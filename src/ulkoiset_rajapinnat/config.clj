@@ -6,11 +6,13 @@
 
 (def ulkoiset-rajapinnat-property-key :ulkoiset-rajapinnat-properties)
 
+(defn ^:private value-from-property [arg]
+  (if (str/starts-with? arg (name ulkoiset-rajapinnat-property-key))
+    (subs arg (+ 1 (count (name ulkoiset-rajapinnat-property-key)))) nil))
+
 (defn ^:private read-config-path-from-args [args]
-  (first (filter some?
-                 (map (fn [arg]
-                        (if (str/starts-with? arg (name ulkoiset-rajapinnat-property-key))
-                          (subs arg (+ 1 (count (name ulkoiset-rajapinnat-property-key)))) nil)) args))))
+  (let [values (map value-from-property args)]
+    (first (filter some? values))))
 
 (defn ^:private read-config-path-from-env []
   (env ulkoiset-rajapinnat-property-key))
@@ -29,5 +31,5 @@
 
 (defn read-configuration-file-first-from-varargs-then-from-env-vars
   "Reads configuration file. File path&name is searched from varargs and env.variables. Key is 'ulkoiset-rajapinnat-properties'."
-  [& args]
+  [args]
   (edn/read-string (slurp (read-args-or-env args))))

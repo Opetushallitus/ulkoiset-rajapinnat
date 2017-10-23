@@ -27,5 +27,6 @@
   :profiles {:plugins [[lein-ring "0.11.0"]]
              :dev {:dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
                                   [cheshire "5.8.0"]
+                                  [tempfile "0.2.0"]
                                   [ring/ring-mock "0.3.1"]]}})
 

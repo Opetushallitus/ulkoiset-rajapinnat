@@ -20,7 +20,7 @@
                          :summary "Hakujen OID:t"
                          tarjonta/tarjonta-resource)))
 
-(defn start-server [& args]
+(defn start-server [args]
   (let [config (read-configuration-file-first-from-varargs-then-from-env-vars args)
         port (-> config :server :port)]
     (log/info "Starting server in port {}" port)
