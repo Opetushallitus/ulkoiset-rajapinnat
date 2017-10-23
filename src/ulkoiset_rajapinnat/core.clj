@@ -10,21 +10,29 @@
         )
   (:require [clj-log4j2.core :as log]))
 
-(defroutes api-opintopolku-routes
-           (context "/api" []
-                    :tags ["api"]
-                    (GET "/healthcheck" []
-                         :summary "Hakujen OID:t"
-                         (ok "OK"))
-                    (GET "/tarjonta" []
-                         :summary "Hakujen OID:t"
-                         tarjonta/tarjonta-resource)))
+(defn api-opintopolku-routes [base-url]
+  (api
+    {:swagger
+     {:ui "/"
+      :spec "/swagger.json"
+      :data {:info {:title "Ulkoiset-rajapinnat"
+                    :description "Ulkoiset-rajapinnat"}
+             }}}
+     (context (str base-url "/api") []
+              :tags ["api"]
+              (GET "/healthcheck" []
+                   :summary "Hakujen OID:t"
+                   (ok "OK"))
+              (GET "/tarjonta" []
+                   :summary "Hakujen OID:t"
+                   tarjonta/tarjonta-resource))))
 
 (defn start-server [args]
   (let [config (read-configuration-file-first-from-varargs-then-from-env-vars args)
-        port (-> config :server :port)]
+        port (-> config :server :port)
+        base-url (-> config :server :base-url)]
     (log/info "Starting server in port {}" port)
-    (run-server (site #'api-opintopolku-routes) {:port port})))
+    (run-server (api-opintopolku-routes base-url) {:port port})))
 
 (defn -main [& args]
   (start-server args))
