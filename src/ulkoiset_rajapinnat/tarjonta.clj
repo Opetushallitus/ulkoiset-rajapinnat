@@ -5,4 +5,4 @@
   (with-channel request channel
                 (send! channel {:status 200
                                 :headers {"Content-Type" "application/json; charset=utf-8"}
-                                :body "Tarjonta Resource!"} true)))
+                                :body "Tarjonta!"} true)))

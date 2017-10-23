@@ -12,11 +12,9 @@
            (context "/api" []
                     :tags ["api"]
                     (GET "/healthcheck" []
-                         ;:return s/Str
                          :summary "Hakujen OID:t"
                          (ok "OK"))
                     (GET "/tarjonta" []
-                         ;:return s/Str
                          :summary "Hakujen OID:t"
                          tarjonta/tarjonta-resource)))
 
