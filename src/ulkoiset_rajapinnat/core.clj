@@ -5,8 +5,10 @@
         [compojure.api.sweet :refer :all]
         [ring.util.http-response :refer :all]
         [ulkoiset-rajapinnat.tarjonta :as tarjonta]
+        [ulkoiset-rajapinnat.config :refer :all]
         org.httpkit.server
-        ))
+        )
+  (:require [clj-log4j2.core :as log]))
 
 (defroutes api-opintopolku-routes
            (context "/api" []
@@ -18,6 +20,12 @@
                          :summary "Hakujen OID:t"
                          tarjonta/tarjonta-resource)))
 
+(defn start-server [& args]
+  (let [config (read-configuration-file-first-from-varargs-then-from-env-vars args)
+        port (-> config :server :port)]
+    (log/info "Starting server in port {}" port)
+    (run-server (site #'api-opintopolku-routes) {:port port})))
+
 (defn -main [& args]
-  (run-server (site #'api-opintopolku-routes) {:port 8080}))
+  (start-server args))
 

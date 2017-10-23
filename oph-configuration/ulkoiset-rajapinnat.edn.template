@@ -1,0 +1,3 @@
+{:host-virkailija "https://{{host_virkailija}}"
+ :server {:port {{palvelu_portti}}
+          :base-url "/ulkoiset-rajapinnat"}}

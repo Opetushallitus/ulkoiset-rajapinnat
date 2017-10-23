@@ -1,0 +1,3 @@
+{:host-virkailija "https://{{host_virkailija}}"
+ :server {:port 8080
+          :base-url "/ulkoiset-rajapinnat"}}
