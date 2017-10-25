@@ -11,6 +11,7 @@
                  [http-kit "2.2.0"]
                  [prismatic/schema "1.1.7"]
                  [metosin/compojure-api "1.1.11"]
+                 [cheshire "5.8.0"]
                  ; Logging
                  [org.apache.logging.log4j/log4j-api "2.9.0"]
                  [org.apache.logging.log4j/log4j-core "2.9.0"]
@@ -26,7 +27,6 @@
 
   :profiles {:plugins [[lein-ring "0.11.0"]]
              :dev {:dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
-                                  [cheshire "5.8.0"]
                                   [tempfile "0.2.0"]
                                   [clj-http "3.7.0"]
                                   [ring/ring-mock "0.3.1"]]}})
