@@ -8,7 +8,8 @@
         [ulkoiset-rajapinnat.config :refer :all]
         org.httpkit.server
         )
-  (:require [clj-log4j2.core :as log]))
+  (:require [clj-log4j2.core :as log])
+  (:gen-class))
 
 (defn api-opintopolku-routes [config]
   (api
