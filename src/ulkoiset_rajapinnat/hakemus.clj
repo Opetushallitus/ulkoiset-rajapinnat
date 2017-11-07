@@ -23,9 +23,9 @@
   (let [preference "preference"
         koulutus-id "-Koulutus-id"
         hakutoiveet (filter #(.endsWith (.getKey %) koulutus-id) (seq (get-in document ["answers" "hakutoiveet"])))
-        p-to-k (fn [key] (.replace (.replace key preference "hakukohde_") koulutus-id "_oid"))
-        converted-hakutoiveet (map (fn [a] {(p-to-k (.getKey a)) (.getValue a)}) hakutoiveet)]
-    (apply merge converted-hakutoiveet)))
+        p-to-k (fn [key] (Integer/parseInt (.replace (.replace key preference "") koulutus-id "")))
+        converted-hakutoiveet (map (fn [a] {:sija (p-to-k (.getKey a)) :oid (.getValue a)}) hakutoiveet)]
+    {:hakutoiveet converted-hakutoiveet}))
 
 (defn write-hakemus [count document]
   (let [json (to-json
