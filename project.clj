@@ -17,6 +17,7 @@
                  [prismatic/schema "1.1.7"]
                  [metosin/compojure-api "1.1.11"]
                  [cheshire "5.8.0"]
+                 [org.mongodb/mongodb-driver-reactivestreams "1.6.0"]
                  ; Logging
                  [org.apache.logging.log4j/log4j-api "2.9.0"]
                  [org.apache.logging.log4j/log4j-core "2.9.0"]
@@ -32,12 +33,16 @@
   :aot [ulkoiset-rajapinnat.core]
 
   :plugins [[lein-resource "14.10.2"]
+            [lein-autoreload "0.1.1"]
+            [com.jakemccrary/lein-test-refresh "0.21.1"]
             [lein-deploy-artifacts "0.1.0"]]
 
   :profiles {:uberjar {:prep-tasks ["compile" "resource"]}
              :plugins [[lein-ring "0.11.0"]]
              :dev {:dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
                                   [tempfile "0.2.0"]
+                                  [de.flapdoodle.embed/de.flapdoodle.embed.mongo "2.0.0"]
+                                  ;[com.github.fakemongo/fongo "2.1.0"]
                                   [clj-http "3.7.0"]
                                   [ring/ring-mock "0.3.1"]]}})
 
