@@ -4,7 +4,7 @@
             [clojure.string :as str]
             [environ.core :refer [env]]))
 
-(def ulkoiset-rajapinnat-property-key :ulkoiset-rajapinnat-properties)
+(def ulkoiset-rajapinnat-property-key :ulkoisetrajapinnat-properties)
 
 (defn ^:private value-from-property [arg]
   (if (str/starts-with? arg (name ulkoiset-rajapinnat-property-key))

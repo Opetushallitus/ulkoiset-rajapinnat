@@ -7,7 +7,7 @@
 
 or
 
-`lein run ulkoiset-rajapinnat-properties=../my.edn`
+`lein run ulkoisetrajapinnat-properties=../my.edn`
 
 ## License
 
