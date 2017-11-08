@@ -42,8 +42,8 @@ urheilijan_lisapisteet)
 (defn vastaanotto-resource [config haku-oid request]
   (with-channel request channel
                 (on-close channel (fn [status] (log/debug "Channel closed!" status)))
-                (let [internal-host-virkailija (config :internal-host-virkailija)]
-                  (-> (let-flow [vastaanotot (fetch-vastaanotto internal-host-virkailija haku-oid)]
+                (let [vastaanotto-host-virkailija (config :vastaanotto-host-virkailija)]
+                  (-> (let-flow [vastaanotot (fetch-vastaanotto vastaanotto-host-virkailija haku-oid)]
                                 (let [json (to-json (map transform-vastaanotto vastaanotot))]
                                   (-> channel
                                       (status 200)

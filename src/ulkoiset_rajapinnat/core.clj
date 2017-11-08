@@ -6,6 +6,7 @@
         [ring.util.http-response :refer :all]
         [ulkoiset-rajapinnat.utils.mongo :refer [create-mongo-client]]
         [ulkoiset-rajapinnat.utils.runtime :refer [shutdown-hook]]
+        [ulkoiset-rajapinnat.oppija :refer [oppija-resource]]
         [ulkoiset-rajapinnat.haku :refer [haku-resource]]
         [ulkoiset-rajapinnat.hakukohde :refer [hakukohde-resource]]
         [ulkoiset-rajapinnat.hakemus :refer [hakemus-resource]]
@@ -29,17 +30,17 @@
               (GET "/healthcheck" []
                    :summary "Health check API"
                    (ok "OK"))
-              (GET "/haku/:vuosi" [vuosi]
-                :summary "Haut"
+              (GET "/haku-for-year/:vuosi" [vuosi]
+                :summary "Haut vuodella"
                 (partial haku-resource config vuosi))
-              (GET "/hakukohde/haku/:haku-oid" [haku-oid kausi]
-                :summary "Hakukohteet"
+              (GET "/hakukohde-for-haku/:haku-oid" [haku-oid kausi]
+                :summary "Hakukohteet haku OID:lla"
                 (partial hakukohde-resource config haku-oid))
-              (GET "/oppija/:haku-oid" [haku-oid kausi]
-                :summary "Oppijat"
-                (partial haku-resource config haku-oid))
+              (GET "/oppija-for-haku/:haku-oid" [haku-oid kausi]
+                :summary "Oppijat haku OID:lla"
+                (partial oppija-resource config haku-oid))
               (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi] ; hakuoid + kaudet
-                :summary "Vastaanotot"
+                :summary "Vastaanotot haku OID:lla"
                 (partial vastaanotto-resource config haku-oid))
               (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi] ; hakuoid + kaudet
                  :summary "Hakemukset haku OID:lla"

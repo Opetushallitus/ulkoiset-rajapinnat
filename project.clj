@@ -26,7 +26,6 @@
                  ]
   :prep-tasks ["compile"]
   :jvm-opts ["-Dlog4j.configurationFile=test/log4j2.properties"
-             "-Dulkoisetrajapinnat-properties=test.edn"
              "-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1"]
   :uberjar-name "ulkoiset-rajapinnat-0.1.0-SNAPSHOT-standalone.jar"
   :main ulkoiset-rajapinnat.core
