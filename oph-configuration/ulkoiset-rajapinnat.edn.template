@@ -1,4 +1,5 @@
 {:host-virkailija "https://{{host_virkailija}}"
+ :internal-host-virkailija "{{host_alb}}"
  :hakuapp-mongo {:uri "mongodb://{{mongodb_hakemus_auth}}@{{mongodb_hakemus_host}}/hakulomake"}
  :server {:port {{palvelu_portti}}
           :base-url "/ulkoiset-rajapinnat"}}
