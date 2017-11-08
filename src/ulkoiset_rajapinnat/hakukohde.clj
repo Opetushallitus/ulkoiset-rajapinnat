@@ -2,7 +2,7 @@
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
             [clj-log4j2.core :as log]
-            [ulkoiset-rajapinnat.rest :refer [get-as-promise status body body-and-close exception-response response-to-json to-json]]
+            [ulkoiset-rajapinnat.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
@@ -39,7 +39,7 @@
 
 (defn fetch-hakukohde [host-virkailija vuosi]
   (let [promise (get-as-promise (format hakukohde-api host-virkailija vuosi))]
-    (chain promise response-to-json result-to-hakukohdes)))
+    (chain promise parse-json-body result-to-hakukohdes)))
 
 (defn hakukohde-resource [config haku-oid request]
   (with-channel request channel

@@ -6,7 +6,7 @@
             [clj-log4j2.core :as log]
             [org.httpkit.server :refer :all]))
 
-(defn response-to-json [response]
+(defn parse-json-body [response]
   (parse-string (response :body)))
 
 (defn to-json [obj]

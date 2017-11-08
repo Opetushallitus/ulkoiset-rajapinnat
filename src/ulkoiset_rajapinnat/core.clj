@@ -9,6 +9,7 @@
         [ulkoiset-rajapinnat.haku :refer [haku-resource]]
         [ulkoiset-rajapinnat.hakukohde :refer [hakukohde-resource]]
         [ulkoiset-rajapinnat.hakemus :refer [hakemus-resource]]
+        [ulkoiset-rajapinnat.vastaanotto :refer [vastaanotto-resource]]
         [ulkoiset-rajapinnat.config :refer :all]
         org.httpkit.server
         )
@@ -37,9 +38,9 @@
               (GET "/oppija/:haku-oid" [haku-oid kausi]
                 :summary "Oppijat"
                 (partial haku-resource config haku-oid))
-              (GET "/vastaanotto/:haku-oid" [haku-oid kausi] ; hakuoid + kaudet
+              (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi] ; hakuoid + kaudet
                 :summary "Vastaanotot"
-                (partial haku-resource config haku-oid))
+                (partial vastaanotto-resource config haku-oid))
               (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi] ; hakuoid + kaudet
                  :summary "Hakemukset haku OID:lla"
                  (partial hakemus-resource config hakuapp-mongo-client haku-oid)))))
