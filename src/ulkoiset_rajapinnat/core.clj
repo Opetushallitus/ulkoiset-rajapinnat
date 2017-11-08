@@ -20,8 +20,8 @@
 (defn api-opintopolku-routes [config hakuapp-mongo-client]
   (api
     {:swagger
-     {:ui "/"
-      :spec "/swagger.json"
+     {:ui (-> config :server :base-url)
+      :spec (str (-> config :server :base-url) "/swagger.json")
       :data {:info {:title "Ulkoiset-rajapinnat"
                     :description "Ulkoiset-rajapinnat"}
              }}}
