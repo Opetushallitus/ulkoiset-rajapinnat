@@ -12,12 +12,26 @@
 (defn to-json [obj]
   (generate-string obj))
 
-(defn get-as-promise [url]
+(defn post-form-as-promise [url form]
+  (let [deferred (d/deferred)]
+    (http/post url {:form-params form} (fn [resp]
+                       (d/success! deferred resp)
+                       ))
+    deferred))
+
+(defn get-as-promise
+  ([url]
   (let [deferred (d/deferred)]
     (http/get url {} (fn [resp]
                        (d/success! deferred resp)
                        ))
     deferred))
+  ([url options]
+   (let [deferred (d/deferred)]
+     (http/get url options (fn [resp]
+                        (d/success! deferred resp)
+                        ))
+     deferred)))
 
 (defn status [channel status]
   (send! channel {:status status

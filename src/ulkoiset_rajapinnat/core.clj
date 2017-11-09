@@ -51,9 +51,17 @@
         port (-> config :server :port)
         hakuapp-mongo-uri (-> config :hakuapp-mongo :uri)
         hakuapp-mongo-client (create-mongo-client hakuapp-mongo-uri)]
-    (shutdown-hook #(.close hakuapp-mongo-client))
+
     (log/info "Starting server in port {}" port)
-    (run-server (api-opintopolku-routes config hakuapp-mongo-client) {:port port})))
+    (let [server (run-server (api-opintopolku-routes config hakuapp-mongo-client) {:port port})
+          close-handle (fn [] (do
+                                (-> (meta server)
+                                    :server
+                                    (.stop 100))
+                                (.close hakuapp-mongo-client)))]
+      (do
+        (shutdown-hook #(close-handle))
+        close-handle))))
 
 (defn -main [& args]
   (start-server args))

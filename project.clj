@@ -18,6 +18,7 @@
                  [metosin/compojure-api "1.1.11"]
                  [cheshire "5.8.0"]
                  [org.mongodb/mongodb-driver-reactivestreams "1.6.0"]
+                 [clj-soup/clojure-soup "0.1.3"]
                  ; Logging
                  [org.apache.logging.log4j/log4j-api "2.9.0"]
                  [org.apache.logging.log4j/log4j-core "2.9.0"]
