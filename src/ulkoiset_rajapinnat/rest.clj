@@ -6,6 +6,9 @@
             [clj-log4j2.core :as log]
             [org.httpkit.server :refer :all]))
 
+(defn parse-json-request [request]
+  (parse-stream (new java.io.InputStreamReader (request :body))))
+
 (defn parse-json-body [response]
   (parse-string (response :body)))
 

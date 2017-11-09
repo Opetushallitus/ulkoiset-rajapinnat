@@ -11,6 +11,7 @@
         [ulkoiset-rajapinnat.hakukohde :refer [hakukohde-resource]]
         [ulkoiset-rajapinnat.hakemus :refer [hakemus-resource]]
         [ulkoiset-rajapinnat.vastaanotto :refer [vastaanotto-resource]]
+        [ulkoiset-rajapinnat.odw :refer [odw-resource]]
         [ulkoiset-rajapinnat.config :refer :all]
         org.httpkit.server
         )
@@ -44,7 +45,10 @@
                 (partial vastaanotto-resource config haku-oid))
               (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi] ; hakuoid + kaudet
                  :summary "Hakemukset haku OID:lla"
-                 (partial hakemus-resource config hakuapp-mongo-client haku-oid)))))
+                 (partial hakemus-resource config hakuapp-mongo-client haku-oid))
+              (POST "/odw/hakukohde" []
+                 :summary "ODW-rajapinta"
+                 (partial odw-resource config)))))
 
 (defn start-server [args]
   (let [config (read-configuration-file-first-from-varargs-then-from-env-vars args)
