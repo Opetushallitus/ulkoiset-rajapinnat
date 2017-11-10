@@ -26,6 +26,8 @@ urheilijan_lisapisteet)
   {"hakukohde_oid" (hakutoive "hakukohdeOid")
    "valinnan_tila" (hakutoive "valintatila")
    "valintatapajono" (hakutoive "valintatapajonoOid")
+   "hakijan_lopullinen_jonosija" (hakutoive "jonosija")
+   "yhteispisteet" (hakutoive "pisteet")
    "ilmoittautumisen_tila" (get-in hakutoive ["ilmoittautumistila" "ilmoittautumistila"])})
 
 (defn transform-vastaanotto [vastaanotto]
