@@ -32,3 +32,18 @@
                           (partial post-st-request absolute-service))]
     ;(let-flow [st st-promise] (prn st))
     st-promise))
+
+(defn parse-jsessionid [response]
+  (nth (re-find #"JSESSIONID=(\w*);" ((response :headers) :set-cookie)) 1))
+
+(defn post-jsessionid-request
+  [host service service-ticket]
+  (get-as-promise (str host service)
+                  {:headers {"CasSecurityTicket" service-ticket}})
+)
+
+(defn fetch-jsessionid
+  [host service username password]
+  (let-flow [st (fetch-service-ticket host service username password)
+             js (post-jsessionid-request host service st)]
+            (parse-jsessionid js)))
