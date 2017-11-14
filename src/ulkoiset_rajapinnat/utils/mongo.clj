@@ -42,9 +42,13 @@
                 (subscribe (fn [s]
                              (fn
                                ([]
-                                 (s/close! stream))
+                                (s/close! stream))
                                ([document]
-                                 (s/put! stream document))
+                                (if (s/closed? stream)
+                                  (do
+                                    (log/warn "Stream cancelled before all documents were read! Client disconnected perhaps.")
+                                    (.cancel s))
+                                  (s/put! stream document)))
                                ([_ throwable]
                                 (log/error "Streaming failed from MongoDB!" throwable)
                                 (on-error throwable)
