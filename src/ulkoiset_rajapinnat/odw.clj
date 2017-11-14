@@ -4,13 +4,17 @@
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
             [clj-log4j2.core :as log]
-            [manifold.deferred :refer [let-flow catch chain on-realized zip]]))
+            [manifold.deferred :refer [let-flow catch chain on-realized zip loop]]))
 
 (def hakukohde-api "%s/valintaperusteet-service/resources/hakukohde/%s")
 (def hakukohde-valinnanvaihe-api  "%s/valintaperusteet-service/resources/hakukohde/%s/valinnanvaihe")
+(def valinnanvaihe-valintatapajono-api "%s/valintaperusteet-service/resources/valinnanvaihe/%s/valintatapajono")
+(def valinnanvaihe-sijoittelu-api "%s/valintaperusteet-service/resources/valinnanvaihe/%s/kuuluuSijoitteluun")
 
 (defn hakukohde-url [host hakukohde-oid] (format hakukohde-api host hakukohde-oid))
 (defn valinnanvaihe-url [host hakukohde-oid] (format hakukohde-valinnanvaihe-api host hakukohde-oid))
+(defn valinnanvaihe-sijoittelu-url [host valinnanvaihe-oid] (format valinnanvaihe-sijoittelu-api host valinnanvaihe-oid))
+(defn valinnanvaihe-valintatapajono-url [host valinnanvaihe-oid] (format valinnanvaihe-valintatapajono-api host valinnanvaihe-oid))
 
 (defn handle-response [url response]
   (log/info (str url " " (response :status)))
@@ -24,11 +28,24 @@
     (log/info (str url "(JSESSIONID=" session-id ")"))
     (chain promise #(handle-response url %))))
 
+(defn get-valinnanvaiheet [host session-id hakukohde-oid] (fetch-with-url session-id (valinnanvaihe-url host hakukohde-oid)))
+(defn get-valinnanvaihe-sijoittelu [host session-id valinnanvaihe-oid] (fetch-with-url session-id (valinnanvaihe-sijoittelu-url host valinnanvaihe-oid)))
+(defn get-valinnanvaihe-valintatapajono [host session-id valinnanvaihe-oid] (fetch-with-url session-id (valinnanvaihe-valintatapajono-url host valinnanvaihe-oid)))
+
+(defn koosta-valinnanvaiheet [host session-id hakukohde-oid]
+  (let-flow [valinnanvaiheet (get-valinnanvaiheet host session-id hakukohde-oid)]
+           (defn koosta-valinnanvaihe [valinnanvaihe]
+             (let-flow [sijoittelu (get-valinnanvaihe-sijoittelu host session-id (get valinnanvaihe "oid"))
+                        valintatapajono (get-valinnanvaihe-valintatapajono host session-id (get valinnanvaihe "oid"))]
+                       (merge valinnanvaihe {:valintatapajonot valintatapajono} sijoittelu)))
+           (apply zip (map #(koosta-valinnanvaihe %) valinnanvaiheet))))
+
+
 (defn koosta-hakukohde [host session-id hakukohde-oid]
   (let-flow [hakukohde (fetch-with-url session-id (hakukohde-url host hakukohde-oid ))]
     (if (not (nil? hakukohde))
-            (let-flow [valinnanvaiheet (fetch-with-url session-id (valinnanvaihe-url host hakukohde-oid))]
-                      (merge hakukohde {:valinnanvaiheet valinnanvaiheet})))))
+      (let-flow [valinnanvaiheet (koosta-valinnanvaiheet host session-id hakukohde-oid)]
+         (merge hakukohde {:valinnanvaiheet valinnanvaiheet})))))
 
 (defn fetch-hakukohteet [hakukohde-oids internal-host-virkailija session-id]
   (apply zip (map #(koosta-hakukohde internal-host-virkailija session-id %) hakukohde-oids)))
