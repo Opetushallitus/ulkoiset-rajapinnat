@@ -7,20 +7,31 @@
             [manifold.deferred :refer [let-flow catch chain on-realized zip]]))
 
 (def hakukohde-api "%s/valintaperusteet-service/resources/hakukohde/%s")
+(def hakukohde-valinnanvaihe-api  "%s/valintaperusteet-service/resources/hakukohde/%s/valinnanvaihe")
 
-(defn parse-response-skip-not-found [response]
-  (if (== 200 (response :status))
-    (parse-json-body response)
-    nil))
+(defn hakukohde-url [host hakukohde-oid] (format hakukohde-api host hakukohde-oid))
+(defn valinnanvaihe-url [host hakukohde-oid] (format hakukohde-valinnanvaihe-api host hakukohde-oid))
 
-(defn fetch-hakukohde [internal-host-virkailija session-id hakukohde-oid]
-  (let [promise (get-as-promise (format hakukohde-api internal-host-virkailija hakukohde-oid)
-                                {:headers {"Cookie" (str "JSESSIONID=" session-id)}})]
-    (log/info (str (format hakukohde-api internal-host-virkailija hakukohde-oid) "(JSESSIONID=" session-id ")"))
-    (chain promise parse-response-skip-not-found)))
+(defn handle-response [url response]
+  (log/info (str url " " (response :status)))
+  (case (response :status)
+    200 (parse-json-body response)
+    404 nil
+    (throw (RuntimeException. (str "Calling " url " failed: status=" (response :status) ", msg=" (response :body))))))
+
+(defn fetch-with-url [session-id url]
+  (let [promise (get-as-promise url {:headers {"Cookie" (str "JSESSIONID=" session-id )}})]
+    (log/info (str url "(JSESSIONID=" session-id ")"))
+    (chain promise #(handle-response url %))))
+
+(defn koosta-hakukohde [host session-id hakukohde-oid]
+  (let-flow [hakukohde (fetch-with-url session-id (hakukohde-url host hakukohde-oid ))]
+    (if (not (nil? hakukohde))
+            (let-flow [valinnanvaiheet (fetch-with-url session-id (valinnanvaihe-url host hakukohde-oid))]
+                      (merge hakukohde {:valinnanvaiheet valinnanvaiheet})))))
 
 (defn fetch-hakukohteet [hakukohde-oids internal-host-virkailija session-id]
-  (apply zip (map #(fetch-hakukohde internal-host-virkailija session-id %) hakukohde-oids)))
+  (apply zip (map #(koosta-hakukohde internal-host-virkailija session-id %) hakukohde-oids)))
 
 (defn odw-resource [config request]
   (with-channel request channel
@@ -30,7 +41,7 @@
                       password (config :ulkoiset-rajapinnat-cas-password)]
                   (-> (let-flow [session-id (fetch-jsessionid host "/valintaperusteet-service" username password)
                                  hakukohteet (fetch-hakukohteet (parse-json-request request) host session-id)]
-                                (let [json (to-json (filter #(not= nil %) hakukohteet))]
+                                (let [json (to-json (filter #(not (nil? %)) hakukohteet))]
                                   (-> channel
                                       (status 200)
                                       (body-and-close json))))
