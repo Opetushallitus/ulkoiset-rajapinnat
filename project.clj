@@ -10,6 +10,7 @@
                  ["ext-snapshots" "https://artifactory.oph.ware.fi/artifactory/ext-snapshot-local"]]
   :dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
                  [org.clojure/clojure "1.8.0"]
+                 [org.clojure/core.async "0.3.443"]
                  [environ "1.1.0"]
                  [compojure "1.6.0"]
                  [manifold "0.1.6"]

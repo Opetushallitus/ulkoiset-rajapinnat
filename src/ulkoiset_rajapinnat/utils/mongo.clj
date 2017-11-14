@@ -1,6 +1,7 @@
 (ns ulkoiset-rajapinnat.utils.mongo
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
+            [manifold.stream :as s]
             [clj-log4j2.core :as log])
   (:refer-clojure :exclude [and])
   (:import (org.bson.conversions Bson)))
@@ -35,3 +36,17 @@
           (log/debug "Subscription completed!")
           (@on-event))))))
 
+(defn publisher-to-stream [publisher on-error]
+  (let [stream (s/stream)]
+    (.subscribe publisher
+                (subscribe (fn [s]
+                             (fn
+                               ([]
+                                 (s/close! stream))
+                               ([document]
+                                 (s/put! stream document))
+                               ([_ throwable]
+                                (log/error "Streaming failed from MongoDB!" throwable)
+                                (on-error throwable)
+                                (s/close! stream))))))
+    stream))
