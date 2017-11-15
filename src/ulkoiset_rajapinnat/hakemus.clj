@@ -1,13 +1,14 @@
 (ns ulkoiset-rajapinnat.hakemus
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
+            [clojure.core.async :refer :all]
             [clj-log4j2.core :as log]
             [ulkoiset-rajapinnat.utils.mongo :as m]
             [ulkoiset-rajapinnat.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
-            [org.httpkit.timer :refer :all]
-            [clojure.core.async :as async]))
+            [org.httpkit.timer :refer :all])
+  (:refer-clojure :rename {merge core-merge}))
 
 (comment
   henkilo_oid
@@ -64,7 +65,7 @@
     (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
 (defn convert-hakemus [pohjakoulutuskkodw document]
-  (remove-nils (merge
+  (remove-nils (core-merge
                  (hakutoiveet-from-hakemus document)
                  (koulutustausta-from-hakemus pohjakoulutuskkodw document)
                  {"hakemus_oid" (get document "oid")
@@ -87,9 +88,36 @@
                (m/in "state" "ACTIVE" "INCOMPLETE")
                (m/eq "applicationSystemId" haku-oid)))))
 
+(defn atomic-take! [atom batch]
+  (loop [oldval @atom]
+    (if (>= (count oldval) batch)
+      (let [spl (split-at batch oldval)]
+        (if (compare-and-set! atom oldval (vec (second spl)))
+          (first spl)
+          (recur @atom)))
+      nil)))
+
+(defn drain! [atom]
+  (loop [oldval @atom]
+    (if (compare-and-set! atom oldval [])
+      oldval
+      (recur @atom))))
+
+(defn handle-document-batch [document-batch document-batch-channel last-batch?]
+  (if last-batch?
+    (go
+      (>! document-batch-channel [last-batch? @document-batch]))
+    (if-let [batch (atomic-take! document-batch 1000)]
+      (do
+        (go
+          (>! document-batch-channel [last-batch? batch]))))))
+
+
 (defn fetch-hakemukset-for-haku
   [pohjakoulutuskkodw-promise haku-oid mongo-client channel]
-  (let [is-first-written (atom false)
+  (let [document-batch-channel (chan)
+        document-batch (atom [])
+        is-first-written (atom false)
         publisher (create-hakemus-publisher mongo-client haku-oid)
         close-channel (fn []
                         (do
@@ -98,24 +126,42 @@
                                 (body channel "[]")
                                 (close channel))
                             (do (body channel "]")
-                                (close channel)))))]
+                                (close channel)))))
+
+        handle-incoming-document (fn [s document]
+                                   (if (open? channel)
+                                     (do
+                                       (swap! document-batch conj document)
+                                       (handle-document-batch document-batch document-batch-channel false))
+                                     (do
+                                       (log/warn "Stopping everything! Client socket no longer listening!")
+                                       (close! document-batch-channel)
+                                       (.close s))))
+        handle-complete (fn []
+                          (go
+                            (>! document-batch-channel [true (drain! document-batch)])))
+        handle-exception (fn [throwable]
+                           (log/error "Failed to fetch stuff!" throwable)
+                           (close! document-batch-channel)
+                           (write-object-to-channel is-first-written {:error (.getMessage throwable)} channel)
+                           (close-channel))]
+    (let-flow [pohjakoulutuskkodw pohjakoulutuskkodw-promise]
+              (go-loop [[last-batch? batch] (<! document-batch-channel)]
+                (doseq [hakemus batch]
+                  (write-object-to-channel is-first-written (convert-hakemus pohjakoulutuskkodw hakemus) channel))
+                (if last-batch?
+                  (do (close-channel)
+                      (close! document-batch-channel))
+                  (recur (<! document-batch-channel)))))
     (.subscribe publisher
                 (m/subscribe (fn [s]
                              (fn
                                ([]
-                                (close-channel))
+                                (handle-complete))
                                ([document]
-                                (if (open? channel)
-                                  (let-flow [pohjakoulutuskkodw pohjakoulutuskkodw-promise
-                                             hakemus (convert-hakemus pohjakoulutuskkodw document)]
-                                            (write-object-to-channel is-first-written hakemus channel))
-                                  (do
-                                    (log/warn "Client socket no longer listening so closing Mongo-connection!")
-                                    (.close s))))
+                                (handle-incoming-document s document))
                                ([_ throwable]
-                                (log/error "Failed to fetch stuff!" throwable)
-                                (write-object-to-channel is-first-written {:error (.getMessage throwable)} channel)
-                                (close-channel))))))))
+                                  (handle-exception throwable))))))))
 
 (defn hakemus-resource [config mongo-client haku-oid request]
   (with-channel request channel
