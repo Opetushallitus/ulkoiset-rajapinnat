@@ -6,9 +6,21 @@
             [ulkoiset-rajapinnat.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
-            [org.httpkit.timer :refer :all]))
+            [org.httpkit.timer :refer :all]
+            [clojure.core.async :as async]))
 
 (comment
+  henkilo_oid
+  yksiloity
+  henkilotunnus
+  syntyma_aika
+  etunimet
+  sukunimi
+  sukupuoli_koodi
+  aidinkieli
+  hakijan_kotikunta
+  hakijan_asuinmaa
+  hakijan_kansalaisuus
   ; missing fields
   lahtokoulun_organisaatio_oid
   lahtokoulun_kuntakoodi
@@ -51,44 +63,59 @@
   (let [f (fn [[k v]] (when v [k v]))]
     (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
-(defn write-hakemus [pohjakoulutuskkodw count document]
-  (let [json (to-json
-               (remove-nils (merge
+(defn convert-hakemus [pohjakoulutuskkodw document]
+  (remove-nils (merge
                  (hakutoiveet-from-hakemus document)
                  (koulutustausta-from-hakemus pohjakoulutuskkodw document)
                  {"hakemus_oid" (get document "oid")
                   "henkilo_oid" (get document "personOid")
                   "haku_oid" (get document "applicationSystemId")
-                  "hakemus_tila" (get document "state")})))]
-    (if (= count 1) json (str "," json))))
+                  "hakemus_tila" (get document "state")})))
+
+(defn write-object-to-channel [is-first-written obj channel]
+  (let [json (to-json obj)]
+    (if (compare-and-set! is-first-written false true)
+      (do
+        (status channel 200)
+        (body channel (str "[" json)))
+      (body channel (str "," json)))))
+
+(defn create-hakemus-publisher [mongo-client haku-oid]
+  (-> (.getDatabase mongo-client "hakulomake")
+      (.getCollection "application")
+      (.find (m/and
+               (m/in "state" "ACTIVE" "INCOMPLETE")
+               (m/eq "applicationSystemId" haku-oid)))))
 
 (defn fetch-hakemukset-for-haku
   [pohjakoulutuskkodw-promise haku-oid mongo-client channel]
-  (let [is-headers-written (atom false)
-        count (atom 0)
-        database (.getDatabase mongo-client "hakulomake")
-        collection (.getCollection database "application")
-        publisher (.find collection
-                         (m/and
-                           (m/in "state" "ACTIVE" "INCOMPLETE")
-                           (m/eq "applicationSystemId" haku-oid)))]
+  (let [is-first-written (atom false)
+        publisher (create-hakemus-publisher mongo-client haku-oid)
+        close-channel (fn []
+                        (do
+                          (if (compare-and-set! is-first-written false true)
+                            (do (status channel 200)
+                                (body channel "[]")
+                                (close channel))
+                            (do (body channel "]")
+                                (close channel)))))]
     (.subscribe publisher
                 (m/subscribe (fn [s]
                              (fn
                                ([]
-                                (body channel "]")
-                                (close channel))
+                                (close-channel))
                                ([document]
-                                (if (compare-and-set! is-headers-written false true)
+                                (if (open? channel)
+                                  (let-flow [pohjakoulutuskkodw pohjakoulutuskkodw-promise
+                                             hakemus (convert-hakemus pohjakoulutuskkodw document)]
+                                            (write-object-to-channel is-first-written hakemus channel))
                                   (do
-                                    (status channel 200)
-                                    (body channel "[")))
-                                (let-flow [pohjakoulutuskkodw pohjakoulutuskkodw-promise]
-                                          (-> channel
-                                              (body (write-hakemus pohjakoulutuskkodw (swap! count inc) document)))))
+                                    (log/warn "Client socket no longer listening so closing Mongo-connection!")
+                                    (.close s))))
                                ([_ throwable]
                                 (log/error "Failed to fetch stuff!" throwable)
-                                (close channel))))))))
+                                (write-object-to-channel is-first-written {:error (.getMessage throwable)} channel)
+                                (close-channel))))))))
 
 (defn hakemus-resource [config mongo-client haku-oid request]
   (with-channel request channel
