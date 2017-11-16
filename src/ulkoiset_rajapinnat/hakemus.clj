@@ -142,7 +142,7 @@
                   (swap! counter (partial + (count batch)))
                   (if last-batch?
                     (do (close-channel)
-                        (log/info "Returned succefully {} 'hakemusta'! Took {}ms!" @counter (- (System/currentTimeMillis) start-time))
+                        (log/info "Returned successfully {} 'hakemusta'! Took {}ms!" @counter (- (System/currentTimeMillis) start-time))
                         (close! document-batch-channel))
                     (do
                       (log/debug "Waiting for next batch!")
