@@ -30,7 +30,6 @@
   (let [absolute-service (str host service "/j_spring_cas_security_check")
         st-promise (chain (post-tgt-request host username password)
                           (partial post-st-request absolute-service))]
-    ;(let-flow [st st-promise] (prn st))
     st-promise))
 
 (defn parse-jsessionid [response]

@@ -166,8 +166,6 @@
                            henkilot (fetch-henkilot-promise config jsessionid (document-batch-to-henkilo-oid-list batch))]
                           (let [henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
                             (doseq [hakemus batch]
-                              (if (not-empty henkilot)
-                                (prn henkilot))
                               (write-object-to-channel is-first-written (convert-hakemus pohjakoulutuskkodw (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
                             (if last-batch?
                               (do (close-channel)
