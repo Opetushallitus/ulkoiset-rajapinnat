@@ -11,6 +11,8 @@
             [org.httpkit.timer :refer :all])
   (:refer-clojure :rename {merge core-merge}))
 
+(def size-of-henkilo-batch-from-onr-at-once 500)
+
 (comment
   :hakijan_kotikunta ""
   :hakijan_asuinmaa ""
@@ -114,7 +116,7 @@
 
 (defn handle-document-batch [document-batch document-batch-channel]
   (let [last-batch? false]
-    (if-let [batch (atomic-take! document-batch 1000)]
+    (if-let [batch (atomic-take! document-batch size-of-henkilo-batch-from-onr-at-once)]
       (do
         (go
           (log/debug "Putting batch of size {}!" (count batch))
@@ -125,7 +127,7 @@
   (map #(get % "personOid") batch))
 
 (defn fetch-rest-of-the-missing-data
-  [config start-time is-first-written pohjakoulutuskkodw jsessionid-promise document-batch-channel channel close-channel]
+  [config start-time counter is-first-written pohjakoulutuskkodw jsessionid-promise document-batch-channel channel close-channel]
   (go
     (let [[last-batch? batch] (<! document-batch-channel)]
       (let-flow [jsessionid jsessionid-promise
@@ -137,18 +139,20 @@
                       (write-object-to-channel is-first-written (convert-hakemus pohjakoulutuskkodw (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
                     (catch Exception e
                       (log/error "Failed to write 'hakemukset'!" e)))
+                  (swap! counter (partial + (count batch)))
                   (if last-batch?
                     (do (close-channel)
-                        (log/info "Returned succefully x 'hakemusta'! Took {}ms!" (- (System/currentTimeMillis) start-time))
+                        (log/info "Returned succefully {} 'hakemusta'! Took {}ms!" @counter (- (System/currentTimeMillis) start-time))
                         (close! document-batch-channel))
                     (do
                       (log/debug "Waiting for next batch!")
-                      (fetch-rest-of-the-missing-data config start-time is-first-written pohjakoulutuskkodw jsessionid-promise document-batch-channel channel close-channel))))))))
+                      (fetch-rest-of-the-missing-data config start-time counter is-first-written pohjakoulutuskkodw jsessionid-promise document-batch-channel channel close-channel))))))))
 
 
 (defn fetch-hakemukset-for-haku
   [config haku-oid mongo-client channel]
   (let [start-time (System/currentTimeMillis)
+        counter (atom 0)
         host-virkailija (config :host-virkailija)
         pohjakoulutuskkodw-promise (chain (fetch-koodisto host-virkailija "pohjakoulutuskkodw") #(vals %))
         jsessionid-promise (fetch-onr-sessionid config)
@@ -186,6 +190,7 @@
               (fetch-rest-of-the-missing-data
                 config
                 start-time
+                counter
                 is-first-written
                 pohjakoulutuskkodw
                 jsessionid-promise
