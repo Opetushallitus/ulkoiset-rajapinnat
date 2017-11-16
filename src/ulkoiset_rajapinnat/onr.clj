@@ -19,4 +19,5 @@
 (defn fetch-henkilot-promise [config jsessionid henkilo-oids]
   (let [host (-> config :oppijanumerorekisteri-host-virkailija)
         url (format oppijanumerorekisteri-api host)]
-    (post-json-as-promise url henkilo-oids {:headers {"Cookie" (str "JSESSIONID=" jsessionid )}})))
+    (-> (post-json-as-promise url henkilo-oids {:headers {"Cookie" (str "JSESSIONID=" jsessionid )}})
+        (chain parse-json-body))))

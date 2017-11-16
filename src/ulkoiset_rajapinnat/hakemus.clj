@@ -3,6 +3,7 @@
             [clojure.string :as str]
             [clojure.core.async :refer :all]
             [clj-log4j2.core :as log]
+            [ulkoiset-rajapinnat.onr :refer :all]
             [ulkoiset-rajapinnat.utils.mongo :as m]
             [ulkoiset-rajapinnat.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
@@ -11,17 +12,10 @@
   (:refer-clojure :rename {merge core-merge}))
 
 (comment
-  henkilo_oid
-  yksiloity
-  henkilotunnus
-  syntyma_aika
-  etunimet
-  sukunimi
-  sukupuoli_koodi
-  aidinkieli
-  hakijan_kotikunta
-  hakijan_asuinmaa
-  hakijan_kansalaisuus
+  :hakijan_kotikunta ""
+  :hakijan_asuinmaa ""
+  :hakijan_kansalaisuus "")
+(comment
   ; missing fields
   lahtokoulun_organisaatio_oid
   lahtokoulun_kuntakoodi
@@ -42,6 +36,20 @@
     {:hakukohde_oid (get-endswith "-Koulutus-id")
      :harkinnanvarainen_valinta (get-endswith "-discretionary-follow-up")
      :sija (.getKey preferences)}))
+
+
+(defn oppija-data-from-henkilo [henkilo-opt]
+  (let [henkilo (if (nil? henkilo-opt) {} henkilo-opt)]
+    {:yksiloity (get henkilo "yksiloity")
+     :henkilotunnus (get henkilo "hetu")
+     :syntyma_aika (get henkilo "syntymaaika")
+     :etunimet (get henkilo "etunimet")
+     :sukunimi (get henkilo "sukunimi")
+     :sukupuoli_koodi (get henkilo "sukupuoli")
+     :aidinkieli (get henkilo "aidinkieli")
+     :hakijan_kotikunta nil
+     :hakijan_asuinmaa nil
+     :hakijan_kansalaisuus nil}))
 
 (defn hakutoiveet-from-hakemus [document]
   (let [pref-keys-by-sija (collect-preference-keys-by-sija document)]
@@ -64,9 +72,10 @@
   (let [f (fn [[k v]] (when v [k v]))]
     (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
-(defn convert-hakemus [pohjakoulutuskkodw document]
+(defn convert-hakemus [pohjakoulutuskkodw henkilo document]
   (remove-nils (core-merge
                  (hakutoiveet-from-hakemus document)
+                 (oppija-data-from-henkilo henkilo)
                  (koulutustausta-from-hakemus pohjakoulutuskkodw document)
                  {"hakemus_oid" (get document "oid")
                   "henkilo_oid" (get document "personOid")
@@ -112,10 +121,16 @@
         (go
           (>! document-batch-channel [last-batch? batch]))))))
 
+(defn document-batch-to-henkilo-oid-list
+  [batch]
+  (map #(get % "personOid") batch))
 
 (defn fetch-hakemukset-for-haku
-  [pohjakoulutuskkodw-promise haku-oid mongo-client channel]
-  (let [document-batch-channel (chan)
+  [config haku-oid mongo-client channel]
+  (let [host-virkailija (config :host-virkailija)
+        pohjakoulutuskkodw-promise (chain (fetch-koodisto host-virkailija "pohjakoulutuskkodw") #(vals %))
+        jsessionid-promise (fetch-onr-sessionid config)
+        document-batch-channel (chan)
         document-batch (atom [])
         is-first-written (atom false)
         publisher (create-hakemus-publisher mongo-client haku-oid)
@@ -136,7 +151,7 @@
                                      (do
                                        (log/warn "Stopping everything! Client socket no longer listening!")
                                        (close! document-batch-channel)
-                                       (.close s))))
+                                       (.cancel s))))
         handle-complete (fn []
                           (go
                             (>! document-batch-channel [true (drain! document-batch)])))
@@ -147,12 +162,17 @@
                            (close-channel))]
     (let-flow [pohjakoulutuskkodw pohjakoulutuskkodw-promise]
               (go-loop [[last-batch? batch] (<! document-batch-channel)]
-                (doseq [hakemus batch]
-                  (write-object-to-channel is-first-written (convert-hakemus pohjakoulutuskkodw hakemus) channel))
-                (if last-batch?
-                  (do (close-channel)
-                      (close! document-batch-channel))
-                  (recur (<! document-batch-channel)))))
+                (let-flow [jsessionid jsessionid-promise
+                           henkilot (fetch-henkilot-promise config jsessionid (document-batch-to-henkilo-oid-list batch))]
+                          (let [henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
+                            (doseq [hakemus batch]
+                              (if (not-empty henkilot)
+                                (prn henkilot))
+                              (write-object-to-channel is-first-written (convert-hakemus pohjakoulutuskkodw (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
+                            (if last-batch?
+                              (do (close-channel)
+                                  (close! document-batch-channel))
+                              (recur (<! document-batch-channel)))))))
     (.subscribe publisher
                 (m/subscribe (fn [s]
                              (fn
@@ -166,7 +186,6 @@
 (defn hakemus-resource [config mongo-client haku-oid request]
   (with-channel request channel
                 (on-close channel (fn [status] (log/debug "Channel closed!" status)))
-                (let [host-virkailija (config :host-virkailija)
-                      pohjakoulutuskkodw-promise (chain (fetch-koodisto host-virkailija "pohjakoulutuskkodw") #(vals %))]
-                  (fetch-hakemukset-for-haku pohjakoulutuskkodw-promise haku-oid mongo-client channel))
-                (schedule-task (* 1000 60 60) (close channel))))
+                (fetch-hakemukset-for-haku config haku-oid mongo-client channel)
+                (schedule-task (* 1000 60 60 12) (close channel))
+                ))
