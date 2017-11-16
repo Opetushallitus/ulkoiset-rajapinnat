@@ -12,7 +12,11 @@
   (parse-stream (new java.io.InputStreamReader (request :body))))
 
 (defn parse-json-body [response]
-  (parse-string (response :body)))
+  (if (= (response :status) 200)
+    (parse-string (response :body))
+    (do
+      (log/error "Expected 200 OK!")
+      (throw (new RuntimeException "Expected 200 OK!")))))
 
 (defn to-json [obj]
   (generate-string obj))

@@ -16,8 +16,14 @@
         host (-> config :oppijanumerorekisteri-host-virkailija)]
     (fetch-jsessionid host "/oppijanumerorekisteri-service" username password)))
 
+(defn log-fetch [number-of-oids start-time response]
+  (log/debug "Fetching 'henkilot' (size = {}) ready with status {}! Took {}ms!" number-of-oids (response :status) (- (System/currentTimeMillis) start-time))
+  response)
+
 (defn fetch-henkilot-promise [config jsessionid henkilo-oids]
   (let [host (-> config :oppijanumerorekisteri-host-virkailija)
-        url (format oppijanumerorekisteri-api host)]
+        url (format oppijanumerorekisteri-api host)
+        start-time (System/currentTimeMillis)]
     (-> (post-json-as-promise url henkilo-oids {:headers {"Cookie" (str "JSESSIONID=" jsessionid )}})
+        (chain (partial log-fetch (count henkilo-oids) start-time))
         (chain parse-json-body))))

@@ -112,25 +112,47 @@
       oldval
       (recur @atom))))
 
-(defn handle-document-batch [document-batch document-batch-channel last-batch?]
-  (if last-batch?
-    (go
-      (>! document-batch-channel [last-batch? @document-batch]))
+(defn handle-document-batch [document-batch document-batch-channel]
+  (let [last-batch? false]
     (if-let [batch (atomic-take! document-batch 1000)]
       (do
         (go
+          (log/debug "Putting batch of size {}!" (count batch))
           (>! document-batch-channel [last-batch? batch]))))))
 
 (defn document-batch-to-henkilo-oid-list
   [batch]
   (map #(get % "personOid") batch))
 
+(defn fetch-rest-of-the-missing-data
+  [config start-time is-first-written pohjakoulutuskkodw jsessionid-promise document-batch-channel channel close-channel]
+  (go
+    (let [[last-batch? batch] (<! document-batch-channel)]
+      (let-flow [jsessionid jsessionid-promise
+                 henkilo-oids (document-batch-to-henkilo-oid-list batch)
+                 henkilot (fetch-henkilot-promise config jsessionid henkilo-oids)]
+                (let [henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
+                  (try
+                    (doseq [hakemus batch]
+                      (write-object-to-channel is-first-written (convert-hakemus pohjakoulutuskkodw (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
+                    (catch Exception e
+                      (log/error "Failed to write 'hakemukset'!" e)))
+                  (if last-batch?
+                    (do (close-channel)
+                        (log/info "Returned succefully x 'hakemusta'! Took {}ms!" (- (System/currentTimeMillis) start-time))
+                        (close! document-batch-channel))
+                    (do
+                      (log/debug "Waiting for next batch!")
+                      (fetch-rest-of-the-missing-data config start-time is-first-written pohjakoulutuskkodw jsessionid-promise document-batch-channel channel close-channel))))))))
+
+
 (defn fetch-hakemukset-for-haku
   [config haku-oid mongo-client channel]
-  (let [host-virkailija (config :host-virkailija)
+  (let [start-time (System/currentTimeMillis)
+        host-virkailija (config :host-virkailija)
         pohjakoulutuskkodw-promise (chain (fetch-koodisto host-virkailija "pohjakoulutuskkodw") #(vals %))
         jsessionid-promise (fetch-onr-sessionid config)
-        document-batch-channel (chan)
+        document-batch-channel (chan 2)
         document-batch (atom [])
         is-first-written (atom false)
         publisher (create-hakemus-publisher mongo-client haku-oid)
@@ -147,7 +169,7 @@
                                    (if (open? channel)
                                      (do
                                        (swap! document-batch conj document)
-                                       (handle-document-batch document-batch document-batch-channel false))
+                                       (handle-document-batch document-batch document-batch-channel))
                                      (do
                                        (log/warn "Stopping everything! Client socket no longer listening!")
                                        (close! document-batch-channel)
@@ -161,16 +183,15 @@
                            (write-object-to-channel is-first-written {:error (.getMessage throwable)} channel)
                            (close-channel))]
     (let-flow [pohjakoulutuskkodw pohjakoulutuskkodw-promise]
-              (go-loop [[last-batch? batch] (<! document-batch-channel)]
-                (let-flow [jsessionid jsessionid-promise
-                           henkilot (fetch-henkilot-promise config jsessionid (document-batch-to-henkilo-oid-list batch))]
-                          (let [henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
-                            (doseq [hakemus batch]
-                              (write-object-to-channel is-first-written (convert-hakemus pohjakoulutuskkodw (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
-                            (if last-batch?
-                              (do (close-channel)
-                                  (close! document-batch-channel))
-                              (recur (<! document-batch-channel)))))))
+              (fetch-rest-of-the-missing-data
+                config
+                start-time
+                is-first-written
+                pohjakoulutuskkodw
+                jsessionid-promise
+                document-batch-channel
+                channel
+                close-channel))
     (.subscribe publisher
                 (m/subscribe (fn [s]
                              (fn
