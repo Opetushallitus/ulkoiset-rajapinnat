@@ -14,10 +14,6 @@
 (def size-of-henkilo-batch-from-onr-at-once 500)
 
 (comment
-  :hakijan_kotikunta ""
-  :hakijan_asuinmaa ""
-  :hakijan_kansalaisuus "")
-(comment
   ; missing fields
   lahtokoulun_organisaatio_oid
   lahtokoulun_kuntakoodi
@@ -48,14 +44,17 @@
      :etunimet (get henkilo "etunimet")
      :sukunimi (get henkilo "sukunimi")
      :sukupuoli_koodi (get henkilo "sukupuoli")
-     :aidinkieli (get henkilo "aidinkieli")
-     :hakijan_kotikunta nil
-     :hakijan_asuinmaa nil
-     :hakijan_kansalaisuus nil}))
+     :aidinkieli (get henkilo "aidinkieli")}))
 
 (defn hakutoiveet-from-hakemus [document]
   (let [pref-keys-by-sija (collect-preference-keys-by-sija document)]
     {:hakutoiveet (map (partial convert-hakutoive document) pref-keys-by-sija)}))
+
+(defn henkilotiedot-from-hakemus [document]
+  (let [henkilotiedot (get-in document ["answers" "henkilotiedot"])]
+    {:hakijan_asuinmaa (get henkilotiedot "asuinmaa")
+     :hakijan_kotikunta (get henkilotiedot "kotikunta")
+     :hakijan_kansalaisuus (get henkilotiedot "kansalaisuus")}))
 
 (defn koulutustausta-from-hakemus [pohjakoulutuskkodw document]
   (let [koulutustausta (get-in document ["answers" "koulutustausta"])
@@ -78,11 +77,12 @@
   (remove-nils (core-merge
                  (hakutoiveet-from-hakemus document)
                  (oppija-data-from-henkilo henkilo)
+                 (henkilotiedot-from-hakemus document)
                  (koulutustausta-from-hakemus pohjakoulutuskkodw document)
-                 {"hakemus_oid" (get document "oid")
-                  "henkilo_oid" (get document "personOid")
-                  "haku_oid" (get document "applicationSystemId")
-                  "hakemus_tila" (get document "state")})))
+                 {:hakemus_oid (get document "oid")
+                  :henkilo_oid (get document "personOid")
+                  :haku_oid (get document "applicationSystemId")
+                  :hakemus_tila (get document "state")})))
 
 (defn write-object-to-channel [is-first-written obj channel]
   (let [json (to-json obj)]
