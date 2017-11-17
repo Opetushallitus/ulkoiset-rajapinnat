@@ -13,7 +13,10 @@
 
 (defn parse-json-body [response]
   (if (= (response :status) 200)
-    (parse-string (response :body))
+    (try
+      (parse-string (response :body))
+      (catch Exception e
+        (log/error "Failed to read JSON!" e)))
     (do
       (log/error "Expected 200 OK!")
       (throw (new RuntimeException "Expected 200 OK!")))))
