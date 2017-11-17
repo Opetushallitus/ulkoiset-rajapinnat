@@ -80,16 +80,19 @@
   (let [f (fn [[k v]] (when v [k v]))]
     (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
-(defn convert-hakemus [orgs-by-oid pohjakoulutuskkodw kunta henkilo document]
-  (remove-nils (core-merge
-                 (hakutoiveet-from-hakemus document)
-                 (oppija-data-from-henkilo henkilo)
-                 (henkilotiedot-from-hakemus document)
-                 (koulutustausta-from-hakemus orgs-by-oid pohjakoulutuskkodw kunta document)
-                 {:hakemus_oid (get document "oid")
-                  :henkilo_oid (get document "personOid")
-                  :haku_oid (get document "applicationSystemId")
-                  :hakemus_tila (get document "state")})))
+(defn convert-hakemus [orgs-by-oid pohjakoulutuskkodw kunta palauta-null-arvot? henkilo document]
+  (let [data (core-merge
+               (hakutoiveet-from-hakemus document)
+               (oppija-data-from-henkilo henkilo)
+               (henkilotiedot-from-hakemus document)
+               (koulutustausta-from-hakemus orgs-by-oid pohjakoulutuskkodw kunta document)
+               {:hakemus_oid (get document "oid")
+                :henkilo_oid (get document "personOid")
+                :haku_oid (get document "applicationSystemId")
+                :hakemus_tila (get document "state")})]
+    (if palauta-null-arvot?
+      data
+      (remove-nils data))))
 
 (defn write-object-to-channel [is-first-written obj channel]
   (let [json (to-json obj)]
@@ -138,7 +141,7 @@
   (filter some? (map #(get-in % ["answers" "koulutustausta" "lahtokoulu"]) batch)))
 
 (defn fetch-rest-of-the-missing-data
-  [config start-time counter is-first-written pohjakoulutuskkodw kunta jsessionid-promise document-batch-channel channel close-channel]
+  [config start-time counter is-first-written pohjakoulutuskkodw kunta palauta-null-arvot? jsessionid-promise document-batch-channel channel close-channel]
   (go
     (let [[last-batch? batch] (<! document-batch-channel)
           jsessionid jsessionid-promise
@@ -152,7 +155,7 @@
                       orgs-by-oid (group-by #(get % "oid") organisations)]
                   (try
                     (doseq [hakemus batch]
-                      (write-object-to-channel is-first-written (convert-hakemus orgs-by-oid pohjakoulutuskkodw kunta (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
+                      (write-object-to-channel is-first-written (convert-hakemus orgs-by-oid pohjakoulutuskkodw kunta palauta-null-arvot? (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
                     (catch Exception e
                       (log/error "Failed to write 'hakemukset'!" e)))
                   (swap! counter (partial + (count batch)))
@@ -162,11 +165,11 @@
                         (close! document-batch-channel))
                     (do
                       (log/debug "Waiting for next batch!")
-                      (fetch-rest-of-the-missing-data config start-time counter is-first-written pohjakoulutuskkodw jsessionid-promise document-batch-channel channel close-channel))))))))
+                      (fetch-rest-of-the-missing-data config start-time counter is-first-written pohjakoulutuskkodw kunta palauta-null-arvot? jsessionid-promise document-batch-channel channel close-channel))))))))
 
 
 (defn fetch-hakemukset-for-haku
-  [config haku-oid mongo-client channel]
+  [config haku-oid palauta-null-arvot? mongo-client channel]
   (let [start-time (System/currentTimeMillis)
         counter (atom 0)
         host-virkailija (config :host-virkailija)
@@ -212,6 +215,7 @@
                 is-first-written
                 pohjakoulutuskkodw
                 kunta
+                palauta-null-arvot?
                 jsessionid-promise
                 document-batch-channel
                 channel
@@ -226,9 +230,9 @@
                                ([_ throwable]
                                   (handle-exception throwable))))))))
 
-(defn hakemus-resource [config mongo-client haku-oid request]
+(defn hakemus-resource [config mongo-client haku-oid palauta-null-arvot? request]
   (with-channel request channel
                 (on-close channel (fn [status] (log/debug "Channel closed!" status)))
-                (fetch-hakemukset-for-haku config haku-oid mongo-client channel)
+                (fetch-hakemukset-for-haku config haku-oid palauta-null-arvot? mongo-client channel)
                 (schedule-task (* 1000 60 60 12) (close channel))
                 ))

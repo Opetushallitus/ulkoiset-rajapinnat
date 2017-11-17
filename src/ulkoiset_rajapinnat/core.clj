@@ -43,9 +43,9 @@
               (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi] ; hakuoid + kaudet
                 :summary "Vastaanotot haku OID:lla"
                 (partial vastaanotto-resource config haku-oid))
-              (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi] ; hakuoid + kaudet
+              (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot] ; hakuoid + kaudet
                  :summary "Hakemukset haku OID:lla"
-                 (partial hakemus-resource config hakuapp-mongo-client haku-oid))
+                 (partial hakemus-resource config hakuapp-mongo-client haku-oid palauta-null-arvot))
               (POST "/odw/hakukohde" []
                  :summary "ODW-rajapinta"
                  (partial odw-resource config)))))
