@@ -5,6 +5,7 @@
             [clj-log4j2.core :as log]
             [ulkoiset-rajapinnat.onr :refer :all]
             [ulkoiset-rajapinnat.utils.mongo :as m]
+            [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-for-oids]]
             [ulkoiset-rajapinnat.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
@@ -56,16 +57,22 @@
      :hakijan_kotikunta (get henkilotiedot "kotikunta")
      :hakijan_kansalaisuus (get henkilotiedot "kansalaisuus")}))
 
-(defn koulutustausta-from-hakemus [pohjakoulutuskkodw document]
+(defn koulutustausta-from-hakemus [orgs-by-oid pohjakoulutuskkodw kunta document]
   (let [koulutustausta (get-in document ["answers" "koulutustausta"])
         koulusivistyskieli (remove nil? [(get koulutustausta "lukion_kieli")
                                          (get koulutustausta "perusopetuksen_kieli")])
+        lahtokoulun_organisaatio_oid (get koulutustausta "lahtokoulu")
+        lahtokoulun_organisaatio (first (get orgs-by-oid lahtokoulun_organisaatio_oid))
+        kotipaikkaUri (get lahtokoulun_organisaatio "kotipaikkaUri")
+        lahtokoulun_kuntakoodi (if kotipaikkaUri (str/replace kotipaikkaUri "kunta_" "") nil)
         pohjakoulutus_2aste (get koulutustausta "POHJAKOULUTUS")
         pohjakoulutus_kk (first (filter #(contains? koulutustausta %) pohjakoulutuskkodw))
         ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa (get koulutustausta "pohjakoulutus_ulk_suoritusmaa")]
     {:hakijan_koulusivistyskieli (first koulusivistyskieli)
      :pohjakoulutus_2aste pohjakoulutus_2aste
      :pohjakoulutus_kk pohjakoulutus_kk
+     :lahtokoulun_organisaatio_oid lahtokoulun_organisaatio_oid
+     :lahtokoulun_kuntakoodi lahtokoulun_kuntakoodi
      :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa}))
 
 (defn remove-nils
@@ -73,12 +80,12 @@
   (let [f (fn [[k v]] (when v [k v]))]
     (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
-(defn convert-hakemus [pohjakoulutuskkodw henkilo document]
+(defn convert-hakemus [orgs-by-oid pohjakoulutuskkodw kunta henkilo document]
   (remove-nils (core-merge
                  (hakutoiveet-from-hakemus document)
                  (oppija-data-from-henkilo henkilo)
                  (henkilotiedot-from-hakemus document)
-                 (koulutustausta-from-hakemus pohjakoulutuskkodw document)
+                 (koulutustausta-from-hakemus orgs-by-oid pohjakoulutuskkodw kunta document)
                  {:hakemus_oid (get document "oid")
                   :henkilo_oid (get document "personOid")
                   :haku_oid (get document "applicationSystemId")
@@ -126,17 +133,26 @@
   [batch]
   (map #(get % "personOid") batch))
 
+(defn document-batch-to-organisation-oid-list
+  [batch]
+  (filter some? (map #(get-in % ["answers" "koulutustausta" "lahtokoulu"]) batch)))
+
 (defn fetch-rest-of-the-missing-data
-  [config start-time counter is-first-written pohjakoulutuskkodw jsessionid-promise document-batch-channel channel close-channel]
+  [config start-time counter is-first-written pohjakoulutuskkodw kunta jsessionid-promise document-batch-channel channel close-channel]
   (go
-    (let [[last-batch? batch] (<! document-batch-channel)]
-      (let-flow [jsessionid jsessionid-promise
-                 henkilo-oids (document-batch-to-henkilo-oid-list batch)
-                 henkilot (fetch-henkilot-promise config jsessionid henkilo-oids)]
-                (let [henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
+    (let [[last-batch? batch] (<! document-batch-channel)
+          jsessionid jsessionid-promise
+          henkilo-oids (document-batch-to-henkilo-oid-list batch)
+          org-oids (document-batch-to-organisation-oid-list batch)
+          henkilot-promise (fetch-henkilot-promise config jsessionid henkilo-oids)
+          organisation-promise (fetch-organisations-for-oids config org-oids)]
+      (let-flow [henkilot henkilot-promise
+                 organisations organisation-promise]
+                (let [henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)
+                      orgs-by-oid (group-by #(get % "oid") organisations)]
                   (try
                     (doseq [hakemus batch]
-                      (write-object-to-channel is-first-written (convert-hakemus pohjakoulutuskkodw (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
+                      (write-object-to-channel is-first-written (convert-hakemus orgs-by-oid pohjakoulutuskkodw kunta (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
                     (catch Exception e
                       (log/error "Failed to write 'hakemukset'!" e)))
                   (swap! counter (partial + (count batch)))
@@ -155,6 +171,7 @@
         counter (atom 0)
         host-virkailija (config :host-virkailija)
         pohjakoulutuskkodw-promise (chain (fetch-koodisto host-virkailija "pohjakoulutuskkodw") #(vals %))
+        kunta-promise (chain (fetch-koodisto host-virkailija "kunta") #(vals %))
         jsessionid-promise (fetch-onr-sessionid config)
         document-batch-channel (chan 2)
         document-batch (atom [])
@@ -186,13 +203,15 @@
                            (close! document-batch-channel)
                            (write-object-to-channel is-first-written {:error (.getMessage throwable)} channel)
                            (close-channel))]
-    (let-flow [pohjakoulutuskkodw pohjakoulutuskkodw-promise]
+    (let-flow [pohjakoulutuskkodw pohjakoulutuskkodw-promise
+               kunta kunta-promise]
               (fetch-rest-of-the-missing-data
                 config
                 start-time
                 counter
                 is-first-written
                 pohjakoulutuskkodw
+                kunta
                 jsessionid-promise
                 document-batch-channel
                 channel
