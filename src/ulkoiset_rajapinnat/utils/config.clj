@@ -1,6 +1,6 @@
 (ns ulkoiset-rajapinnat.utils.config
   (:require [clojure.edn :as edn]
-            [clj-log4j2.core :as log]
+            [clojure.tools.logging :as log]
             [clojure.string :as str]
             [environ.core :refer [env]]))
 

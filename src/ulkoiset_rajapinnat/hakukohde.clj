@@ -1,7 +1,7 @@
 (ns ulkoiset-rajapinnat.hakukohde
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
-            [clj-log4j2.core :as log]
+            [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]

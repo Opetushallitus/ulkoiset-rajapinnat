@@ -13,6 +13,7 @@
                  [org.clojure/core.async "0.3.443"]
                  [environ "1.1.0"]
                  [compojure "1.6.0"]
+                 [clj-time "0.14.0"]
                  [manifold "0.1.6"]
                  [http-kit "2.2.0"]
                  [prismatic/schema "1.1.7"]
@@ -21,6 +22,7 @@
                  [org.mongodb/mongodb-driver-reactivestreams "1.6.0"]
                  [clj-soup/clojure-soup "0.1.3"]
                  ; Logging
+                 [org.clojure/tools.logging "0.4.0"]
                  [org.apache.logging.log4j/log4j-api "2.9.0"]
                  [org.apache.logging.log4j/log4j-core "2.9.0"]
                  [org.apache.logging.log4j/log4j-slf4j-impl "2.9.0"]

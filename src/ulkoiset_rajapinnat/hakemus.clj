@@ -2,7 +2,7 @@
   (:require [manifold.deferred :refer [let-flow catch chain deferred success!]]
             [clojure.string :as str]
             [clojure.core.async :refer :all]
-            [clj-log4j2.core :as log]
+            [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.onr :refer :all]
             [ulkoiset-rajapinnat.utils.mongo :as m]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-for-oids]]

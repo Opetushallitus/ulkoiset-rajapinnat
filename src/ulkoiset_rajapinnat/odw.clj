@@ -3,7 +3,7 @@
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
-            [clj-log4j2.core :as log]
+            [clojure.tools.logging :as log]
             [manifold.deferred :refer [let-flow catch chain on-realized zip loop]]))
 
 (def hakukohde-api "%s/valintaperusteet-service/resources/hakukohde/%s")

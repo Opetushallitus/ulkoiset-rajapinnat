@@ -3,7 +3,7 @@
   (:require [manifold.deferred :as d]
             [org.httpkit.client :as http]
             [cheshire.core :refer :all]
-            [clj-log4j2.core :as log]
+            [clojure.tools.logging :as log]
             [org.httpkit.server :refer :all]))
 
 (def mime-application-json "application/json; charset=utf-8")

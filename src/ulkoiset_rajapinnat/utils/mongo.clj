@@ -2,7 +2,7 @@
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
             [manifold.stream :as s]
-            [clj-log4j2.core :as log])
+            [clojure.tools.logging :as log])
   (:refer-clojure :exclude [and])
   (:import (org.bson.conversions Bson)))
 

@@ -1,7 +1,7 @@
 (ns ulkoiset-rajapinnat.organisaatio
   (:require [manifold.deferred :refer [let-flow catch chain deferred success!]]
             [clojure.string :as str]
-            [clj-log4j2.core :as log]
+            [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-promise get-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))

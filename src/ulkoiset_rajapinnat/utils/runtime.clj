@@ -1,6 +1,5 @@
 (ns ulkoiset-rajapinnat.utils.runtime
-  (:require [clojure.string :as str]
-            [clj-log4j2.core :as log]))
+  (:require [clojure.string :as str]))
 
 (defn shutdown-hook [runnable]
   (.addShutdownHook (Runtime/getRuntime) (Thread. runnable)))
