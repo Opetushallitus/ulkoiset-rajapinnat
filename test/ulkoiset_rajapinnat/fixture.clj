@@ -3,7 +3,7 @@
             [ulkoiset-rajapinnat.freeport :refer :all]
             [ulkoiset-rajapinnat.generate-edn :refer :all]
             [ulkoiset-rajapinnat.fongo :refer :all]
-            [ulkoiset-rajapinnat.config :refer :all]
+            [ulkoiset-rajapinnat.utils.config :refer :all]
             [ulkoiset-rajapinnat.freeport :refer :all]
             [ulkoiset-rajapinnat.core :refer :all]
             ))

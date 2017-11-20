@@ -12,7 +12,7 @@
         [ulkoiset-rajapinnat.hakemus :refer [hakemus-resource]]
         [ulkoiset-rajapinnat.vastaanotto :refer [vastaanotto-resource]]
         [ulkoiset-rajapinnat.odw :refer [odw-resource]]
-        [ulkoiset-rajapinnat.config :refer :all]
+        [ulkoiset-rajapinnat.utils.config :refer :all]
         org.httpkit.server
         )
   (:require [clj-log4j2.core :as log])

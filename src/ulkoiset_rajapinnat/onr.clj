@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [clj-log4j2.core :as log]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
-            [ulkoiset-rajapinnat.rest :refer [post-json-as-promise get-as-promise status body body-and-close exception-response parse-json-body to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-promise get-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))

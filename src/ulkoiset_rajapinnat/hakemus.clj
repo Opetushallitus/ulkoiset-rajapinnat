@@ -6,7 +6,7 @@
             [ulkoiset-rajapinnat.onr :refer :all]
             [ulkoiset-rajapinnat.utils.mongo :as m]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-for-oids]]
-            [ulkoiset-rajapinnat.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all])

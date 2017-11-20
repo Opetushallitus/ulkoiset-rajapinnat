@@ -1,4 +1,4 @@
-(ns ulkoiset-rajapinnat.rest
+(ns ulkoiset-rajapinnat.utils.rest
   "Rest Utils"
   (:require [manifold.deferred :as d]
             [org.httpkit.client :as http]

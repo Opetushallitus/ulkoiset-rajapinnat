@@ -1,4 +1,4 @@
-(ns ulkoiset-rajapinnat.config
+(ns ulkoiset-rajapinnat.utils.config
   (:require [clojure.edn :as edn]
             [clj-log4j2.core :as log]
             [clojure.string :as str]

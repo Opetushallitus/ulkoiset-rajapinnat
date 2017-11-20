@@ -1,5 +1,5 @@
 (ns ulkoiset-rajapinnat.odw
-  (:require [ulkoiset-rajapinnat.rest :refer [parse-json-request status body-and-close body to-json get-as-promise parse-json-body exception-response]]
+  (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-request status body-and-close body to-json get-as-promise parse-json-body exception-response]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]

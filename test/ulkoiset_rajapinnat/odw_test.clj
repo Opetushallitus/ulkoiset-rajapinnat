@@ -3,7 +3,7 @@
             [clojure.test :refer :all]
             [clj-log4j2.core :as log]
             [clj-http.client :as client]
-            [ulkoiset-rajapinnat.rest :refer [get-as-promise]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
             [ulkoiset-rajapinnat.fixture :refer :all]))
 

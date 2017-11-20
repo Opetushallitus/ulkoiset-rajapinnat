@@ -2,7 +2,7 @@
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
             [clj-log4j2.core :as log]
-            [ulkoiset-rajapinnat.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket]]
              [org.httpkit.server :refer :all]
