@@ -16,8 +16,8 @@
 (defn transform-hakukohde [kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne hakukohde]
   (merge
     (hakukohde-to-names kieli hakukohde)
-    {"hakukohteen_oid" (hakukohde "oid")
-     "koulutuksen_opetuskieli" (map #(kieli %) (hakukohde "opetuskielet"))
+    {"hakukohteen_oid"                    (hakukohde "oid")
+     "koulutuksen_opetuskieli"            (map #(kieli %) (hakukohde "opetuskielet"))
      ;
      ;"hakukohteen_koodi" (hakukohde "pohjakoulutusvaatimus") ; Kolminumeroinen hakukohteen koodi. 2. asteen tieto.
      ;"hakukohteen_koulutuskoodit" (hakukohde "pohjakoulutusvaatimus") ; Hakukohteeseen liittyvien koulutustusten koulutuskoodit eli ns. kuusinumerokoodit. Voi olla useita per hakukohde. 999999 = tuntematon.
@@ -29,10 +29,10 @@
      ;"hakukohteen_koulutustoimijan_ytunnus" (hakukohde "pohjakoulutusvaatimus")
      ;"hakukohteen_oppilaitos_koodi" (hakukohde "pohjakoulutusvaatimus")
      ;
-     "pohjakoulutusvaatimus" (get-in hakukohde ["pohjakoulutusvaatimus" "fi"])
+     "pohjakoulutusvaatimus"              (get-in hakukohde ["pohjakoulutusvaatimus" "fi"])
      "hakijalle_ilmoitetut_aloituspaikat" (hakukohde "aloituspaikat")
-     "valintojen_aloituspaikat" (hakukohde "valintojenAloituspaikat")
-     "ensikertalaisten_aloituspaikat" (hakukohde "ensikertalaistenAloituspaikat")}))
+     "valintojen_aloituspaikat"           (hakukohde "valintojenAloituspaikat")
+     "ensikertalaisten_aloituspaikat"     (hakukohde "ensikertalaistenAloituspaikat")}))
 
 (defn result-to-hakukohdes [result]
   (mapcat #(% "tulokset") ((result "result") "tulokset")))
@@ -41,24 +41,22 @@
   (let [promise (get-as-promise (format hakukohde-api host-virkailija vuosi))]
     (chain promise parse-json-body result-to-hakukohdes)))
 
-(defn hakukohde-resource [config haku-oid request]
-  (with-channel request channel
-                (on-close channel (fn [status] (log/debug "Channel closed!" status)))
-                (let [host-virkailija (config :host-virkailija)]
-                  (-> (let-flow [kieli (fetch-koodisto host-virkailija "kieli")
-                                 kausi (fetch-koodisto host-virkailija "kausi")
-                                 ;pohjakoulutusvaatimus (fetch-koodisto host-virkailija "pohjakoulutusvaatimustoinenaste")
-                                 hakutyyppi (fetch-koodisto host-virkailija "hakutyyppi")
-                                 hakutapa (fetch-koodisto host-virkailija "hakutapa")
-                                 haunkohdejoukko (fetch-koodisto host-virkailija "haunkohdejoukko")
-                                 haunkohdejoukontarkenne (fetch-koodisto host-virkailija "haunkohdejoukontarkenne")
-                                 hakukohde (fetch-hakukohde host-virkailija haku-oid)]
-                                (let [hakukohde-converter (partial transform-hakukohde kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
-                                      converted-hakukohdes (map hakukohde-converter hakukohde)
-                                      json (to-json converted-hakukohdes)]
-                                  (-> channel
-                                      (status 200)
-                                      (body-and-close json))))
-                      (catch Exception (exception-response channel))))
-                (schedule-task (* 1000 60 60) (close channel))))
+(defn hakukohde-resource [config haku-oid request channel]
+  (let [host-virkailija (config :host-virkailija)]
+    (-> (let-flow [kieli (fetch-koodisto host-virkailija "kieli")
+                   kausi (fetch-koodisto host-virkailija "kausi")
+                   ;pohjakoulutusvaatimus (fetch-koodisto host-virkailija "pohjakoulutusvaatimustoinenaste")
+                   hakutyyppi (fetch-koodisto host-virkailija "hakutyyppi")
+                   hakutapa (fetch-koodisto host-virkailija "hakutapa")
+                   haunkohdejoukko (fetch-koodisto host-virkailija "haunkohdejoukko")
+                   haunkohdejoukontarkenne (fetch-koodisto host-virkailija "haunkohdejoukontarkenne")
+                   hakukohde (fetch-hakukohde host-virkailija haku-oid)]
+                  (let [hakukohde-converter (partial transform-hakukohde kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
+                        converted-hakukohdes (map hakukohde-converter hakukohde)
+                        json (to-json converted-hakukohdes)]
+                    (-> channel
+                        (status 200)
+                        (body-and-close json))))
+        (catch Exception (exception-response channel))))
+  (schedule-task (* 1000 60 60) (close channel)))
 

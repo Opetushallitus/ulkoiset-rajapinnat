@@ -35,24 +35,22 @@
   (let [promise (get-as-promise (format haku-api host-virkailija vuosi))]
     (chain promise parse-json-body result-to-hakus)))
 
-(defn haku-resource [config vuosi request]
-  (with-channel request channel
-                (on-close channel (fn [status] (log/debug "Channel closed!" status)))
-                (let [host-virkailija (config :host-virkailija)]
-                  (-> (let-flow [kieli (fetch-koodisto host-virkailija "kieli")
-                                 kausi (fetch-koodisto host-virkailija "kausi")
-                                 hakutyyppi (fetch-koodisto host-virkailija "hakutyyppi")
-                                 hakutapa (fetch-koodisto host-virkailija "hakutapa")
-                                 haunkohdejoukko (fetch-koodisto host-virkailija "haunkohdejoukko")
-                                 haunkohdejoukontarkenne (fetch-koodisto host-virkailija "haunkohdejoukontarkenne")
-                                 haku (fetch-haku host-virkailija vuosi)]
-                                (let [haku-converter (partial transform-haku kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
-                                      converted-hakus (map haku-converter haku)
-                                      json (to-json converted-hakus)]
-                                  (-> channel
-                                      (status 200)
-                                      (body-and-close json))))
-                      (catch Exception (exception-response channel))))
-                (schedule-task (* 1000 60 60) (close channel))))
+(defn haku-resource [config vuosi request channel]
+  (let [host-virkailija (config :host-virkailija)]
+    (-> (let-flow [kieli (fetch-koodisto host-virkailija "kieli")
+                   kausi (fetch-koodisto host-virkailija "kausi")
+                   hakutyyppi (fetch-koodisto host-virkailija "hakutyyppi")
+                   hakutapa (fetch-koodisto host-virkailija "hakutapa")
+                   haunkohdejoukko (fetch-koodisto host-virkailija "haunkohdejoukko")
+                   haunkohdejoukontarkenne (fetch-koodisto host-virkailija "haunkohdejoukontarkenne")
+                   haku (fetch-haku host-virkailija vuosi)]
+                  (let [haku-converter (partial transform-haku kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
+                        converted-hakus (map haku-converter haku)
+                        json (to-json converted-hakus)]
+                    (-> channel
+                        (status 200)
+                        (body-and-close json))))
+        (catch Exception (exception-response channel))))
+  (schedule-task (* 1000 60 60) (close channel)))
 
 

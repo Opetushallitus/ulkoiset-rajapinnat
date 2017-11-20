@@ -3,7 +3,8 @@
             [clojure.tools.logging :as log]
             [clj-time.core :as t]
             [ulkoiset-rajapinnat.utils.rest :refer [to-json]]
-            [clojure.tools.logging.impl :as impl]))
+            [clojure.tools.logging.impl :as impl]
+            [org.httpkit.server :refer :all]))
 
 (def ^{:private true} logger (impl/get-logger (impl/find-factory) "ACCESS"))
 (comment
@@ -25,7 +26,7 @@
     (.getValue user-agent)
     "-"))
 
-(defn- get-method [request]
+(defn- get-method-from-request [request]
   (let [conversion-table {:get "GET"
                           :options "OPTIONS"
                           :post "POST"
@@ -37,26 +38,35 @@
         kit-method (request :request-method)]
     (get conversion-table kit-method)))
 
-(defn- do-logging [start-time request]
+(defn- do-logging [start-time response-code request]
   (let [duration (- (System/currentTimeMillis) start-time)
-        method (get-method request)
+        method (get-method-from-request request)
         path-info (request :uri)
         user-agent (get-user-agent request)]
-  (.info logger
-         (to-json {:timestamp (t/now)
-                   :customer "OPH"
-                   :service "ulkoiset-rajapinnat"
-                   :responseCode "-"
-                   :request (str method " " path-info)
-                   :requestMethod method
-                   :responseTime duration
-                   :user-agent user-agent
+    (.info logger
+           (to-json {:timestamp (t/now)
+                     :customer "OPH"
+                     :service "ulkoiset-rajapinnat"
+                     :responseCode response-code
+                     :request (str method " " path-info)
+                     :requestMethod method
+                     :responseTime (str duration)
+                     :user-agent user-agent
           }))))
 
-(defn access-log [operation]
+(defn access-log [response]
   (fn [request]
     (let [start-time (System/currentTimeMillis)]
-      (try
-        (operation request)
-        (finally (do-logging start-time request))))))
+      (do-logging start-time (response :status) request)
+      response)))
 
+(defn access-log-with-channel [operation]
+  (fn [request]
+    (let [start-time (System/currentTimeMillis)]
+      (with-channel request channel
+                    (on-close channel (fn [status] (do-logging start-time
+                                                               (case status
+                                                                 :server-close "200"
+                                                                 "Closed by client!")
+                                                               request)))
+                    (operation request channel)))))

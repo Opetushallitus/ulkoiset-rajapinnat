@@ -226,9 +226,6 @@
                                ([_ throwable]
                                   (handle-exception throwable))))))))
 
-(defn hakemus-resource [config mongo-client haku-oid palauta-null-arvot? request]
-  (with-channel request channel
-                (on-close channel (fn [status] (log/debug "Channel closed!" status)))
-                (fetch-hakemukset-for-haku config haku-oid palauta-null-arvot? mongo-client channel)
-                (schedule-task (* 1000 60 60 12) (close channel))
-                ))
+(defn hakemus-resource [config mongo-client haku-oid palauta-null-arvot? request channel]
+  (fetch-hakemukset-for-haku config haku-oid palauta-null-arvot? mongo-client channel)
+  (schedule-task (* 1000 60 60 12) (close channel)))
