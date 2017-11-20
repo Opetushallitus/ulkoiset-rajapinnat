@@ -60,7 +60,6 @@ logger.access.name = ACCESS
 logger.access.level = debug
 logger.access.additivity = false
 logger.access.appenderRef.rolling.ref = accessLogger
-logger.access.appenderRef.console.ref = consoleLogger
 
 # Configure root logger for logging error logs in classes which are in package other than above specified package
 rootLogger.level = info
