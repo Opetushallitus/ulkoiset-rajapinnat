@@ -34,12 +34,33 @@ appender.rolling.strategy.delete.ifLastModified.type = IfLastModified
 # Delete files older than 30 days
 appender.rolling.strategy.delete.ifLastModified.age = 30d
 
+# RollingFileAppender will print logs in file which can be rotated based on time or size
+appender.access.type = RollingFile
+appender.access.name = accessLogger
+appender.access.fileName=${basePath}/localhost_access_log.log
+appender.access.filePattern=${basePath}localhost_access_log_%d{yyyy-MM-dd}.log.gz
+appender.access.layout.type = PatternLayout
+appender.access.layout.pattern = %m%n
+appender.access.policies.type = Policies
+
+# Rotate log file each day
+appender.access.policies.time.type = TimeBasedTriggeringPolicy
+appender.access.policies.time.interval = 1
+appender.access.policies.time.modulate = true
+appender.access.strategy.type = DefaultRolloverStrategy
+appender.access.strategy.delete.type = Delete
+appender.access.strategy.delete.basePath = ${basePath}
+appender.access.strategy.delete.maxDepth = 1
+appender.access.strategy.delete.ifLastModified.type = IfLastModified
+# Delete files older than 30 days
+appender.access.strategy.delete.ifLastModified.age = 30d
+
 # Mention package name here in place of example. Classes in this package or subpackages will use ConsoleAppender and RollingFileAppender for logging
-#logger.example.name = example
-#logger.example.level = debug
-#logger.example.additivity = false
-#logger.example.appenderRef.rolling.ref = fileLogger
-#logger.example.appenderRef.console.ref = consoleLogger
+logger.access.name = ACCESS
+logger.access.level = debug
+logger.access.additivity = false
+logger.access.appenderRef.rolling.ref = accessLogger
+logger.access.appenderRef.console.ref = consoleLogger
 
 # Configure root logger for logging error logs in classes which are in package other than above specified package
 rootLogger.level = info
