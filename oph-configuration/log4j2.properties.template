@@ -2,7 +2,7 @@ status = info
 name= properties_configuration
 
 # Give directory path where log files should get stored
-property.basePath = ${user.home}/logs
+property.basePath = ${sys:user.home}/logs
 
 # ConsoleAppender will print logs on console
 appender.console.type = Console
