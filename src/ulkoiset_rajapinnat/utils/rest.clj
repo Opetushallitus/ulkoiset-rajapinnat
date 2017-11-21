@@ -42,6 +42,12 @@
   ([url data]
     (post-json-as-promise url data {})))
 
+(defn post-as-promise [url options body]
+  (let [deferred (d/deferred)]
+    (http/post url (merge options {:body (to-json body) :content-type :json}) (fn [resp]
+      (d/success! deferred resp)))
+    deferred))
+
 (defn get-as-promise
   ([url]
    (get-as-promise url {}))

@@ -1,0 +1,47 @@
+[
+  {
+    "nimi": "Haaga-Helia ammattikorkeakoulu, Pasilan kampus, Medianomi (AMK), journalismi, päivätoteutus, Kevät 2017",
+    "hakuoid": "1.2.246.562.29.59856749474",
+    "oid": "1.2.246.562.20.16152550832",
+    "tarjoajaOid": "1.2.246.562.10.13905763275",
+    "tila": "JULKAISTU",
+    "valintaryhmaOid": "14846409492849154031594415883210",
+    "hakukohdekoodi": {
+      "uri": "hakukohteet_122465622016152550832",
+      "nimiFi": null,
+      "nimiSv": null,
+      "nimiEn": null,
+      "arvo": null
+    }
+  },
+  {
+    "nimi": "Haaga-Helia ammattikorkeakoulu, Pasilan kampus, Tradenomi (AMK), johdon assistenttityö ja kielet, päivätoteutus, Kevät 2017",
+    "hakuoid": "1.2.246.562.29.59856749474",
+    "oid": "1.2.246.562.20.76494006901",
+    "tarjoajaOid": "1.2.246.562.10.13905763275",
+    "tila": "JULKAISTU",
+    "valintaryhmaOid": "14818787975454503380383648280539",
+    "hakukohdekoodi": {
+      "uri": "hakukohteet_122465622076494006901",
+      "nimiFi": null,
+      "nimiSv": null,
+      "nimiEn": null,
+      "arvo": null
+    }
+  },
+  {
+    "nimi": "Aalto-yliopisto, Insinööritieteiden korkeakoulu, Energia- ja ympäristötekniikka, tekniikan kandidaatti ja diplomi-insinööri (3 v + 2 v) - DIA-yhteisvalinta, Kevät 2017",
+    "hakuoid": "1.2.246.562.29.59856749474",
+    "oid": "1.2.246.562.20.18496942519",
+    "tarjoajaOid": "1.2.246.562.10.72985435253",
+    "tila": "JULKAISTU",
+    "valintaryhmaOid": "1484308899334-1862191885651590823",
+    "hakukohdekoodi": {
+      "uri": "hakukohteet_122465622018496942519",
+      "nimiFi": null,
+      "nimiSv": null,
+      "nimiEn": null,
+      "arvo": null
+    }
+  }
+]

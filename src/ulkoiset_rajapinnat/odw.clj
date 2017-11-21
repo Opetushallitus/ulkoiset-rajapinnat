@@ -1,65 +1,71 @@
 (ns ulkoiset-rajapinnat.odw
-  (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-request status body-and-close body to-json get-as-promise parse-json-body exception-response]]
+  (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-request status body-and-close body to-json get-as-promise parse-json-body exception-response post-as-promise]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
             [clojure.tools.logging :as log]
             [manifold.deferred :refer [let-flow catch chain on-realized zip loop]]))
 
-(def hakukohde-api "%s/valintaperusteet-service/resources/hakukohde/%s")
-(def hakukohde-valinnanvaihe-api "%s/valintaperusteet-service/resources/hakukohde/%s/valinnanvaihe")
-(def valinnanvaihe-valintatapajono-api "%s/valintaperusteet-service/resources/valinnanvaihe/%s/valintatapajono")
-(def valinnanvaihe-sijoittelu-api "%s/valintaperusteet-service/resources/valinnanvaihe/%s/kuuluuSijoitteluun")
-
-(defn hakukohde-url [host hakukohde-oid] (format hakukohde-api host hakukohde-oid))
-(defn valinnanvaihe-url [host hakukohde-oid] (format hakukohde-valinnanvaihe-api host hakukohde-oid))
-(defn valinnanvaihe-sijoittelu-url [host valinnanvaihe-oid] (format valinnanvaihe-sijoittelu-api host valinnanvaihe-oid))
-(defn valinnanvaihe-valintatapajono-url [host valinnanvaihe-oid] (format valinnanvaihe-valintatapajono-api host valinnanvaihe-oid))
-
 (defn handle-response [url response]
   (log/info (str url " " (response :status)))
+  ;(log/info (response :body))
   (case (response :status)
     200 (parse-json-body response)
     404 nil
     (throw (RuntimeException. (str "Calling " url " failed: status=" (response :status) ", msg=" (response :body))))))
 
-(defn fetch-with-url [session-id url]
-  (let [promise (get-as-promise url {:headers {"Cookie" (str "JSESSIONID=" session-id)}})]
+(defn post-with-url [session-id url body]
+  (log/info url)
+  ;(log/info body)
+  (let [promise (post-as-promise url {:headers {"Cookie" (str "JSESSIONID=" session-id )}} body)]
     (log/info (str url "(JSESSIONID=" session-id ")"))
     (chain promise #(handle-response url %))))
 
-(defn get-valinnanvaiheet [host session-id hakukohde-oid] (fetch-with-url session-id (valinnanvaihe-url host hakukohde-oid)))
-(defn get-valinnanvaihe-sijoittelu [host session-id valinnanvaihe-oid] (fetch-with-url session-id (valinnanvaihe-sijoittelu-url host valinnanvaihe-oid)))
-(defn get-valinnanvaihe-valintatapajono [host session-id valinnanvaihe-oid] (fetch-with-url session-id (valinnanvaihe-valintatapajono-url host valinnanvaihe-oid)))
 
-(defn koosta-valinnanvaiheet [host session-id hakukohde-oid]
-  (let-flow [valinnanvaiheet (get-valinnanvaiheet host session-id hakukohde-oid)]
-            (defn koosta-valinnanvaihe [valinnanvaihe]
-              (let-flow [sijoittelu (get-valinnanvaihe-sijoittelu host session-id (get valinnanvaihe "oid"))
-                         valintatapajono (get-valinnanvaihe-valintatapajono host session-id (get valinnanvaihe "oid"))]
-                        (merge valinnanvaihe {:valintatapajonot valintatapajono} sijoittelu)))
-            (apply zip (map #(koosta-valinnanvaihe %) valinnanvaiheet))))
+(def hakukohteet-api "%s/valintaperusteet-service/resources/hakukohde/hakukohteet")
+(defn hakukohteet-url [host] (format hakukohteet-api host))
+(defn get-hakukohteet [host session-id hakukohde-oids] (post-with-url session-id (hakukohteet-url host) hakukohde-oids))
+(def valinnanvaiheet-api "%s/valintaperusteet-service/resources/hakukohde/valinnanvaiheet")
+(defn valinnanvaiheet-url [host] (format valinnanvaiheet-api host))
+(defn get-valinnanvaiheet [host session-id hakukohde-oids] (post-with-url session-id (valinnanvaiheet-url host) hakukohde-oids))
+(def valintatapajonot-api "%s/valintaperusteet-service/resources/valinnanvaihe/valintatapajonot")
+(defn valintatapajonot-url [host] (format valintatapajonot-api host))
+(defn get-valintatapajonot [host session-id valinnanvaihe-oids] (post-with-url session-id (valintatapajonot-url host) valinnanvaihe-oids))
 
+(defn find-first-matching [match-key match-value collection]
+  (first (filter #(= match-value (get % match-key)) collection)))
 
-(defn koosta-hakukohde [host session-id hakukohde-oid]
-  (let-flow [hakukohde (fetch-with-url session-id (hakukohde-url host hakukohde-oid))]
-            (if (not (nil? hakukohde))
-              (let-flow [valinnanvaiheet (koosta-valinnanvaiheet host session-id hakukohde-oid)]
-                        (merge hakukohde {:valinnanvaiheet valinnanvaiheet})))))
+(defn merge-if-not-nil [collection merge-key merge-collection]
+  (if (nil? merge-collection) collection (merge collection {merge-key merge-collection})))
 
-(defn fetch-hakukohteet [hakukohde-oids internal-host-virkailija session-id]
-  (apply zip (map #(koosta-hakukohde internal-host-virkailija session-id %) hakukohde-oids)))
+(defn result [all-hakukohteet all-valinnanvaiheet all-valintatapajonot]
+  (defn collect-hakukohteen-valinnanvaiheet [hakukohde-oid]
+    (def hakukohteen-valinnanvaiheet (get (find-first-matching "hakukohdeOid" hakukohde-oid all-valinnanvaiheet) "valinnanvaiheet"))
+    (map (fn [valinnanvaihe]
+      (def valinnanvaihe-oid (get valinnanvaihe "oid"))
+      (def valinnanvaiheen-valintatapajonot (get (find-first-matching "valinnanvaiheOid" valinnanvaihe-oid all-valintatapajonot) "valintatapajonot"))
+      (merge-if-not-nil valinnanvaihe "valintatapajonot" valinnanvaiheen-valintatapajonot)
+    ) hakukohteen-valinnanvaiheet))
+
+  (map (fn [hakukohde]
+    (def hakukohde-oid (get hakukohde "oid"))
+    (def hakukohteen-valinnanvaiheet (collect-hakukohteen-valinnanvaiheet hakukohde-oid))
+    (merge-if-not-nil hakukohde "valinnanvaiheet" hakukohteen-valinnanvaiheet)
+  ) (filter #(not (nil? %)) all-hakukohteet)))
 
 (defn odw-resource [config request channel]
   (let [host (config :host-virkailija)
         username (config :ulkoiset-rajapinnat-cas-username)
         password (config :ulkoiset-rajapinnat-cas-password)]
     (-> (let-flow [session-id (fetch-jsessionid host "/valintaperusteet-service" username password)
-                   hakukohteet (fetch-hakukohteet (parse-json-request request) host session-id)]
-                  (let [json (to-json (filter #(not (nil? %)) hakukohteet))]
+                   hakukohde-oidit (parse-json-request request)
+                   hakukohteet (get-hakukohteet host session-id hakukohde-oidit)
+                   valinnanvaiheet (get-valinnanvaiheet host session-id hakukohde-oidit)
+                   valinnanvaihe-oidit (map #(get % "oid") valinnanvaiheet)
+                   valintatapajonot (get-valintatapajonot host session-id valinnanvaihe-oidit)]
+                  (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot))]
                     (-> channel
                         (status 200)
                         (body-and-close json))))
-        (catch Exception (exception-response channel))
-        )
+        (catch Exception (exception-response channel)))
     (schedule-task (* 1000 60 60) (close channel))))

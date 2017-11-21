@@ -9,7 +9,8 @@
             ))
 (def fake-mongo-port (get-free-port))
 
-(def test-configs {:hakuapp-mongo {:uri (str "mongodb://localhost:" fake-mongo-port "/hakulomake")}
+(def test-configs {:host-virkailija "http://fake.virkailija.opintopolku.fi"
+                   :hakuapp-mongo {:uri (str "mongodb://localhost:" fake-mongo-port "/hakulomake")}
                    :server {:port (get-free-port)
                             :base-url "/ulkoiset-rajapinnat"}})
 (defn api-call [path] (str "http://localhost:" (-> test-configs :server :port) (-> test-configs :server :base-url) path))

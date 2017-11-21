@@ -1,0 +1,98 @@
+[
+  {
+    "hakukohdeOid": "1.2.246.562.20.16152550832",
+    "valinnanvaiheet": [
+      {
+        "nimi": "Hakukelpoisuuden käsittelyvaihe",
+        "kuvaus": null,
+        "aktiivinen": true,
+        "valinnanVaiheTyyppi": "TAVALLINEN",
+        "oid": "1484641242557787294147793391071",
+        "inheritance": true,
+        "hasValisijoittelu": null
+      },
+      {
+        "nimi": "Karsiva ennakkotehtävä",
+        "kuvaus": "Karsiva ennakkotehtävä",
+        "aktiivinen": true,
+        "valinnanVaiheTyyppi": "TAVALLINEN",
+        "oid": "14846412425396636600534897031696",
+        "inheritance": true,
+        "hasValisijoittelu": null
+      },
+      {
+        "nimi": "Valintakoekutsuvaihe",
+        "kuvaus": "Valintakoekutsuvaihe",
+        "aktiivinen": true,
+        "valinnanVaiheTyyppi": "VALINTAKOE",
+        "oid": "1488881229683-9055313892218480290",
+        "inheritance": false,
+        "hasValisijoittelu": null
+      },
+      {
+        "nimi": "Varsinainen valinta",
+        "kuvaus": null,
+        "aktiivinen": true,
+        "valinnanVaiheTyyppi": "TAVALLINEN",
+        "oid": "1484641242502-4899875119217350865",
+        "inheritance": true,
+        "hasValisijoittelu": null
+      }
+    ]
+  },
+  {
+    "hakukohdeOid": "1.2.246.562.20.76494006901",
+    "valinnanvaiheet": [
+      {
+        "nimi": "Hakukelpoisuuden käsittelyvaihe",
+        "kuvaus": null,
+        "aktiivinen": true,
+        "valinnanVaiheTyyppi": "TAVALLINEN",
+        "oid": "1481878976202-7810907148121997049",
+        "inheritance": true,
+        "hasValisijoittelu": null
+      },
+      {
+        "nimi": "Valintakoekutsuvaihe",
+        "kuvaus": null,
+        "aktiivinen": true,
+        "valinnanVaiheTyyppi": "VALINTAKOE",
+        "oid": "1482391273767-344126808569885283",
+        "inheritance": false,
+        "hasValisijoittelu": null
+      },
+      {
+        "nimi": "Varsinainen valinta",
+        "kuvaus": null,
+        "aktiivinen": true,
+        "valinnanVaiheTyyppi": "TAVALLINEN",
+        "oid": "1481878976183-6509309476133021710",
+        "inheritance": true,
+        "hasValisijoittelu": null
+      }
+    ]
+  },
+  {
+    "hakukohdeOid": "1.2.246.562.20.18496942519",
+    "valinnanvaiheet": [
+      {
+        "nimi": "Hakukelpoisuuden käsittelyvaihe",
+        "kuvaus": null,
+        "aktiivinen": true,
+        "valinnanVaiheTyyppi": "TAVALLINEN",
+        "oid": "1484310132348-7999171358545077407",
+        "inheritance": true,
+        "hasValisijoittelu": null
+      },
+      {
+        "nimi": "Varsinainen valinta",
+        "kuvaus": null,
+        "aktiivinen": true,
+        "valinnanVaiheTyyppi": "TAVALLINEN",
+        "oid": "1484310132316-7554721772098086636",
+        "inheritance": true,
+        "hasValisijoittelu": null
+      }
+    ]
+  }
+]
