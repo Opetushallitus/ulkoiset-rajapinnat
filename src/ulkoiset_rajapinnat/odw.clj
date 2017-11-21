@@ -6,6 +6,11 @@
             [clojure.tools.logging :as log]
             [manifold.deferred :refer [let-flow catch chain on-realized zip loop]]))
 
+(def hakukohteet-api "%s/valintaperusteet-service/resources/hakukohde/hakukohteet")
+(def valinnanvaiheet-api "%s/valintaperusteet-service/resources/hakukohde/valinnanvaiheet")
+(def valintatapajonot-api "%s/valintaperusteet-service/resources/valinnanvaihe/valintatapajonot")
+(def hakijaryhmat-api "%s/valintaperusteet-service/resources/hakukohde/hakijaryhmat")
+
 (defn handle-response [url response]
   (log/info (str url " " (response :status)))
   ;(log/info (response :body))
@@ -21,19 +26,8 @@
     (log/info (str url "(JSESSIONID=" session-id ")"))
     (chain promise #(handle-response url %))))
 
-
-(def hakukohteet-api "%s/valintaperusteet-service/resources/hakukohde/hakukohteet")
-(defn hakukohteet-url [host] (format hakukohteet-api host))
-(defn get-hakukohteet [host session-id hakukohde-oids] (post-with-url session-id (hakukohteet-url host) hakukohde-oids))
-(def valinnanvaiheet-api "%s/valintaperusteet-service/resources/hakukohde/valinnanvaiheet")
-(defn valinnanvaiheet-url [host] (format valinnanvaiheet-api host))
-(defn get-valinnanvaiheet [host session-id hakukohde-oids] (post-with-url session-id (valinnanvaiheet-url host) hakukohde-oids))
-(def valintatapajonot-api "%s/valintaperusteet-service/resources/valinnanvaihe/valintatapajonot")
-(defn valintatapajonot-url [host] (format valintatapajonot-api host))
-(defn get-valintatapajonot [host session-id valinnanvaihe-oids] (post-with-url session-id (valintatapajonot-url host) valinnanvaihe-oids))
-(def hakijaryhmat-api "%s/valintaperusteet-service/resources/hakukohde/hakijaryhmat")
-(defn hakijaryhmat-url [host] (format hakijaryhmat-api host))
-(defn get-hakijaryhmat [host session-id hakukohde-oids] (post-with-url session-id (hakijaryhmat-url host) hakukohde-oids))
+(defn post [host session-id url-template body]
+  (post-with-url session-id (format url-template host) body))
 
 (defn find-first-matching [match-key match-value collection]
   (first (filter #(= match-value (get % match-key)) collection)))
@@ -62,12 +56,13 @@
         username (config :ulkoiset-rajapinnat-cas-username)
         password (config :ulkoiset-rajapinnat-cas-password)]
     (-> (let-flow [session-id (fetch-jsessionid host "/valintaperusteet-service" username password)
+                   post-with-session-id (partial post host session-id)
                    hakukohde-oidit (parse-json-request request)
-                   hakukohteet (get-hakukohteet host session-id hakukohde-oidit)
-                   valinnanvaiheet (get-valinnanvaiheet host session-id hakukohde-oidit)
+                   hakukohteet (post-with-session-id hakukohteet-api hakukohde-oidit)
+                   valinnanvaiheet (post-with-session-id valinnanvaiheet-api hakukohde-oidit)
                    valinnanvaihe-oidit (map #(get % "oid") valinnanvaiheet)
-                   valintatapajonot (get-valintatapajonot host session-id valinnanvaihe-oidit)
-                   hakijaryhmat (get-hakijaryhmat host session-id hakukohde-oidit)]
+                   valintatapajonot (post-with-session-id valintatapajonot-api valinnanvaihe-oidit)
+                   hakijaryhmat (post-with-session-id hakijaryhmat-api hakukohde-oidit)]
                   (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat))]
                     (-> channel
                         (status 200)
