@@ -31,6 +31,9 @@
 (def valintatapajonot-api "%s/valintaperusteet-service/resources/valinnanvaihe/valintatapajonot")
 (defn valintatapajonot-url [host] (format valintatapajonot-api host))
 (defn get-valintatapajonot [host session-id valinnanvaihe-oids] (post-with-url session-id (valintatapajonot-url host) valinnanvaihe-oids))
+(def hakijaryhmat-api "%s/valintaperusteet-service/resources/hakukohde/hakijaryhmat")
+(defn hakijaryhmat-url [host] (format hakijaryhmat-api host))
+(defn get-hakijaryhmat [host session-id hakukohde-oids] (post-with-url session-id (hakijaryhmat-url host) hakukohde-oids))
 
 (defn find-first-matching [match-key match-value collection]
   (first (filter #(= match-value (get % match-key)) collection)))
@@ -38,7 +41,7 @@
 (defn merge-if-not-nil [collection merge-key merge-collection]
   (if (nil? merge-collection) collection (merge collection {merge-key merge-collection})))
 
-(defn result [all-hakukohteet all-valinnanvaiheet all-valintatapajonot]
+(defn result [all-hakukohteet all-valinnanvaiheet all-valintatapajonot all-hakijaryhmat]
   (defn collect-hakukohteen-valinnanvaiheet [hakukohde-oid]
     (def hakukohteen-valinnanvaiheet (get (find-first-matching "hakukohdeOid" hakukohde-oid all-valinnanvaiheet) "valinnanvaiheet"))
     (map (fn [valinnanvaihe]
@@ -50,7 +53,8 @@
   (map (fn [hakukohde]
     (def hakukohde-oid (get hakukohde "oid"))
     (def hakukohteen-valinnanvaiheet (collect-hakukohteen-valinnanvaiheet hakukohde-oid))
-    (merge-if-not-nil hakukohde "valinnanvaiheet" hakukohteen-valinnanvaiheet)
+    (def hakukohteen-hakijaryhmat (get (find-first-matching "hakukohdeOid" hakukohde-oid all-hakijaryhmat) "hakijaryhmat"))
+    (merge-if-not-nil (merge-if-not-nil hakukohde "valinnanvaiheet" hakukohteen-valinnanvaiheet) "hakijaryhmat" hakukohteen-hakijaryhmat)
   ) (filter #(not (nil? %)) all-hakukohteet)))
 
 (defn odw-resource [config request channel]
@@ -62,8 +66,9 @@
                    hakukohteet (get-hakukohteet host session-id hakukohde-oidit)
                    valinnanvaiheet (get-valinnanvaiheet host session-id hakukohde-oidit)
                    valinnanvaihe-oidit (map #(get % "oid") valinnanvaiheet)
-                   valintatapajonot (get-valintatapajonot host session-id valinnanvaihe-oidit)]
-                  (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot))]
+                   valintatapajonot (get-valintatapajonot host session-id valinnanvaihe-oidit)
+                   hakijaryhmat (get-hakijaryhmat host session-id hakukohde-oidit)]
+                  (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat))]
                     (-> channel
                         (status 200)
                         (body-and-close json))))

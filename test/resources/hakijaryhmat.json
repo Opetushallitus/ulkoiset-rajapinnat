@@ -1,0 +1,74 @@
+[
+  {
+    "hakukohdeOid": "1.2.246.562.20.16152550832",
+    "hakijaryhmat": [
+      {
+        "oid": "1484641243208-4982584373877111024",
+        "nimi": "Ensikertalaisten hakijaryhmä",
+        "kuvaus": "Ensikertalaisten hakijaryhmä",
+        "kiintio": 24,
+        "kaytaKaikki": false,
+        "tarkkaKiintio": false,
+        "kaytetaanRyhmaanKuuluvia": true,
+        "aktiivinen": true,
+        "prioriteetti": 0,
+        "masterOid": "14846409524902101483817990154807",
+        "hakijaryhmatyyppikoodi": {
+          "uri": "hakijaryhmantyypit_ensikertalaiset",
+          "nimiFi": "Ensikertalaisten hakijaryhmä",
+          "nimiSv": null,
+          "nimiEn": null,
+          "arvo": "ensikertalaiset"
+        }
+      }
+    ]
+  },
+  {
+    "hakukohdeOid": "1.2.246.562.20.76494006901",
+    "hakijaryhmat": [
+      {
+        "oid": "14818789764021101275759967959368",
+        "nimi": "Ensikertalaisten hakijaryhmä",
+        "kuvaus": "Ensikertalaisten hakijaryhmä",
+        "kiintio": 70,
+        "kaytaKaikki": false,
+        "tarkkaKiintio": false,
+        "kaytetaanRyhmaanKuuluvia": true,
+        "aktiivinen": true,
+        "prioriteetti": 0,
+        "masterOid": "14818787979603475942959241013032",
+        "hakijaryhmatyyppikoodi": {
+          "uri": "hakijaryhmantyypit_ensikertalaiset",
+          "nimiFi": "Ensikertalaisten hakijaryhmä",
+          "nimiSv": null,
+          "nimiEn": null,
+          "arvo": "ensikertalaiset"
+        }
+      }
+    ]
+  },
+  {
+    "hakukohdeOid": "1.2.246.562.20.18496942519",
+    "hakijaryhmat": [
+      {
+        "oid": "1484310132551-5790490144250443705",
+        "nimi": "Ensikertalaisten hakijaryhmä",
+        "kuvaus": "Ensikertalaisten hakijaryhmä",
+        "kiintio": 0,
+        "kaytaKaikki": false,
+        "tarkkaKiintio": false,
+        "kaytetaanRyhmaanKuuluvia": true,
+        "aktiivinen": true,
+        "prioriteetti": 0,
+        "masterOid": "14843088998378161162205395849932",
+        "hakijaryhmatyyppikoodi": {
+          "uri": "hakijaryhmantyypit_ensikertalaiset",
+          "nimiFi": "Ensikertalaisten hakijaryhmä",
+          "nimiSv": null,
+          "nimiEn": null,
+          "arvo": "ensikertalaiset"
+        }
+      }
+    ]
+  }
+]
