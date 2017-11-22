@@ -8,6 +8,8 @@
             [org.httpkit.timer :refer :all]))
 
 (def haku-api "%s/tarjonta-service/rest/v1/haku/find?TILA=JULKAISTU&HAKUVUOSI=%s")
+(def haku-api-hakukohde-tulos "%s/tarjonta-service/rest/v1/haku/%s/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1")
+(def haku-api-koulutus "%s/tarjonta-service/rest/v1/koulutus/search?hakuOid=%s")
 
 (defn haku-to-names [kieli haku]
   (let [a (map #(vector (str "haku_nimi." (get kieli (first %))) (last %)) (haku "nimi"))]
@@ -28,12 +30,27 @@
      "haun_kohdejoukko" (get haunkohdejoukko (strip-version-from-tarjonta-koodisto-uri (haku "kohdejoukkoUri")))
      "haun_kohdejoukon_tarkenne" (get haunkohdejoukontarkenne (strip-version-from-tarjonta-koodisto-uri (haku "kohdejoukonTarkenne")))}))
 
-(defn result-to-hakus [result]
-  (result "result"))
+(defn log-fetch [resource-name start-time response]
+  (log/debug "Fetching '{}' ready with status {}! Took {}ms!" resource-name (response :status) (- (System/currentTimeMillis) start-time))
+  response)
 
 (defn fetch-haku [host-virkailija vuosi]
-  (let [promise (get-as-promise (format haku-api host-virkailija vuosi))]
-    (chain promise parse-json-body result-to-hakus)))
+  (let [start-time (System/currentTimeMillis)
+        promise (get-as-promise (format haku-api host-virkailija vuosi))]
+    (chain promise (partial log-fetch "haku" start-time) parse-json-body #(% "result"))))
+
+(defn fetch-hakukohde-tulos [host-virkailija haku-oid]
+  (let [start-time (System/currentTimeMillis)
+        promise (get-as-promise (format haku-api-hakukohde-tulos host-virkailija haku-oid))]
+    (chain promise (partial log-fetch "hakukohde-tulos" start-time) parse-json-body #(% "tulokset"))))
+
+(defn- handle-koulutus-result [koulutus-result]
+  (mapcat #(get % "tulokset") (get-in koulutus-result ["result" "tulokset"])))
+
+(defn fetch-koulutukset [host-virkailija haku-oid]
+  (let [start-time (System/currentTimeMillis)
+        promise (get-as-promise (format haku-api-koulutus host-virkailija haku-oid))]
+    (chain promise (partial log-fetch "koulutukset" start-time) parse-json-body handle-koulutus-result)))
 
 (defn haku-resource [config vuosi request channel]
   (let [host-virkailija (config :host-virkailija)]
