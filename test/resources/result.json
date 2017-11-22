@@ -149,6 +149,78 @@
           "arvo": "ensikertalaiset"
         }
       }
+    ],
+    "valintaryhma": {
+      "nimi": "Haaga-Helia, kulttuuri, päivätoteutus",
+      "kohdejoukko": null,
+      "hakuoid": null,
+      "hakuvuosi": null,
+      "organisaatiot": [],
+      "vastuuorganisaatioOid": null,
+      "viimeinenKaynnistyspaiva": null,
+      "oid": "14846409492849154031594415883210",
+      "hakukohdekoodit": [],
+      "valintakoekoodit": [],
+      "lapsivalintaryhma": false,
+      "lapsihakukohde": false
+    },
+    "syotettavatArvot": [
+      {
+        "tunniste": "HH_joura_ryhmahaastattelu",
+        "kuvaus": "Ryhmähaastattelu",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "30",
+        "arvot": null,
+        "osallistuminenTunniste": "HH_joura_ryhmahaastattelu-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false
+      },
+      {
+        "tunniste": "HH_joura_yleistietokoe",
+        "kuvaus": "Yleistietokoe",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "25",
+        "arvot": null,
+        "osallistuminenTunniste": "HH_joura_yleistietokoe-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false
+      },
+      {
+        "tunniste": "HH_joura_karsiva_ennakkotehtava",
+        "kuvaus": "Ennakkotehtävä, kulttuuri\n1=hyväksytty, 0=hylätty ja 2=palauttamatta",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": null,
+        "max": null,
+        "arvot": [
+          "1",
+          "2",
+          "0"
+        ],
+        "osallistuminenTunniste": "HH_joura_karsiva_ennakkotehtava-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "HH_joura_journalistinenkoe",
+        "kuvaus": "Journalistinen koe",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "45",
+        "arvot": null,
+        "osallistuminenTunniste": "HH_joura_journalistinenkoe-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false
+      }
     ]
   },
   {
@@ -289,6 +361,87 @@
           "nimiEn": null,
           "arvo": "ensikertalaiset"
         }
+      }
+    ],
+    "valintaryhma": {
+      "nimi": "Haaga-Helia, Johdon assistenttityö ja kielet",
+      "kohdejoukko": null,
+      "hakuoid": null,
+      "hakuvuosi": null,
+      "organisaatiot": [],
+      "vastuuorganisaatioOid": null,
+      "viimeinenKaynnistyspaiva": null,
+      "oid": "14818787975454503380383648280539",
+      "hakukohdekoodit": [],
+      "valintakoekoodit": [],
+      "lapsivalintaryhma": false,
+      "lapsihakukohde": false
+    },
+    "syotettavatArvot": [
+      {
+        "tunniste": "HH_assi_kirjallinen",
+        "kuvaus": "kirjallinen koe (min/maks. pisteet 8 p./20 p.)",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "20",
+        "arvot": null,
+        "osallistuminenTunniste": "HH_assi_kirjallinen-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false
+      },
+      {
+        "tunniste": "HH_assi_englanninkoe",
+        "kuvaus": "Assi englannin kielikoe (-17-0 p.)",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "-17",
+        "max": "0",
+        "arvot": null,
+        "osallistuminenTunniste": "HH_assi_englanninkoe-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false
+      },
+      {
+        "tunniste": "fdcd7d38-f19c-8f95-62cf-2040ac6d244f",
+        "kuvaus": "Pelkkä yo-tutkinto pisteet, 0-60p.",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "60",
+        "arvot": null,
+        "osallistuminenTunniste": "fdcd7d38-f19c-8f95-62cf-2040ac6d244f-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": false,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "HH_assi_toinenkieli",
+        "kuvaus": "Assi toisen kielen koe (-14-0 p.)",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "-14",
+        "max": "0",
+        "arvot": null,
+        "osallistuminenTunniste": "HH_assi_toinenkieli-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false
+      },
+      {
+        "tunniste": "HH_assi_ryhmahaastattelu",
+        "kuvaus": "Assi ryhmähaastattelu (min./maks.2 p./20 p.)",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "20",
+        "arvot": null,
+        "osallistuminenTunniste": "HH_assi_ryhmahaastattelu-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false
       }
     ]
   },
@@ -445,6 +598,330 @@
           "nimiEn": null,
           "arvo": "ensikertalaiset"
         }
+      }
+    ],
+    "valintaryhma": {
+      "nimi": "DI-Mat+Fys/Kem",
+      "kohdejoukko": null,
+      "hakuoid": null,
+      "hakuvuosi": null,
+      "organisaatiot": [],
+      "vastuuorganisaatioOid": null,
+      "viimeinenKaynnistyspaiva": null,
+      "oid": "1484308899334-1862191885651590823",
+      "hakukohdekoodit": [],
+      "valintakoekoodit": [],
+      "lapsivalintaryhma": false,
+      "lapsihakukohde": false
+    },
+    "syotettavatArvot": [
+      {
+        "tunniste": "DIA-2017-DI-KOE-FYS-T1",
+        "kuvaus": "Fys, t. 1",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T1-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-MAT-T1",
+        "kuvaus": "Insmat, t. 1",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T1-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-KEM-T1",
+        "kuvaus": "Kem, t. 1",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T1-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-FYS-T2",
+        "kuvaus": "Fys, t. 2",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T2-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-MAT-T2",
+        "kuvaus": "Insmat, t. 2",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T2-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-KEM-T4",
+        "kuvaus": "Kem, t. 4",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T4-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KVY-ALK-P",
+        "kuvaus": "EB/IB/RP/VanhaYO -pisteet",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "26",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KVY-ALK-P-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": false,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KVY-MAT-L",
+        "kuvaus": "EB/IB/RP/VanhaYO pitkä matikka väh. L\n1=ok, 0=ei ok.",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": null,
+        "max": null,
+        "arvot": [
+          "0",
+          "1"
+        ],
+        "osallistuminenTunniste": "DIA-2017-DI-KVY-MAT-L-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": false,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-KEM-T5",
+        "kuvaus": "Kem, t. 5",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T5-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-KEM-T2",
+        "kuvaus": "Kem, t. 2",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T2-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-KEM-T3",
+        "kuvaus": "Kem, t. 3",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T3-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-KEM-T6",
+        "kuvaus": "Kem, t. 6",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T6-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-FYS-T5",
+        "kuvaus": "Fys, t. 5",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T5-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-MAT-T5",
+        "kuvaus": "Insmat, t. 5",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T5-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KVY-FYS-L",
+        "kuvaus": "EB/IB/RP/VanhaYO fys väh. L\n1=ok, 0=ei ok.",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": null,
+        "max": null,
+        "arvot": [
+          "1",
+          "0"
+        ],
+        "osallistuminenTunniste": "DIA-2017-DI-KVY-FYS-L-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": false,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KVY-MAT-T",
+        "kuvaus": "EB/IB/RP/VanhaYO VR1-matikkatarkistus\n1=ok, 0=ei ok",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": null,
+        "max": null,
+        "arvot": [
+          "1",
+          "0"
+        ],
+        "osallistuminenTunniste": "DIA-2017-DI-KVY-MAT-T-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": false,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-FYS-T6",
+        "kuvaus": "Fys, t. 6",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T6-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-MAT-T6",
+        "kuvaus": "Insmat, t. 6",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T6-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-MAT-T3",
+        "kuvaus": "Insmat, t. 3",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T3-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-FYS-T3",
+        "kuvaus": "Fys, t. 3",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T3-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-FYS-T4",
+        "kuvaus": "Fys, t. 4",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T4-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-MAT-T4",
+        "kuvaus": "Insmat, t. 4",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T4-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KVY-MAT-AS",
+        "kuvaus": "IB/EB/RP/VanhaYO Tasapistesääntö (matematiikan arvosana)",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "2",
+        "max": "7",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KVY-MAT-AS-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": false,
+        "syotettavissaKaikille": true
       }
     ]
   }

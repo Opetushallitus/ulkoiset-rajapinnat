@@ -1,0 +1,53 @@
+[
+  {
+    "hakukohdeOid": "1.2.246.562.20.16152550832",
+    "valintaryhma": {
+      "nimi": "Haaga-Helia, kulttuuri, päivätoteutus",
+      "kohdejoukko": null,
+      "hakuoid": null,
+      "hakuvuosi": null,
+      "organisaatiot": [],
+      "vastuuorganisaatioOid": null,
+      "viimeinenKaynnistyspaiva": null,
+      "oid": "14846409492849154031594415883210",
+      "hakukohdekoodit": [],
+      "valintakoekoodit": [],
+      "lapsivalintaryhma": false,
+      "lapsihakukohde": false
+    }
+  },
+  {
+    "hakukohdeOid": "1.2.246.562.20.76494006901",
+    "valintaryhma": {
+      "nimi": "Haaga-Helia, Johdon assistenttityö ja kielet",
+      "kohdejoukko": null,
+      "hakuoid": null,
+      "hakuvuosi": null,
+      "organisaatiot": [],
+      "vastuuorganisaatioOid": null,
+      "viimeinenKaynnistyspaiva": null,
+      "oid": "14818787975454503380383648280539",
+      "hakukohdekoodit": [],
+      "valintakoekoodit": [],
+      "lapsivalintaryhma": false,
+      "lapsihakukohde": false
+    }
+  },
+  {
+    "hakukohdeOid": "1.2.246.562.20.18496942519",
+    "valintaryhma": {
+      "nimi": "DI-Mat+Fys/Kem",
+      "kohdejoukko": null,
+      "hakuoid": null,
+      "hakuvuosi": null,
+      "organisaatiot": [],
+      "vastuuorganisaatioOid": null,
+      "viimeinenKaynnistyspaiva": null,
+      "oid": "1484308899334-1862191885651590823",
+      "hakukohdekoodit": [],
+      "valintakoekoodit": [],
+      "lapsivalintaryhma": false,
+      "lapsihakukohde": false
+    }
+  }
+]

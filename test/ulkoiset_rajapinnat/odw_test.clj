@@ -16,6 +16,8 @@
 (def valinnanvaiheet-json (slurp "test/resources/valinnanvaiheet.json"))
 (def valintatapajonot-json (slurp "test/resources/valintatapajonot.json"))
 (def hakijaryhmat-json (slurp "test/resources/hakijaryhmat.json"))
+(def valintaryhmat-json (slurp "test/resources/valintaryhmat.json"))
+(def avaimet-json (slurp "test/resources/avaimet.json"))
 
 (defn mock-endpoints [url options]
   (case url
@@ -23,6 +25,8 @@
     "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/valinnanvaiheet" (d/future {:status 200 :body valinnanvaiheet-json })
     "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/valinnanvaihe/valintatapajonot" (d/future {:status 200 :body valintatapajonot-json})
     "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/hakijaryhmat" (d/future {:status 200 :body hakijaryhmat-json})
+    "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/valintaryhmat" (d/future {:status 200 :body valintaryhmat-json})
+    "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (d/future {:status 200 :body avaimet-json})
     (d/future {:status 404 :body "[]"})))
 
 (deftest odw-api-test
