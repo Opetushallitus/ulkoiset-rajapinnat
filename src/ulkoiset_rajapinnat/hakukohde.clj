@@ -8,6 +8,7 @@
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-type-and-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
+            [ulkoiset-rajapinnat.utils.snippets :refer [remove-when remove-nils]]
             [manifold.deferred :as d]))
 
 (def hakukohde-api "%s/tarjonta-service/rest/v1/hakukohde/search?hakuOid=%s&tila=JULKAISTU")
@@ -56,12 +57,13 @@
     (d/success! (d/deferred) [])
     (d/success! (d/deferred) [])))
 
-(defn hakukohde-resource [config haku-oid request channel]
-  (let [host-virkailija (config :host-virkailija)]
+(defn hakukohde-resource [config haku-oid palauta-null-arvot? request channel]
+  (let [host-virkailija (config :host-virkailija)
+        remove-tarjonta-data-quirks (partial remove-when #(or (= % "null") (= % "")))]
     (-> (let-flow [kieli (fetch-koodisto host-virkailija "kieli")
-                   hakukohde (fetch-hakukohde host-virkailija haku-oid)
+                   hakukohde (d/chain (fetch-hakukohde host-virkailija haku-oid) remove-tarjonta-data-quirks)
                    komotos (fetch-komotos-if-kk-haku (first hakukohde))
-                   hakukohde-tulos (fetch-hakukohde-tulos host-virkailija haku-oid)
+                   hakukohde-tulos (d/chain (fetch-hakukohde-tulos host-virkailija haku-oid) remove-tarjonta-data-quirks)
                    koulutukset (fetch-koulutukset host-virkailija haku-oid)
                    organisaatiot (fetch-organisations-in-batch config (set (mapcat #(get % "tarjoajat") koulutukset)))]
                   (let [organisaatiot-by-oid (group-by #(% "oid") (flatten organisaatiot))
@@ -73,7 +75,7 @@
                                                          hk-organisaatiot (select-keys organisaatiot-by-oid (% "organisaatioOids"))
                                                          hk (first (get hakukohde-by-oid (% "hakukohdeOid")))]
                                                      (hakukohde-converter % hk-organisaatiot hk-koulutukset hk)) hakukohde-tulos)
-                        json (to-json converted-hakukohdes)]
+                        json (to-json (if palauta-null-arvot? converted-hakukohdes (remove-nils converted-hakukohdes)))]
                     (-> channel
                         (status 200)
                         (body-and-close json))))

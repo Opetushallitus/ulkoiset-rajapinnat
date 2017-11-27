@@ -35,9 +35,9 @@
               (GET "/haku-for-year/:vuosi" [vuosi]
                 :summary "Haut vuodella"
                 (access-log-with-channel (partial haku-resource config vuosi)))
-              (GET "/hakukohde-for-haku/:haku-oid" [haku-oid kausi]
+              (GET "/hakukohde-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot]
                 :summary "Hakukohteet haku OID:lla"
-                (access-log-with-channel (partial hakukohde-resource config haku-oid)))
+                (access-log-with-channel (partial hakukohde-resource config haku-oid palauta-null-arvot)))
               (GET "/oppija-for-haku/:haku-oid" [haku-oid kausi]
                 :summary "Oppijat haku OID:lla"
                 (access-log-with-channel (partial oppija-resource config haku-oid)))
