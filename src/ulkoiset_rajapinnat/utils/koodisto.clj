@@ -13,6 +13,11 @@
     (first (str/split uri #"#"))
     nil))
 
+(defn strip-type-and-version-from-tarjonta-koodisto-uri
+  [tarjonta-koodisto-uri]
+  (if-let [uri tarjonta-koodisto-uri]
+    (strip-version-from-tarjonta-koodisto-uri (subs uri (inc (str/index-of uri "_"))))
+    nil))
 
 (defn transform-uri-to-arvo-format [koodisto]
   [(koodisto "koodiUri") (koodisto "koodiArvo")])
