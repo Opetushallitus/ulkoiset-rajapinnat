@@ -64,7 +64,7 @@
                    hakukohteet (post-with-session-id hakukohteet-api (parse-json-request request))
                    hakukohde-oidit (map #(get % "oid") hakukohteet)
                    valinnanvaiheet (post-with-session-id valinnanvaiheet-api hakukohde-oidit)
-                   valinnanvaihe-oidit (map #(get % "oid") valinnanvaiheet)
+                   valinnanvaihe-oidit (map #(get % "oid") (flatten (map #(get % "valinnanvaiheet") valinnanvaiheet)))
                    valintatapajonot (post-with-session-id valintatapajonot-api valinnanvaihe-oidit)
                    hakijaryhmat (post-with-session-id hakijaryhmat-api hakukohde-oidit)
                    valintaryhmat (post-with-session-id valintaryhmat-api hakukohde-oidit)
