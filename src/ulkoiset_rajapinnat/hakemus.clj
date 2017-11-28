@@ -9,6 +9,7 @@
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
+            [ulkoiset-rajapinnat.utils.snippets :refer [remove-nils]]
             [org.httpkit.timer :refer :all])
   (:refer-clojure :rename {merge core-merge
                            loop core-loop}))
@@ -68,11 +69,6 @@
      :pohjakoulutus_kk pohjakoulutus_kk
      :lahtokoulun_organisaatio_oid lahtokoulun_organisaatio_oid
      :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa}))
-
-(defn remove-nils
-  [m]
-  (let [f (fn [[k v]] (when v [k v]))]
-    (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
 (defn convert-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo document]
   (let [data (core-merge

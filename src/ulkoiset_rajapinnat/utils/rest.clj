@@ -18,7 +18,7 @@
       (catch Exception e
         (log/error "Failed to read JSON!" e)))
     (do
-      (log/error "Expected 200 OK!")
+      (log/error "Expected 200 OK! But got STATUS = {}!" (response :status))
       (throw (new RuntimeException "Expected 200 OK!")))))
 
 (defn to-json [obj]
