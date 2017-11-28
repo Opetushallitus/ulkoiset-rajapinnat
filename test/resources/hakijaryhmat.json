@@ -19,7 +19,9 @@
           "nimiSv": null,
           "nimiEn": null,
           "arvo": "ensikertalaiset"
-        }
+        },
+        "valintatapajonoOid": null,
+        "hakukohdeOid": "1.2.246.562.20.16152550832"
       }
     ]
   },
@@ -43,13 +45,78 @@
           "nimiSv": null,
           "nimiEn": null,
           "arvo": "ensikertalaiset"
-        }
+        },
+        "valintatapajonoOid": null,
+        "hakukohdeOid": "1.2.246.562.20.76494006901"
       }
     ]
   },
   {
     "hakukohdeOid": "1.2.246.562.20.18496942519",
     "hakijaryhmat": [
+      {
+        "oid": "14943107836554401129268353773842",
+        "nimi": "Ensikertalaisten hakijaryhmä",
+        "kuvaus": "Ensikertalaisten hakijaryhmä",
+        "kiintio": 8,
+        "kaytaKaikki": false,
+        "tarkkaKiintio": false,
+        "kaytetaanRyhmaanKuuluvia": true,
+        "aktiivinen": true,
+        "prioriteetti": 0,
+        "masterOid": "14843088998378161162205395849932",
+        "hakijaryhmatyyppikoodi": {
+          "uri": "hakijaryhmantyypit_ensikertalaiset",
+          "nimiFi": "Ensikertalaisten hakijaryhmä",
+          "nimiSv": null,
+          "nimiEn": null,
+          "arvo": "ensikertalaiset"
+        },
+        "valintatapajonoOid": "1485939457760934474221944253677",
+        "hakukohdeOid": null
+      },
+      {
+        "oid": "1494310829319-1492038813983287902",
+        "nimi": "Ensikertalaisten hakijaryhmä",
+        "kuvaus": "Ensikertalaisten hakijaryhmä",
+        "kiintio": 28,
+        "kaytaKaikki": false,
+        "tarkkaKiintio": false,
+        "kaytetaanRyhmaanKuuluvia": true,
+        "aktiivinen": true,
+        "prioriteetti": 0,
+        "masterOid": "14843088998378161162205395849932",
+        "hakijaryhmatyyppikoodi": {
+          "uri": "hakijaryhmantyypit_ensikertalaiset",
+          "nimiFi": "Ensikertalaisten hakijaryhmä",
+          "nimiSv": null,
+          "nimiEn": null,
+          "arvo": "ensikertalaiset"
+        },
+        "valintatapajonoOid": "1485939517987-3990180655055059116",
+        "hakukohdeOid": null
+      },
+      {
+        "oid": "14943108660765598521064467817871",
+        "nimi": "Ensikertalaisten hakijaryhmä",
+        "kuvaus": "Ensikertalaisten hakijaryhmä",
+        "kiintio": 12,
+        "kaytaKaikki": false,
+        "tarkkaKiintio": false,
+        "kaytetaanRyhmaanKuuluvia": true,
+        "aktiivinen": true,
+        "prioriteetti": 0,
+        "masterOid": "14843088998378161162205395849932",
+        "hakijaryhmatyyppikoodi": {
+          "uri": "hakijaryhmantyypit_ensikertalaiset",
+          "nimiFi": "Ensikertalaisten hakijaryhmä",
+          "nimiSv": null,
+          "nimiEn": null,
+          "arvo": "ensikertalaiset"
+        },
+        "valintatapajonoOid": "14859395497537064389715243940441",
+        "hakukohdeOid": null
+      },
       {
         "oid": "1484310132551-5790490144250443705",
         "nimi": "Ensikertalaisten hakijaryhmä",
@@ -67,7 +134,9 @@
           "nimiSv": null,
           "nimiEn": null,
           "arvo": "ensikertalaiset"
-        }
+        },
+        "valintatapajonoOid": null,
+        "hakukohdeOid": "1.2.246.562.20.18496942519"
       }
     ]
   }

@@ -1,6 +1,97 @@
 [
   {
+    "valinnanvaiheOid": "1484641242557787294147793391071",
+    "kuuluuSijoitteluun": false,
+    "valintatapajonot": [
+      {
+        "aloituspaikat": 0,
+        "nimi": "Ei-hakukelpoiset",
+        "kuvaus": null,
+        "tyyppi": null,
+        "siirretaanSijoitteluun": false,
+        "tasapistesaanto": "YLITAYTTO",
+        "aktiivinen": true,
+        "valisijoittelu": false,
+        "automaattinenLaskentaanSiirto": false,
+        "eiVarasijatayttoa": false,
+        "kaikkiEhdonTayttavatHyvaksytaan": false,
+        "varasijat": 0,
+        "varasijaTayttoPaivat": 0,
+        "poissaOlevaTaytto": false,
+        "poistetaankoHylatyt": false,
+        "varasijojaKaytetaanAlkaen": null,
+        "varasijojaTaytetaanAsti": null,
+        "kaytetaanValintalaskentaa": true,
+        "tayttojono": null,
+        "oid": "1484641242594-2393137692446692310",
+        "inheritance": true,
+        "prioriteetti": 0
+      }
+    ]
+  },
+  {
+    "valinnanvaiheOid": "14846412425396636600534897031696",
+    "kuuluuSijoitteluun": false,
+    "valintatapajonot": [
+      {
+        "aloituspaikat": 140,
+        "nimi": "Journalismin karsiva etukäteisnäyttötehtävä",
+        "kuvaus": "Etukäteisnäyttötehtävän jälkeinen karsinta, josta osa pääsee varsinaiseen valintakokeeseen.",
+        "tyyppi": null,
+        "siirretaanSijoitteluun": false,
+        "tasapistesaanto": "YLITAYTTO",
+        "aktiivinen": true,
+        "valisijoittelu": false,
+        "automaattinenLaskentaanSiirto": false,
+        "eiVarasijatayttoa": false,
+        "kaikkiEhdonTayttavatHyvaksytaan": false,
+        "varasijat": 0,
+        "varasijaTayttoPaivat": 0,
+        "poissaOlevaTaytto": false,
+        "poistetaankoHylatyt": false,
+        "varasijojaKaytetaanAlkaen": null,
+        "varasijojaTaytetaanAsti": null,
+        "kaytetaanValintalaskentaa": true,
+        "tayttojono": null,
+        "oid": "1484641242767-5710813613381239738",
+        "inheritance": true,
+        "prioriteetti": 0
+      }
+    ]
+  },
+  {
+    "valinnanvaiheOid": "1484641242502-4899875119217350865",
+    "kuuluuSijoitteluun": true,
+    "valintatapajonot": [
+      {
+        "aloituspaikat": 40,
+        "nimi": "Koepisteet",
+        "kuvaus": "koepisteet",
+        "tyyppi": null,
+        "siirretaanSijoitteluun": true,
+        "tasapistesaanto": "ARVONTA",
+        "aktiivinen": true,
+        "valisijoittelu": false,
+        "automaattinenLaskentaanSiirto": true,
+        "eiVarasijatayttoa": false,
+        "kaikkiEhdonTayttavatHyvaksytaan": false,
+        "varasijat": 0,
+        "varasijaTayttoPaivat": 0,
+        "poissaOlevaTaytto": true,
+        "poistetaankoHylatyt": false,
+        "varasijojaKaytetaanAlkaen": null,
+        "varasijojaTaytetaanAsti": null,
+        "kaytetaanValintalaskentaa": true,
+        "tayttojono": null,
+        "oid": "1484641243020-7329378191891046793",
+        "inheritance": true,
+        "prioriteetti": 0
+      }
+    ]
+  },
+  {
     "valinnanvaiheOid": "1481878976202-7810907148121997049",
+    "kuuluuSijoitteluun": false,
     "valintatapajonot": [
       {
         "aloituspaikat": 0,
@@ -30,6 +121,7 @@
   },
   {
     "valinnanvaiheOid": "1481878976183-6509309476133021710",
+    "kuuluuSijoitteluun": true,
     "valintatapajonot": [
       {
         "aloituspaikat": 74,
@@ -83,6 +175,7 @@
   },
   {
     "valinnanvaiheOid": "1484310132348-7999171358545077407",
+    "kuuluuSijoitteluun": false,
     "valintatapajonot": [
       {
         "aloituspaikat": 0,
@@ -111,94 +204,8 @@
     ]
   },
   {
-    "valinnanvaiheOid": "14846412425396636600534897031696",
-    "valintatapajonot": [
-      {
-        "aloituspaikat": 140,
-        "nimi": "Journalismin karsiva etukäteisnäyttötehtävä",
-        "kuvaus": "Etukäteisnäyttötehtävän jälkeinen karsinta, josta osa pääsee varsinaiseen valintakokeeseen.",
-        "tyyppi": null,
-        "siirretaanSijoitteluun": false,
-        "tasapistesaanto": "YLITAYTTO",
-        "aktiivinen": true,
-        "valisijoittelu": false,
-        "automaattinenLaskentaanSiirto": false,
-        "eiVarasijatayttoa": false,
-        "kaikkiEhdonTayttavatHyvaksytaan": false,
-        "varasijat": 0,
-        "varasijaTayttoPaivat": 0,
-        "poissaOlevaTaytto": false,
-        "poistetaankoHylatyt": false,
-        "varasijojaKaytetaanAlkaen": null,
-        "varasijojaTaytetaanAsti": null,
-        "kaytetaanValintalaskentaa": true,
-        "tayttojono": null,
-        "oid": "1484641242767-5710813613381239738",
-        "inheritance": true,
-        "prioriteetti": 0
-      }
-    ]
-  },
-  {
-    "valinnanvaiheOid": "1484641242557787294147793391071",
-    "valintatapajonot": [
-      {
-        "aloituspaikat": 0,
-        "nimi": "Ei-hakukelpoiset",
-        "kuvaus": null,
-        "tyyppi": null,
-        "siirretaanSijoitteluun": false,
-        "tasapistesaanto": "YLITAYTTO",
-        "aktiivinen": true,
-        "valisijoittelu": false,
-        "automaattinenLaskentaanSiirto": false,
-        "eiVarasijatayttoa": false,
-        "kaikkiEhdonTayttavatHyvaksytaan": false,
-        "varasijat": 0,
-        "varasijaTayttoPaivat": 0,
-        "poissaOlevaTaytto": false,
-        "poistetaankoHylatyt": false,
-        "varasijojaKaytetaanAlkaen": null,
-        "varasijojaTaytetaanAsti": null,
-        "kaytetaanValintalaskentaa": true,
-        "tayttojono": null,
-        "oid": "1484641242594-2393137692446692310",
-        "inheritance": true,
-        "prioriteetti": 0
-      }
-    ]
-  },
-  {
-    "valinnanvaiheOid": "1484641242502-4899875119217350865",
-    "valintatapajonot": [
-      {
-        "aloituspaikat": 40,
-        "nimi": "Koepisteet",
-        "kuvaus": "koepisteet",
-        "tyyppi": null,
-        "siirretaanSijoitteluun": true,
-        "tasapistesaanto": "ARVONTA",
-        "aktiivinen": true,
-        "valisijoittelu": false,
-        "automaattinenLaskentaanSiirto": true,
-        "eiVarasijatayttoa": false,
-        "kaikkiEhdonTayttavatHyvaksytaan": false,
-        "varasijat": 0,
-        "varasijaTayttoPaivat": 0,
-        "poissaOlevaTaytto": true,
-        "poistetaankoHylatyt": false,
-        "varasijojaKaytetaanAlkaen": null,
-        "varasijojaTaytetaanAsti": null,
-        "kaytetaanValintalaskentaa": true,
-        "tayttojono": null,
-        "oid": "1484641243020-7329378191891046793",
-        "inheritance": true,
-        "prioriteetti": 0
-      }
-    ]
-  },
-  {
     "valinnanvaiheOid": "1484310132316-7554721772098086636",
+    "kuuluuSijoitteluun": true,
     "valintatapajonot": [
       {
         "aloituspaikat": 15,
