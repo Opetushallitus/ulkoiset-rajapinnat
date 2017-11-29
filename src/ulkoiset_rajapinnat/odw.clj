@@ -21,7 +21,7 @@
     (throw (RuntimeException. (str "Calling " url " failed: status=" (response :status) ", msg=" (response :body))))))
 
 (defn post-with-url [session-id url body]
-  (let [promise (post-as-promise url {:headers {"Cookie" (str "JSESSIONID=" session-id )}} body)]
+  (let [promise (post-as-promise url session-id body)]
     (log/info (str url "(JSESSIONID=" session-id ")"))
     (chain promise #(handle-response url %))))
 

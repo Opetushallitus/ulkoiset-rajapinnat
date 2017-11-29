@@ -42,9 +42,9 @@
   ([url data]
     (post-json-as-promise url data {})))
 
-(defn post-as-promise [url options body]
+(defn post-as-promise [url session-id body]
   (let [deferred (d/deferred)]
-    (http/post url (merge options {:body (to-json body) :content-type :json}) (fn [resp]
+    (http/post url {:headers {"Content-Type" mime-application-json, "Cookie" (str "JSESSIONID=" session-id )} :body (to-json body)} (fn [resp]
       (d/success! deferred resp)))
     deferred))
 

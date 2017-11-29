@@ -20,6 +20,7 @@
 (def avaimet-json (slurp "test/resources/avaimet.json"))
 
 (defn mock-endpoints [url options]
+  (log/info options)
   (case url
     "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/hakukohteet" (d/future {:status 200 :body hakukohteet-json })
     "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/valinnanvaiheet" (d/future {:status 200 :body valinnanvaiheet-json })
@@ -39,7 +40,7 @@
         (is (= status 200))
         (is (= body "[]")))))
   (testing "Odw -> hakukohteet found"
-    (with-redefs [post-as-promise (fn [a b c] (mock-endpoints a (merge b {:body c})))
+    (with-redefs [post-as-promise (fn [a b c] (mock-endpoints a {:headers {"Cookie" b} :body c}))
                   fetch-jsessionid (fn [a b c d] (str "FAKEJSESSIONID"))]
       (let [response (client/post (api-call "/api/odw/hakukohde") {:body "[\"1.2.246.562.20.16152550832\", \"1.2.246.562.20.96011436637\", \"1.2.246.562.20.76494006901\", \"1.2.246.562.20.18496942519\"]" :content-type :json})
             status (-> response :status)
