@@ -178,7 +178,8 @@
         "arvot": null,
         "osallistuminenTunniste": "HH_joura_ryhmahaastattelu-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": false
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false
       },
       {
         "tunniste": "HH_joura_yleistietokoe",
@@ -191,7 +192,8 @@
         "arvot": null,
         "osallistuminenTunniste": "HH_joura_yleistietokoe-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": false
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false
       },
       {
         "tunniste": "HH_joura_karsiva_ennakkotehtava",
@@ -208,7 +210,8 @@
         ],
         "osallistuminenTunniste": "HH_joura_karsiva_ennakkotehtava-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": false
       },
       {
         "tunniste": "HH_joura_journalistinenkoe",
@@ -221,7 +224,8 @@
         "arvot": null,
         "osallistuminenTunniste": "HH_joura_journalistinenkoe-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": false
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false
       }
     ]
   },
@@ -393,7 +397,8 @@
         "arvot": null,
         "osallistuminenTunniste": "HH_assi_kirjallinen-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": false
+        "syotettavissaKaikille": false,
+        "tilastoidaan": true
       },
       {
         "tunniste": "HH_assi_englanninkoe",
@@ -406,7 +411,8 @@
         "arvot": null,
         "osallistuminenTunniste": "HH_assi_englanninkoe-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": false
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false
       },
       {
         "tunniste": "fdcd7d38-f19c-8f95-62cf-2040ac6d244f",
@@ -419,7 +425,8 @@
         "arvot": null,
         "osallistuminenTunniste": "fdcd7d38-f19c-8f95-62cf-2040ac6d244f-OSALLISTUMINEN",
         "vaatiiOsallistumisen": false,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": false
       },
       {
         "tunniste": "HH_assi_toinenkieli",
@@ -432,7 +439,8 @@
         "arvot": null,
         "osallistuminenTunniste": "HH_assi_toinenkieli-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": false
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false
       },
       {
         "tunniste": "HH_assi_ryhmahaastattelu",
@@ -445,7 +453,8 @@
         "arvot": null,
         "osallistuminenTunniste": "HH_assi_ryhmahaastattelu-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": false
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false
       }
     ]
   },
@@ -685,19 +694,6 @@
     },
     "syotettavatArvot": [
       {
-        "tunniste": "DIA-2017-DI-KOE-FYS-T1",
-        "kuvaus": "Fys, t. 1",
-        "funktiotyyppi": "LUKUARVOFUNKTIO",
-        "lahde": "SYOTETTAVA_ARVO",
-        "onPakollinen": false,
-        "min": "0",
-        "max": "6",
-        "arvot": null,
-        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T1-OSALLISTUMINEN",
-        "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
-      },
-      {
         "tunniste": "DIA-2017-DI-KOE-MAT-T1",
         "kuvaus": "Insmat, t. 1",
         "funktiotyyppi": "LUKUARVOFUNKTIO",
@@ -708,7 +704,22 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T1-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-FYS-T1",
+        "kuvaus": "Fys, t. 1",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T1-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-KEM-T1",
@@ -721,20 +732,8 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T1-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
-      },
-      {
-        "tunniste": "DIA-2017-DI-KOE-FYS-T2",
-        "kuvaus": "Fys, t. 2",
-        "funktiotyyppi": "LUKUARVOFUNKTIO",
-        "lahde": "SYOTETTAVA_ARVO",
-        "onPakollinen": false,
-        "min": "0",
-        "max": "6",
-        "arvot": null,
-        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T2-OSALLISTUMINEN",
-        "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-MAT-T2",
@@ -747,7 +746,22 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T2-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-FYS-T2",
+        "kuvaus": "Fys, t. 2",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T2-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-KEM-T4",
@@ -760,7 +774,8 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T4-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": false
       },
       {
         "tunniste": "DIA-2017-DI-KVY-ALK-P",
@@ -773,7 +788,8 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KVY-ALK-P-OSALLISTUMINEN",
         "vaatiiOsallistumisen": false,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": false
       },
       {
         "tunniste": "DIA-2017-DI-KVY-MAT-L",
@@ -789,7 +805,8 @@
         ],
         "osallistuminenTunniste": "DIA-2017-DI-KVY-MAT-L-OSALLISTUMINEN",
         "vaatiiOsallistumisen": false,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-KEM-T5",
@@ -802,7 +819,8 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T5-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-KEM-T2",
@@ -815,7 +833,8 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T2-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-KEM-T3",
@@ -828,7 +847,8 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T3-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-KEM-T6",
@@ -841,20 +861,8 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-KEM-T6-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
-      },
-      {
-        "tunniste": "DIA-2017-DI-KOE-FYS-T5",
-        "kuvaus": "Fys, t. 5",
-        "funktiotyyppi": "LUKUARVOFUNKTIO",
-        "lahde": "SYOTETTAVA_ARVO",
-        "onPakollinen": false,
-        "min": "0",
-        "max": "6",
-        "arvot": null,
-        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T5-OSALLISTUMINEN",
-        "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-MAT-T5",
@@ -867,23 +875,22 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T5-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
-        "tunniste": "DIA-2017-DI-KVY-FYS-L",
-        "kuvaus": "EB/IB/RP/VanhaYO fys väh. L\n1=ok, 0=ei ok.",
+        "tunniste": "DIA-2017-DI-KOE-FYS-T5",
+        "kuvaus": "Fys, t. 5",
         "funktiotyyppi": "LUKUARVOFUNKTIO",
         "lahde": "SYOTETTAVA_ARVO",
         "onPakollinen": false,
-        "min": null,
-        "max": null,
-        "arvot": [
-          "1",
-          "0"
-        ],
-        "osallistuminenTunniste": "DIA-2017-DI-KVY-FYS-L-OSALLISTUMINEN",
-        "vaatiiOsallistumisen": false,
-        "syotettavissaKaikille": true
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T5-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KVY-MAT-T",
@@ -899,20 +906,25 @@
         ],
         "osallistuminenTunniste": "DIA-2017-DI-KVY-MAT-T-OSALLISTUMINEN",
         "vaatiiOsallistumisen": false,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
-        "tunniste": "DIA-2017-DI-KOE-FYS-T6",
-        "kuvaus": "Fys, t. 6",
+        "tunniste": "DIA-2017-DI-KVY-FYS-L",
+        "kuvaus": "EB/IB/RP/VanhaYO fys väh. L\n1=ok, 0=ei ok.",
         "funktiotyyppi": "LUKUARVOFUNKTIO",
         "lahde": "SYOTETTAVA_ARVO",
         "onPakollinen": false,
-        "min": "0",
-        "max": "6",
-        "arvot": null,
-        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T6-OSALLISTUMINEN",
-        "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "min": null,
+        "max": null,
+        "arvot": [
+          "1",
+          "0"
+        ],
+        "osallistuminenTunniste": "DIA-2017-DI-KVY-FYS-L-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": false,
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-MAT-T6",
@@ -925,7 +937,22 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T6-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-FYS-T6",
+        "kuvaus": "Fys, t. 6",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T6-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-MAT-T3",
@@ -938,7 +965,8 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T3-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-FYS-T3",
@@ -951,20 +979,8 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T3-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
-      },
-      {
-        "tunniste": "DIA-2017-DI-KOE-FYS-T4",
-        "kuvaus": "Fys, t. 4",
-        "funktiotyyppi": "LUKUARVOFUNKTIO",
-        "lahde": "SYOTETTAVA_ARVO",
-        "onPakollinen": false,
-        "min": "0",
-        "max": "6",
-        "arvot": null,
-        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T4-OSALLISTUMINEN",
-        "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       },
       {
         "tunniste": "DIA-2017-DI-KOE-MAT-T4",
@@ -977,7 +993,22 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KOE-MAT-T4-OSALLISTUMINEN",
         "vaatiiOsallistumisen": true,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": false
+      },
+      {
+        "tunniste": "DIA-2017-DI-KOE-FYS-T4",
+        "kuvaus": "Fys, t. 4",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "DIA-2017-DI-KOE-FYS-T4-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true,
+        "tilastoidaan": false
       },
       {
         "tunniste": "DIA-2017-DI-KVY-MAT-AS",
@@ -990,7 +1021,8 @@
         "arvot": null,
         "osallistuminenTunniste": "DIA-2017-DI-KVY-MAT-AS-OSALLISTUMINEN",
         "vaatiiOsallistumisen": false,
-        "syotettavissaKaikille": true
+        "syotettavissaKaikille": true,
+        "tilastoidaan": true
       }
     ]
   }
