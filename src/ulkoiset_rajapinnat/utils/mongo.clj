@@ -2,7 +2,9 @@
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
             [manifold.stream :as s]
-            [clojure.tools.logging :as log])
+            [clojure.core.async :refer [close! put! chan]]
+            [clojure.tools.logging :as log]
+            [clojure.core.async.impl.protocols :as impl])
   (:refer-clojure :exclude [and])
   (:import (org.bson.conversions Bson)))
 
@@ -36,21 +38,58 @@
           (log/debug "Subscription completed!")
           (@on-event))))))
 
-(defn publisher-to-stream [publisher on-error]
-  (let [stream (s/stream)]
-    (.subscribe publisher
-                (subscribe (fn [s]
-                             (fn
-                               ([]
-                                (s/close! stream))
-                               ([document]
-                                (if (s/closed? stream)
-                                  (do
-                                    (log/warn "Stream cancelled before all documents were read! Client disconnected perhaps.")
-                                    (.cancel s))
-                                  (s/put! stream document)))
-                               ([_ throwable]
-                                (log/error "Streaming failed from MongoDB!" throwable)
-                                (on-error throwable)
-                                (s/close! stream))))))
-    stream))
+(defn atomic-take! [atom batch]
+  (loop [oldval @atom]
+    (if (>= (count oldval) batch)
+      (let [spl (split-at batch oldval)]
+        (if (compare-and-set! atom oldval (vec (second spl)))
+          (vec (first spl))
+          (recur @atom)))
+      nil)))
+
+(defn drain! [atom]
+  (loop [oldval @atom]
+             (if (compare-and-set! atom oldval [])
+               oldval
+               (recur @atom))))
+
+(defn- handle-document-batch [document-batch document-batch-channel batch-size]
+  (if-let [batch (atomic-take! document-batch batch-size)]
+    (put! document-batch-channel batch)))
+
+(comment
+(do
+  (log/error "Got nil batch! This should never happen!")
+  (throw (RuntimeException. "Got nil batch! This should never happen!"))))
+
+(defn publisher-as-channel
+  ([publisher document-batch-channel]
+   (publisher-as-channel publisher document-batch-channel 500))
+  ([publisher document-batch-channel batch-size]
+   (let [document-batch (atom [])
+         handle-incoming-document (fn [s document]
+                                    (do
+                                      (swap! document-batch conj document)
+                                      (handle-document-batch document-batch document-batch-channel batch-size)
+                                      ))]
+     (.subscribe publisher
+                 (subscribe (fn [s]
+                              (fn
+                                ([]
+                                 (let [last-documents (drain! document-batch)]
+                                   (if (not (empty? last-documents))
+                                     (put! document-batch-channel last-documents)
+                                     (put! document-batch-channel []))
+                                   (log/info "Got last hakemus so closing channel!")
+                                   (close! document-batch-channel)))
+                                ([document]
+                                 (if (impl/closed? document-batch-channel)
+                                   (do
+                                     (log/warn "Channel cancelled before all documents were read! Client disconnected perhaps.")
+                                     (.cancel s))
+                                   (handle-incoming-document s document)))
+                                ([_ throwable]
+                                 (log/error "Streaming failed from MongoDB!" throwable)
+                                 (put! document-batch-channel throwable)
+                                 (close! document-batch-channel))))))
+     document-batch-channel)))

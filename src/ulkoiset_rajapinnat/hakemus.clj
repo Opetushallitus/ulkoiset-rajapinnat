@@ -1,6 +1,5 @@
 (ns ulkoiset-rajapinnat.hakemus
-  (:require [manifold.deferred :refer [let-flow catch chain deferred success!]]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [clojure.core.async :refer :all]
             [clojure.tools.logging :as log]
             [full.async :refer :all]
@@ -11,7 +10,8 @@
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [ulkoiset-rajapinnat.utils.snippets :refer [remove-nils]]
-            [org.httpkit.timer :refer :all])
+            [org.httpkit.timer :refer :all]
+            [clojure.core.async.impl.protocols :as impl])
   (:refer-clojure :rename {merge core-merge
                            loop  core-loop}))
 
@@ -130,36 +130,28 @@
 (defn fetch-rest-of-the-missing-data
   [config start-time counter is-first-written pohjakoulutuskkodw palauta-null-arvot? jsessionid document-batch-channel channel close-channel]
   (go
-    (let [[last-batch? batch] (<! document-batch-channel)
-          batch-size (int (count batch))
-          henkilo-oids (document-batch-to-henkilo-oid-list batch)
-          henkilot-promise (fetch-henkilot-promise config jsessionid henkilo-oids)]
-      (let-flow [henkilot henkilot-promise]
-                (try
-                  (let [henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
-                    (doseq [hakemus batch]
-                      (write-object-to-channel is-first-written (convert-hakemus pohjakoulutuskkodw palauta-null-arvot? (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
-
-                    (swap! counter (partial + batch-size))
-                    (if last-batch?
-                      (do (close-channel)
-                          (log/info "Returned successfully {} 'hakemusta'! Took {}ms!" @counter (- (System/currentTimeMillis) start-time))
-                          (close! document-batch-channel))
-                      (do
-                        (log/debug "Waiting for next batch!")
-                        (fetch-rest-of-the-missing-data config
-                                                        start-time
-                                                        counter
-                                                        is-first-written
-                                                        pohjakoulutuskkodw
-                                                        palauta-null-arvot?
-                                                        jsessionid
-                                                        document-batch-channel
-                                                        channel
-                                                        close-channel))))
-                  (catch Exception e
-                    (log/error "Failed to write 'hakemukset'!" e)))))))
-
+    (try
+      (doseq [batch (<<?? document-batch-channel)]
+        (let [batch-size (int (count batch))
+              henkilo-oids (document-batch-to-henkilo-oid-list batch)
+              henkilot (<? (fetch-henkilot-channel config jsessionid henkilo-oids))
+              henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
+          (doseq [hakemus batch]
+            (write-object-to-channel
+              is-first-written
+              (convert-hakemus pohjakoulutuskkodw palauta-null-arvot? (get henkilo-by-oid (get hakemus "personOid")) hakemus)
+              channel)
+            )
+          (swap! counter (partial + batch-size))))
+      (close-channel)
+      (log/info "Returned successfully" @counter "'hakemusta'! Took"  (- (System/currentTimeMillis) start-time) "ms!")
+      (catch Exception e
+        (do
+          (log/error "Failed to write 'hakemukset'!" e)
+          (write-object-to-channel is-first-written
+                                   {:error (.getMessage e)}
+                                   channel)
+          (close-channel))))))
 
 (defn fetch-hakemukset-for-haku
   [config haku-oid palauta-null-arvot? mongo-client channel]
@@ -168,9 +160,7 @@
         host-virkailija (config :host-virkailija)
         pohjakoulutuskkodw-channel (koodisto-as-channel config "pohjakoulutuskkodw")
         jsessionid-channel (onr-sessionid-channel config)
-        ;pohjakoulutuskkodw-promise (chain (fetch-koodisto host-virkailija "pohjakoulutuskkodw") #(vals %))
-        ;jsessionid-promise (fetch-onr-sessionid config)
-        document-batch-channel (chan 1)
+        document-batch-channel (chan 2)
         document-batch (atom [])
         is-first-written (atom false)
         publisher (create-hakemus-publisher mongo-client haku-oid)
@@ -216,15 +206,9 @@
           channel
           close-channel)))
 
-    (.subscribe publisher
-                (m/subscribe (fn [s]
-                               (fn
-                                 ([]
-                                  (handle-complete))
-                                 ([document]
-                                  (handle-incoming-document s document))
-                                 ([_ throwable]
-                                  (handle-exception throwable))))))))
+    (m/publisher-as-channel publisher document-batch-channel size-of-henkilo-batch-from-onr-at-once)
+
+    ))
 
 (defn hakemus-resource [config mongo-client haku-oid palauta-null-arvot? request channel]
   (fetch-hakemukset-for-haku config haku-oid palauta-null-arvot? mongo-client channel)
