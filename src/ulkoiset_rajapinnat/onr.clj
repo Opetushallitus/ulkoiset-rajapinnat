@@ -1,6 +1,7 @@
 (ns ulkoiset-rajapinnat.onr
-  (:require [manifold.deferred :refer [let-flow catch chain]]
+  (:require [manifold.deferred :refer [chain]]
             [clojure.string :as str]
+            [clojure.core.async :refer [go]]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel fetch-jsessionid jsessionid-channel]]
             [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json post-as-channel post-json-as-promise get-as-promise status body body-and-close exception-response parse-json-body to-json]]
@@ -30,16 +31,18 @@
   (let [host (-> config :oppijanumerorekisteri-host-virkailija)
         url (format oppijanumerorekisteri-api host)
         start-time (System/currentTimeMillis)]
-    (-> (post-json-as-promise url henkilo-oids {:headers {"Cookie" (str "JSESSIONID=" jsessionid )}})
+    (-> (post-json-as-promise url henkilo-oids {:headers {"Cookie" (str "JSESSIONID=" jsessionid)}})
         (chain (partial log-fetch (count henkilo-oids) start-time))
         (chain parse-json-body))))
 
 (defn fetch-henkilot-channel [config jsessionid henkilo-oids]
-  (let [host (-> config :oppijanumerorekisteri-host-virkailija)
-        url (format oppijanumerorekisteri-api host)
-        start-time (System/currentTimeMillis)]
-    (post-as-channel url
-                     (to-json henkilo-oids)
-                     {:headers {"Content-Type" mime-application-json
-                                "Cookie" (str "JSESSIONID=" jsessionid )}}
-                     parse-json-body)))
+  (if-let [sid jsessionid]
+    (let [host (-> config :oppijanumerorekisteri-host-virkailija)
+          url (format oppijanumerorekisteri-api host)
+          start-time (System/currentTimeMillis)]
+      (post-as-channel url
+                       (to-json henkilo-oids)
+                       {:headers {"Content-Type" mime-application-json
+                                  "Cookie"       (str "JSESSIONID=" sid)}}
+                       parse-json-body))
+    (go (RuntimeException. "Trying to fetch 'henkilot' with nil JSESSIONID!"))))

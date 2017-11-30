@@ -33,12 +33,16 @@
   [service host]
   (chain (post-form-as-promise host {:service service}) #(% :body)))
 
+(defn- parse-service-ticket [service response]
+  (if-let [st (response :body)]
+    st
+    (RuntimeException. (format "Unable to parse service ticket for service %s!" service))))
+
 (defn st-request-channel
   [service host]
-  (post-form-as-channel host {:service service}
-                        (fn [r]
-                          (r :body)
-                          )))
+  (post-form-as-channel host
+                        {:service service}
+                        (partial parse-service-ticket service)))
 
 (defn fetch-service-ticket
   [host service username password]
@@ -54,12 +58,13 @@
           tgt (<? (tgt-request-channel host username password))
           st (<? (st-request-channel absolute-service tgt))
           ]
-      ;(prn st)
       st
       )))
 
 (defn parse-jsessionid [response]
-  (nth (re-find #"JSESSIONID=(\w*);" ((response :headers) :set-cookie)) 1))
+  (if-let [sid (nth (re-find #"JSESSIONID=(\w*);" ((response :headers) :set-cookie)) 1)]
+    sid
+    (RuntimeException. (format "Unable to parse JSESSIONID! Uri = %s" (get-in response [:opts :url])))))
 
 (defn post-jsessionid-request
   [host service service-ticket]

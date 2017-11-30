@@ -1,6 +1,5 @@
 (ns ulkoiset-rajapinnat.utils.mongo
-  (:require [manifold.deferred :refer [let-flow catch chain]]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [manifold.stream :as s]
             [clojure.core.async :refer [close! put! chan]]
             [clojure.tools.logging :as log]
@@ -63,10 +62,11 @@
   (throw (RuntimeException. "Got nil batch! This should never happen!"))))
 
 (defn publisher-as-channel
-  ([publisher document-batch-channel]
-   (publisher-as-channel publisher document-batch-channel 500))
-  ([publisher document-batch-channel batch-size]
-   (let [document-batch (atom [])
+  ([publisher]
+   (publisher-as-channel publisher 500))
+  ([publisher batch-size]
+   (let [document-batch-channel (chan 2)
+         document-batch (atom [])
          handle-incoming-document (fn [s document]
                                     (do
                                       (swap! document-batch conj document)
@@ -80,7 +80,7 @@
                                    (if (not (empty? last-documents))
                                      (put! document-batch-channel last-documents)
                                      (put! document-batch-channel []))
-                                   (log/info "Got last hakemus so closing channel!")
+                                   (log/debug "Got last hakemus so closing channel!")
                                    (close! document-batch-channel)))
                                 ([document]
                                  (if (impl/closed? document-batch-channel)
