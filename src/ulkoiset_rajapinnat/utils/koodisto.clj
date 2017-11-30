@@ -27,8 +27,9 @@
   (let [promise (get-as-promise (format koodisto-api host-virkailija koodisto))]
     (chain promise parse-json-body #(map transform-uri-to-arvo-format %) #(into (sorted-map) %))))
 
-(defn koodisto-as-promise [host-virkailija koodisto]
-  (let [url (format koodisto-api host-virkailija koodisto)
+(defn koodisto-as-channel [config koodisto]
+  (let [host-virkailija (config :host-virkailija)
+        url (format koodisto-api host-virkailija koodisto)
         options {}
         response-mapper (comp #(into (sorted-map) %)
                               #(map transform-uri-to-arvo-format %)

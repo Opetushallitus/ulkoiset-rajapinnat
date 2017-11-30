@@ -2,7 +2,8 @@
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
-            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise post-form-as-promise status body body-and-close exception-response parse-json-body to-json]]
+            [full.async :refer :all]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel post-form-as-channel get-as-promise post-form-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
             [jsoup.soup :refer :all]))
@@ -21,9 +22,23 @@
                          :password password})
          read-action-attribute-from-cas-response))
 
+(defn tgt-request-channel
+  [host username password]
+  (post-form-as-channel (format tgt-api host)
+                        {:username username
+                         :password password}
+                        read-action-attribute-from-cas-response))
+
 (defn post-st-request
   [service host]
   (chain (post-form-as-promise host {:service service}) #(% :body)))
+
+(defn st-request-channel
+  [service host]
+  (post-form-as-channel host {:service service}
+                        (fn [r]
+                          (r :body)
+                          )))
 
 (defn fetch-service-ticket
   [host service username password]
@@ -32,17 +47,40 @@
                           (partial post-st-request absolute-service))]
     st-promise))
 
+(defn service-ticket-channel
+  [host service username password]
+  (go-try
+    (let [absolute-service (str host service "/j_spring_cas_security_check")
+          tgt (<? (tgt-request-channel host username password))
+          st (<? (st-request-channel absolute-service tgt))
+          ]
+      ;(prn st)
+      st
+      )))
+
 (defn parse-jsessionid [response]
   (nth (re-find #"JSESSIONID=(\w*);" ((response :headers) :set-cookie)) 1))
 
 (defn post-jsessionid-request
   [host service service-ticket]
   (get-as-promise (str host service)
-                  {:headers {"CasSecurityTicket" service-ticket}})
-)
+                  {:headers {"CasSecurityTicket" service-ticket}}))
+
+(defn jsessionid-channel
+  [host service service-ticket]
+  (get-as-channel (str host service)
+                  {:headers {"CasSecurityTicket" service-ticket}}
+                  parse-jsessionid))
 
 (defn fetch-jsessionid
   [host service username password]
   (let-flow [st (fetch-service-ticket host service username password)
              js (post-jsessionid-request host service st)]
             (parse-jsessionid js)))
+
+(defn fetch-jsessionid-channel
+  [host service username password]
+  (go-try
+    (let [st (<? (service-ticket-channel host service username password))
+          jid (<? (jsessionid-channel host service st))]
+      jid)))

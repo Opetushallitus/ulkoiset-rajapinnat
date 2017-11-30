@@ -3,16 +3,17 @@
             [clojure.string :as str]
             [clojure.core.async :refer :all]
             [clojure.tools.logging :as log]
+            [full.async :refer :all]
             [ulkoiset-rajapinnat.onr :refer :all]
             [ulkoiset-rajapinnat.utils.mongo :as m]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-for-oids]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
-            [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [ulkoiset-rajapinnat.utils.snippets :refer [remove-nils]]
             [org.httpkit.timer :refer :all])
   (:refer-clojure :rename {merge core-merge
-                           loop core-loop}))
+                           loop  core-loop}))
 
 (def size-of-henkilo-batch-from-onr-at-once 500)
 
@@ -32,19 +33,19 @@
   (let [hakutoiveet (get-in document ["answers" "hakutoiveet"])
         pref-keys (set (map first (.getValue preferences)))
         get-endswith #(get hakutoiveet (find-ends-with pref-keys %))]
-    {:hakukohde_oid (get-endswith "-Koulutus-id")
+    {:hakukohde_oid             (get-endswith "-Koulutus-id")
      :harkinnanvarainen_valinta (get-endswith "-discretionary-follow-up")
-     :sija (.getKey preferences)}))
+     :sija                      (.getKey preferences)}))
 
 (defn oppija-data-from-henkilo [henkilo-opt]
   (let [henkilo (if (nil? henkilo-opt) {} henkilo-opt)]
-    {:yksiloity (get henkilo "yksiloity")
-     :henkilotunnus (get henkilo "hetu")
-     :syntyma_aika (get henkilo "syntymaaika")
-     :etunimet (get henkilo "etunimet")
-     :sukunimi (get henkilo "sukunimi")
+    {:yksiloity       (get henkilo "yksiloity")
+     :henkilotunnus   (get henkilo "hetu")
+     :syntyma_aika    (get henkilo "syntymaaika")
+     :etunimet        (get henkilo "etunimet")
+     :sukunimi        (get henkilo "sukunimi")
      :sukupuoli_koodi (get henkilo "sukupuoli")
-     :aidinkieli (get henkilo "aidinkieli")}))
+     :aidinkieli      (get henkilo "aidinkieli")}))
 
 (defn hakutoiveet-from-hakemus [document]
   (let [pref-keys-by-sija (collect-preference-keys-by-sija document)]
@@ -52,8 +53,8 @@
 
 (defn henkilotiedot-from-hakemus [document]
   (let [henkilotiedot (get-in document ["answers" "henkilotiedot"])]
-    {:hakijan_asuinmaa (get henkilotiedot "asuinmaa")
-     :hakijan_kotikunta (get henkilotiedot "kotikunta")
+    {:hakijan_asuinmaa     (get henkilotiedot "asuinmaa")
+     :hakijan_kotikunta    (get henkilotiedot "kotikunta")
      :hakijan_kansalaisuus (get henkilotiedot "kansalaisuus")}))
 
 (defn koulutustausta-from-hakemus [pohjakoulutuskkodw document]
@@ -64,10 +65,10 @@
         pohjakoulutus_2aste (get koulutustausta "POHJAKOULUTUS")
         pohjakoulutus_kk (first (filter #(contains? koulutustausta %) pohjakoulutuskkodw))
         ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa (get koulutustausta "pohjakoulutus_ulk_suoritusmaa")]
-    {:hakijan_koulusivistyskieli (first koulusivistyskieli)
-     :pohjakoulutus_2aste pohjakoulutus_2aste
-     :pohjakoulutus_kk pohjakoulutus_kk
-     :lahtokoulun_organisaatio_oid lahtokoulun_organisaatio_oid
+    {:hakijan_koulusivistyskieli                                (first koulusivistyskieli)
+     :pohjakoulutus_2aste                                       pohjakoulutus_2aste
+     :pohjakoulutus_kk                                          pohjakoulutus_kk
+     :lahtokoulun_organisaatio_oid                              lahtokoulun_organisaatio_oid
      :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa}))
 
 (defn convert-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo document]
@@ -76,9 +77,9 @@
                (oppija-data-from-henkilo henkilo)
                (henkilotiedot-from-hakemus document)
                (koulutustausta-from-hakemus pohjakoulutuskkodw document)
-               {:hakemus_oid (get document "oid")
-                :henkilo_oid (get document "personOid")
-                :haku_oid (get document "applicationSystemId")
+               {:hakemus_oid  (get document "oid")
+                :henkilo_oid  (get document "personOid")
+                :haku_oid     (get document "applicationSystemId")
                 :hakemus_tila (get document "state")})]
     (if palauta-null-arvot?
       data
@@ -127,11 +128,10 @@
   (map #(get % "personOid") batch))
 
 (defn fetch-rest-of-the-missing-data
-  [config start-time counter is-first-written pohjakoulutuskkodw palauta-null-arvot? jsessionid-promise document-batch-channel channel close-channel]
+  [config start-time counter is-first-written pohjakoulutuskkodw palauta-null-arvot? jsessionid document-batch-channel channel close-channel]
   (go
     (let [[last-batch? batch] (<! document-batch-channel)
           batch-size (int (count batch))
-          jsessionid jsessionid-promise
           henkilo-oids (document-batch-to-henkilo-oid-list batch)
           henkilot-promise (fetch-henkilot-promise config jsessionid henkilo-oids)]
       (let-flow [henkilot henkilot-promise]
@@ -140,23 +140,23 @@
                     (doseq [hakemus batch]
                       (write-object-to-channel is-first-written (convert-hakemus pohjakoulutuskkodw palauta-null-arvot? (get henkilo-by-oid (get hakemus "personOid")) hakemus) channel))
 
-                  (swap! counter (partial + batch-size))
-                  (if last-batch?
-                    (do (close-channel)
-                        (log/info "Returned successfully {} 'hakemusta'! Took {}ms!" @counter (- (System/currentTimeMillis) start-time))
-                        (close! document-batch-channel))
-                    (do
-                      (log/debug "Waiting for next batch!")
-                      (fetch-rest-of-the-missing-data config
-                                                      start-time
-                                                      counter
-                                                      is-first-written
-                                                      pohjakoulutuskkodw
-                                                      palauta-null-arvot?
-                                                      jsessionid-promise
-                                                      document-batch-channel
-                                                      channel
-                                                      close-channel))))
+                    (swap! counter (partial + batch-size))
+                    (if last-batch?
+                      (do (close-channel)
+                          (log/info "Returned successfully {} 'hakemusta'! Took {}ms!" @counter (- (System/currentTimeMillis) start-time))
+                          (close! document-batch-channel))
+                      (do
+                        (log/debug "Waiting for next batch!")
+                        (fetch-rest-of-the-missing-data config
+                                                        start-time
+                                                        counter
+                                                        is-first-written
+                                                        pohjakoulutuskkodw
+                                                        palauta-null-arvot?
+                                                        jsessionid
+                                                        document-batch-channel
+                                                        channel
+                                                        close-channel))))
                   (catch Exception e
                     (log/error "Failed to write 'hakemukset'!" e)))))))
 
@@ -166,8 +166,10 @@
   (let [start-time (System/currentTimeMillis)
         counter (atom 0)
         host-virkailija (config :host-virkailija)
-        pohjakoulutuskkodw-promise (chain (fetch-koodisto host-virkailija "pohjakoulutuskkodw") #(vals %))
-        jsessionid-promise (fetch-onr-sessionid config)
+        pohjakoulutuskkodw-channel (koodisto-as-channel config "pohjakoulutuskkodw")
+        jsessionid-channel (onr-sessionid-channel config)
+        ;pohjakoulutuskkodw-promise (chain (fetch-koodisto host-virkailija "pohjakoulutuskkodw") #(vals %))
+        ;jsessionid-promise (fetch-onr-sessionid config)
         document-batch-channel (chan 1)
         document-batch (atom [])
         is-first-written (atom false)
@@ -199,27 +201,29 @@
                            (write-object-to-channel is-first-written {:error (.getMessage throwable)} channel)
                            (close-channel))]
 
-    (let-flow [pohjakoulutuskkodw pohjakoulutuskkodw-promise]
-              (fetch-rest-of-the-missing-data
-                      config
-                      start-time
-                      counter
-                      is-first-written
-                      pohjakoulutuskkodw
-                      palauta-null-arvot?
-                      jsessionid-promise
-                      document-batch-channel
-                      channel
-                      close-channel))
+    (go
+      (let [pohjakoulutuskkodw (<? pohjakoulutuskkodw-channel)
+            jsessionid (<? jsessionid-channel)]
+        (fetch-rest-of-the-missing-data
+          config
+          start-time
+          counter
+          is-first-written
+          pohjakoulutuskkodw
+          palauta-null-arvot?
+          jsessionid
+          document-batch-channel
+          channel
+          close-channel)))
 
     (.subscribe publisher
                 (m/subscribe (fn [s]
-                             (fn
-                               ([]
-                                (handle-complete))
-                               ([document]
-                                (handle-incoming-document s document))
-                               ([_ throwable]
+                               (fn
+                                 ([]
+                                  (handle-complete))
+                                 ([document]
+                                  (handle-incoming-document s document))
+                                 ([_ throwable]
                                   (handle-exception throwable))))))))
 
 (defn hakemus-resource [config mongo-client haku-oid palauta-null-arvot? request channel]

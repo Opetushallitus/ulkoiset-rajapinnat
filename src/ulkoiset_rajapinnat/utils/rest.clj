@@ -60,10 +60,20 @@
                         ))
      deferred)))
 
+(defn transform-response [optional-mapper response]
+  (if-let [f optional-mapper]
+    (try
+      (if-let [t (f response)]
+        t
+        (RuntimeException.
+          (format "Transformer returned nil for response (status = %s): Url = %s" (response :status) (get-in response [:opts :url]))))
+      (catch Exception e e))
+    response))
+
 (defn- call-as-channel [method url options mapper]
   (let [p (promise-chan)]
     (method url options #(do
-                           (put! p (if-let [f mapper] (f %) %))
+                           (put! p (transform-response mapper %))
                            (close! p)))
     p))
 
@@ -82,6 +92,9 @@
    (post-as-channel url body options nil))
   ([url body options mapper]
    (call-as-channel http/post url (merge-with into options {:body body}) mapper)))
+
+(defn post-form-as-channel [url form mapper]
+  (post-as-channel url nil {:form-params form} mapper))
 
 (defn status [channel status]
   (send! channel {:status status
