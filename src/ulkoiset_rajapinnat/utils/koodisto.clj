@@ -1,8 +1,9 @@
 (ns ulkoiset-rajapinnat.utils.koodisto
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
+            [clojure.core.async :as async]
             [clojure.tools.logging :as log]
-            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel get-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
 
@@ -25,3 +26,12 @@
 (defn fetch-koodisto [host-virkailija koodisto]
   (let [promise (get-as-promise (format koodisto-api host-virkailija koodisto))]
     (chain promise parse-json-body #(map transform-uri-to-arvo-format %) #(into (sorted-map) %))))
+
+(defn koodisto-as-promise [host-virkailija koodisto]
+  (let [url (format koodisto-api host-virkailija koodisto)
+        options {}
+        response-mapper (comp #(into (sorted-map) %)
+                              #(map transform-uri-to-arvo-format %)
+                              parse-json-body)
+        kc (get-as-channel url options response-mapper)]
+    kc))

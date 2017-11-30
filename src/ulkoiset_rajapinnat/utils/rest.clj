@@ -3,6 +3,8 @@
   (:require [manifold.deferred :as d]
             [org.httpkit.client :as http]
             [cheshire.core :refer :all]
+            [full.async :refer :all]
+            [clojure.core.async :refer [promise-chan >! go put! close!]]
             [clojure.tools.logging :as log]
             [org.httpkit.server :refer :all]))
 
@@ -57,6 +59,29 @@
                         (d/success! deferred resp)
                         ))
      deferred)))
+
+(defn- call-as-channel [method url options mapper]
+  (let [p (promise-chan)]
+    (method url options #(do
+                           (put! p (if-let [f mapper] (f %) %))
+                           (close! p)))
+    p))
+
+(defn get-as-channel
+  ([url]
+   (get-as-channel url {}))
+  ([url options]
+   (get-as-channel url options nil))
+  ([url options mapper]
+   (call-as-channel http/get url options mapper)))
+
+(defn post-as-channel
+  ([url body]
+   (post-as-channel url body {} nil))
+  ([url body options]
+   (post-as-channel url body options nil))
+  ([url body options mapper]
+   (call-as-channel http/post url (merge-with into options {:body body}) mapper)))
 
 (defn status [channel status]
   (send! channel {:status status
