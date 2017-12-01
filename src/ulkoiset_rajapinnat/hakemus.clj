@@ -147,16 +147,16 @@
                                 (close channel)))))]
     (go
       (try
-        (let [jsessionid (<? jsessionid-channel)
-              pohjakoulutuskkodw (<? pohjakoulutuskkodw-channel)]
+        (let [jsessionid (<<?? jsessionid-channel)
+              pohjakoulutuskkodw (<<?? pohjakoulutuskkodw-channel)]
         (doseq [batch (<<?? (m/publisher-as-channel publisher size-of-henkilo-batch-from-onr-at-once))]
           (let [henkilo-oids (document-batch-to-henkilo-oid-list batch)
-                henkilot (<? (fetch-henkilot-channel config jsessionid henkilo-oids))
+                henkilot (<? (fetch-henkilot-channel config (first jsessionid) henkilo-oids))
                 henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
             (doseq [hakemus batch]
               (write-object-to-channel
                 is-first-written
-                (convert-hakemus pohjakoulutuskkodw palauta-null-arvot? (get henkilo-by-oid (get hakemus "personOid")) hakemus)
+                (convert-hakemus (first pohjakoulutuskkodw) palauta-null-arvot? (get henkilo-by-oid (get hakemus "personOid")) hakemus)
                 channel)
               ))
           (let [bs (int (count batch))]
