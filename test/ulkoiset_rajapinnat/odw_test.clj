@@ -46,7 +46,7 @@
             status (-> response :status)
             body (-> (parse-json-body response))]
         (is (= status 200))
-        (def expected (parse-string (slurp "test/resources/result.json")))
+        (def expected (parse-string (slurp "test/resources/odw-result.json")))
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference )))))
 
