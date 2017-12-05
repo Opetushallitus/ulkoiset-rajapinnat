@@ -13,7 +13,7 @@
   hakijan_lopullinen_jonosija
   hakijan_jonosijan_tarkenne
   valinnan_tilan_lisatieto
-  hyvaksytty_ensikertalaisten_hakijaryhmasta
+  hyvaksytty_ensikertalaisten_hakijaryhmasta x
   hyvaksytty_harkinnanvaraisesti
   yhteispisteet
   alin_hyvaksytty_pistemaara
@@ -25,12 +25,17 @@
 (defn transform-hakutoive [hakutoive]
   (def valintatapajono (first (hakutoive "hakutoiveenValintatapajonot")))
 
-  {"hakukohde_oid"               (hakutoive "hakukohdeOid")
-   "valinnan_tila"               (valintatapajono "tila")
-   "valintatapajono"             (valintatapajono "valintatapajonoOid")
-   "hakijan_lopullinen_jonosija" (valintatapajono "jonosija")
-   "yhteispisteet"               (valintatapajono "pisteet")
-   "ilmoittautumisen_tila"       (valintatapajono "ilmoittautumisTila")})
+  {"hakukohde_oid"                  (hakutoive "hakukohdeOid")
+   "valinnan_tila"                  (valintatapajono "tila")
+   "valinnan_tilan_lisatieto"       ((valintatapajono "tilanKuvaukset") "FI")
+   "valintatapajono"                (valintatapajono "valintatapajonoOid")
+   "hakijan_lopullinen_jonosija"    (valintatapajono "jonosija")
+   "hakijan_jonosijan_tarkenne"     (valintatapajono "tasasijaJonosija")
+   "yhteispisteet"                  (valintatapajono "pisteet")
+   "ilmoittautumisen_tila"          (valintatapajono "ilmoittautumisTila")
+   "vastaanoton_tila"               (hakutoive "vastaanottotieto")
+   "alin_hyvaksytty_pistemaara"     (valintatapajono "alinHyvaksyttyPistemaara")
+   "hyvaksytty_harkinnanvaraisesti" (valintatapajono "hyvaksyttyHarkinnanvaraisesti")})
 
 (defn transform-vastaanotto [vastaanotto]
   {"henkilo_oid" (vastaanotto "hakijaOid")

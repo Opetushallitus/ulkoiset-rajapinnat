@@ -261,7 +261,7 @@
             "hakijaryhmatyyppikoodiUri": null,
             "hyvaksyttyHakijaryhmasta": false,
             "kiintio": 44,
-            "nimi": "Ensikertalaisten hakijaryhm\u00e4",
+            "nimi": "Ei-Ensikertalaisten hakijaryhm\u00e4",
             "oid": "1474449226623-2476795707963912977",
             "valintatapajonoOid": null
           }
@@ -338,7 +338,7 @@
         "hakijaryhmat": [
           {
             "hakijaryhmatyyppikoodiUri": null,
-            "hyvaksyttyHakijaryhmasta": false,
+            "hyvaksyttyHakijaryhmasta": true,
             "kiintio": 0,
             "nimi": "Ensikertalaisten hakijaryhm\u00e4",
             "oid": "1476774927206-724879754646158192",
