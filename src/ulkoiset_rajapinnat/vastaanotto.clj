@@ -7,7 +7,7 @@
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
 
-(def valinta-tulos-service-api "%s/valinta-tulos-service/haku/%s")
+(def valinta-tulos-service-api "%s/valinta-tulos-service/haku/streaming/%s/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true")
 
 (comment
   hakijan_lopullinen_jonosija
@@ -23,12 +23,14 @@
   urheilijan_lisapisteet)
 
 (defn transform-hakutoive [hakutoive]
+  (def valintatapajono (first (hakutoive "hakutoiveenValintatapajonot")))
+
   {"hakukohde_oid"               (hakutoive "hakukohdeOid")
-   "valinnan_tila"               (hakutoive "valintatila")
-   "valintatapajono"             (hakutoive "valintatapajonoOid")
-   "hakijan_lopullinen_jonosija" (hakutoive "jonosija")
-   "yhteispisteet"               (hakutoive "pisteet")
-   "ilmoittautumisen_tila"       (get-in hakutoive ["ilmoittautumistila" "ilmoittautumistila"])})
+   "valinnan_tila"               (valintatapajono "tila")
+   "valintatapajono"             (valintatapajono "valintatapajonoOid")
+   "hakijan_lopullinen_jonosija" (valintatapajono "jonosija")
+   "yhteispisteet"               (valintatapajono "pisteet")
+   "ilmoittautumisen_tila"       (valintatapajono "ilmoittautumisTila")})
 
 (defn transform-vastaanotto [vastaanotto]
   {"henkilo_oid" (vastaanotto "hakijaOid")
