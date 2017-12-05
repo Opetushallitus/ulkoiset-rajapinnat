@@ -1,0 +1,573 @@
+[
+  {
+    "etunimi": null,
+    "hakemusOid": "1.2.246.562.11.00007664779",
+    "hakijaOid": "1.2.246.562.24.22430847549",
+    "hakutoiveet": [
+      {
+        "ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet": null,
+        "hakijaryhmat": [
+          {
+            "hakijaryhmatyyppikoodiUri": null,
+            "hyvaksyttyHakijaryhmasta": false,
+            "kiintio": 0,
+            "nimi": "Ensikertalaisten hakijaryhm\u00e4",
+            "oid": "1476774927206-724879754646158192",
+            "valintatapajonoOid": null
+          }
+        ],
+        "hakukohdeOid": "1.2.246.562.20.72385087522",
+        "hakutoive": 1,
+        "hakutoiveenValintatapajonot": [
+          {
+            "alinHyvaksyttyPistemaara": 19.65,
+            "ehdollisenHyvaksymisenEhtoEN": null,
+            "ehdollisenHyvaksymisenEhtoFI": null,
+            "ehdollisenHyvaksymisenEhtoKoodi": null,
+            "ehdollisenHyvaksymisenEhtoSV": null,
+            "ehdollisestiHyvaksyttavissa": false,
+            "eiVarasijatayttoa": false,
+            "hakemuksenTilanViimeisinMuutos": 1506083761552,
+            "hakeneet": 613,
+            "hyvaksytty": 84,
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "hyvaksyttyVarasijalta": false,
+            "ilmoittautumisTila": "EI_TEHTY",
+            "jonosija": 104,
+            "julkaistavissa": true,
+            "paasyJaSoveltuvuusKokeenTulos": null,
+            "pisteet": 23.15,
+            "tasasijaJonosija": 1,
+            "tayttojono": null,
+            "tila": "HYVAKSYTTY",
+            "tilanKuvaukset": {},
+            "valintatapajonoNimi": "Koepisteet",
+            "valintatapajonoOid": "1476774926762-6272426481946884766",
+            "valintatapajonoPrioriteetti": 0,
+            "valintatuloksenViimeisinMuutos": null,
+            "varalla": null,
+            "varasijaTayttoPaivat": 0,
+            "varasijanNumero": null,
+            "varasijat": 0,
+            "varasijojaKaytetaanAlkaen": null,
+            "varasijojaTaytetaanAsti": null
+          }
+        ],
+        "kaikkiJonotSijoiteltu": true,
+        "pistetiedot": [
+          {
+            "arvo": "1",
+            "laskennallinenArvo": "0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_pakollinenosio",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "4.4",
+            "laskennallinenArvo": "4.4",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monivalinta",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "7.2",
+            "laskennallinenArvo": "7.2",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_matloog",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "7.11",
+            "laskennallinenArvo": "7.11",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_haastattelu",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "4.44",
+            "laskennallinenArvo": "4.44",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_essee",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": null,
+            "laskennallinenArvo": null,
+            "osallistuminen": "MERKITSEMATTA",
+            "tilastoidaan": null,
+            "tunniste": "1ae74f64-1fb0-4e7a-b47a-591c3ec496d9",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "1",
+            "laskennallinenArvo": "0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_pakollinenosio",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "4.4",
+            "laskennallinenArvo": "4.4",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monivalinta",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "7.2",
+            "laskennallinenArvo": "7.2",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_matloog",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "7.2",
+            "laskennallinenArvo": "7.2",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_matloog",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "7.11",
+            "laskennallinenArvo": "7.11",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_haastattelu",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "4.44",
+            "laskennallinenArvo": "4.44",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_essee",
+            "tyypinKoodiUri": null
+          }
+        ],
+        "tarjoajaOid": null,
+        "vastaanottotieto": "EI_VASTAANOTETTU_MAARA_AIKANA"
+      },
+      {
+        "ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet": null,
+        "hakijaryhmat": [
+          {
+            "hakijaryhmatyyppikoodiUri": null,
+            "hyvaksyttyHakijaryhmasta": false,
+            "kiintio": 0,
+            "nimi": "Ensikertalaisten hakijaryhm\u00e4",
+            "oid": "1476784379996-9146173987383205070",
+            "valintatapajonoOid": null
+          }
+        ],
+        "hakukohdeOid": "1.2.246.562.20.16902536479",
+        "hakutoive": 2,
+        "hakutoiveenValintatapajonot": [
+          {
+            "alinHyvaksyttyPistemaara": 38,
+            "ehdollisenHyvaksymisenEhtoEN": null,
+            "ehdollisenHyvaksymisenEhtoFI": null,
+            "ehdollisenHyvaksymisenEhtoKoodi": null,
+            "ehdollisenHyvaksymisenEhtoSV": null,
+            "ehdollisestiHyvaksyttavissa": false,
+            "eiVarasijatayttoa": false,
+            "hakemuksenTilanViimeisinMuutos": 1491994322475,
+            "hakeneet": 337,
+            "hyvaksytty": 10,
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "hyvaksyttyVarasijalta": false,
+            "ilmoittautumisTila": "EI_TEHTY",
+            "jonosija": 41,
+            "julkaistavissa": true,
+            "paasyJaSoveltuvuusKokeenTulos": null,
+            "pisteet": 55,
+            "tasasijaJonosija": 1,
+            "tayttojono": "1476784379542-5629659032565588749",
+            "tila": "PERUUNTUNUT",
+            "tilanKuvaukset": {
+              "EN": "Cancelled, accepted for a study place with higher priority",
+              "FI": "Peruuntunut, hyv\u00e4ksytty ylemm\u00e4lle hakutoiveelle",
+              "SV": "Annullerad, godk\u00e4nt till ans\u00f6kningsm\u00e5l med h\u00f6gre prioritet"
+            },
+            "valintatapajonoNimi": "Yhteispisteet",
+            "valintatapajonoOid": "1476784379529-748676204640952695",
+            "valintatapajonoPrioriteetti": 1,
+            "valintatuloksenViimeisinMuutos": null,
+            "varalla": null,
+            "varasijaTayttoPaivat": 0,
+            "varasijanNumero": null,
+            "varasijat": 0,
+            "varasijojaKaytetaanAlkaen": null,
+            "varasijojaTaytetaanAsti": null
+          }
+        ],
+        "kaikkiJonotSijoiteltu": true,
+        "pistetiedot": [
+          {
+            "arvo": "1",
+            "laskennallinenArvo": "0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monimuoto_pakollinenosio",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "55",
+            "laskennallinenArvo": "55",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monimuoto_koepisteet",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "1",
+            "laskennallinenArvo": "0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monimuoto_pakollinenosio",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "55",
+            "laskennallinenArvo": "55",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monimuoto_koepisteet",
+            "tyypinKoodiUri": null
+          }
+        ],
+        "tarjoajaOid": null,
+        "vastaanottotieto": "KESKEN"
+      }
+    ],
+    "sukunimi": null
+  },
+  {
+    "etunimi": null,
+    "hakemusOid": "1.2.246.562.11.00007664782",
+    "hakijaOid": "1.2.246.562.24.11097025100",
+    "hakutoiveet": [
+      {
+        "ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet": null,
+        "hakijaryhmat": [
+          {
+            "hakijaryhmatyyppikoodiUri": null,
+            "hyvaksyttyHakijaryhmasta": false,
+            "kiintio": 44,
+            "nimi": "Ensikertalaisten hakijaryhm\u00e4",
+            "oid": "1474449226623-2476795707963912977",
+            "valintatapajonoOid": null
+          }
+        ],
+        "hakukohdeOid": "1.2.246.562.20.760269451710",
+        "hakutoive": 1,
+        "hakutoiveenValintatapajonot": [
+          {
+            "alinHyvaksyttyPistemaara": 48.0,
+            "ehdollisenHyvaksymisenEhtoEN": null,
+            "ehdollisenHyvaksymisenEhtoFI": null,
+            "ehdollisenHyvaksymisenEhtoKoodi": null,
+            "ehdollisenHyvaksymisenEhtoSV": null,
+            "ehdollisestiHyvaksyttavissa": false,
+            "eiVarasijatayttoa": false,
+            "hakemuksenTilanViimeisinMuutos": 1506083760761,
+            "hakeneet": 270,
+            "hyvaksytty": 61,
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "hyvaksyttyVarasijalta": false,
+            "ilmoittautumisTila": "EI_TEHTY",
+            "jonosija": 211,
+            "julkaistavissa": false,
+            "paasyJaSoveltuvuusKokeenTulos": null,
+            "pisteet": null,
+            "tasasijaJonosija": 27,
+            "tayttojono": null,
+            "tila": "HYLATTY",
+            "tilanKuvaukset": {},
+            "valintatapajonoNimi": "Koepisteet",
+            "valintatapajonoOid": "1474449226093-3944635560658602913",
+            "valintatapajonoPrioriteetti": 1,
+            "valintatuloksenViimeisinMuutos": null,
+            "varalla": null,
+            "varasijaTayttoPaivat": 0,
+            "varasijanNumero": null,
+            "varasijat": 0,
+            "varasijojaKaytetaanAlkaen": null,
+            "varasijojaTaytetaanAsti": null
+          }
+        ],
+        "kaikkiJonotSijoiteltu": true,
+        "pistetiedot": [
+          {
+            "arvo": null,
+            "laskennallinenArvo": null,
+            "osallistuminen": "MERKITSEMATTA",
+            "tilastoidaan": null,
+            "tunniste": "Sote1_valintakoe",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": null,
+            "laskennallinenArvo": null,
+            "osallistuminen": "EI_VAADITA",
+            "tilastoidaan": null,
+            "tunniste": "Sote1_pakollinen_osio",
+            "tyypinKoodiUri": null
+          }
+        ],
+        "tarjoajaOid": null,
+        "vastaanottotieto": "KESKEN"
+      }
+    ],
+    "sukunimi": null
+  },
+  {
+    "etunimi": null,
+    "hakemusOid": "1.2.246.562.11.00007721463",
+    "hakijaOid": "1.2.246.562.24.78252877314",
+    "hakutoiveet": [
+      {
+        "ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet": null,
+        "hakijaryhmat": [
+          {
+            "hakijaryhmatyyppikoodiUri": null,
+            "hyvaksyttyHakijaryhmasta": false,
+            "kiintio": 0,
+            "nimi": "Ensikertalaisten hakijaryhm\u00e4",
+            "oid": "1476774927206-724879754646158192",
+            "valintatapajonoOid": null
+          }
+        ],
+        "hakukohdeOid": "1.2.246.562.20.72385087522",
+        "hakutoive": 1,
+        "hakutoiveenValintatapajonot": [
+          {
+            "alinHyvaksyttyPistemaara": 19.65,
+            "ehdollisenHyvaksymisenEhtoEN": null,
+            "ehdollisenHyvaksymisenEhtoFI": null,
+            "ehdollisenHyvaksymisenEhtoKoodi": null,
+            "ehdollisenHyvaksymisenEhtoSV": null,
+            "ehdollisestiHyvaksyttavissa": false,
+            "eiVarasijatayttoa": false,
+            "hakemuksenTilanViimeisinMuutos": 1506087749281,
+            "hakeneet": 613,
+            "hyvaksytty": 84,
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "hyvaksyttyVarasijalta": false,
+            "ilmoittautumisTila": "EI_TEHTY",
+            "jonosija": 122,
+            "julkaistavissa": true,
+            "paasyJaSoveltuvuusKokeenTulos": null,
+            "pisteet": 20.45,
+            "tasasijaJonosija": 1,
+            "tayttojono": null,
+            "tila": "HYVAKSYTTY",
+            "tilanKuvaukset": {},
+            "valintatapajonoNimi": "Koepisteet",
+            "valintatapajonoOid": "1476774926762-6272426481946884766",
+            "valintatapajonoPrioriteetti": 0,
+            "valintatuloksenViimeisinMuutos": 1506342376787,
+            "varalla": null,
+            "varasijaTayttoPaivat": 0,
+            "varasijanNumero": null,
+            "varasijat": 0,
+            "varasijojaKaytetaanAlkaen": null,
+            "varasijojaTaytetaanAsti": null
+          }
+        ],
+        "kaikkiJonotSijoiteltu": true,
+        "pistetiedot": [
+          {
+            "arvo": "1",
+            "laskennallinenArvo": "0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_pakollinenosio",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "2.0",
+            "laskennallinenArvo": "2.0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monivalinta",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "4.0",
+            "laskennallinenArvo": "4.0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_matloog",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "8.89",
+            "laskennallinenArvo": "8.89",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_haastattelu",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "5.56",
+            "laskennallinenArvo": "5.56",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_essee",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": null,
+            "laskennallinenArvo": null,
+            "osallistuminen": "MERKITSEMATTA",
+            "tilastoidaan": null,
+            "tunniste": "1ae74f64-1fb0-4e7a-b47a-591c3ec496d9",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "1",
+            "laskennallinenArvo": "0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_pakollinenosio",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "2.0",
+            "laskennallinenArvo": "2.0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monivalinta",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "4.0",
+            "laskennallinenArvo": "4.0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_matloog",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "8.89",
+            "laskennallinenArvo": "8.89",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_haastattelu",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "5.56",
+            "laskennallinenArvo": "5.56",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_essee",
+            "tyypinKoodiUri": null
+          }
+        ],
+        "tarjoajaOid": null,
+        "vastaanottotieto": "VASTAANOTTANUT_SITOVASTI"
+      },
+      {
+        "ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet": null,
+        "hakijaryhmat": [
+          {
+            "hakijaryhmatyyppikoodiUri": null,
+            "hyvaksyttyHakijaryhmasta": false,
+            "kiintio": 0,
+            "nimi": "Ensikertalaisten hakijaryhm\u00e4",
+            "oid": "1476784379996-9146173987383205070",
+            "valintatapajonoOid": null
+          }
+        ],
+        "hakukohdeOid": "1.2.246.562.20.16902536479",
+        "hakutoive": 2,
+        "hakutoiveenValintatapajonot": [
+          {
+            "alinHyvaksyttyPistemaara": 38,
+            "ehdollisenHyvaksymisenEhtoEN": null,
+            "ehdollisenHyvaksymisenEhtoFI": null,
+            "ehdollisenHyvaksymisenEhtoKoodi": null,
+            "ehdollisenHyvaksymisenEhtoSV": null,
+            "ehdollisestiHyvaksyttavissa": false,
+            "eiVarasijatayttoa": false,
+            "hakemuksenTilanViimeisinMuutos": 1495028415842,
+            "hakeneet": 337,
+            "hyvaksytty": 10,
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "hyvaksyttyVarasijalta": false,
+            "ilmoittautumisTila": "EI_TEHTY",
+            "jonosija": 16,
+            "julkaistavissa": true,
+            "paasyJaSoveltuvuusKokeenTulos": null,
+            "pisteet": 67,
+            "tasasijaJonosija": 1,
+            "tayttojono": "1476784379542-5629659032565588749",
+            "tila": "PERUUNTUNUT",
+            "tilanKuvaukset": {
+              "EN": "Cancelled, accepted another higher education study place",
+              "FI": "Peruuntunut, vastaanottanut toisen korkeakoulupaikan",
+              "SV": "Annullerad, tagit emot en annan h\u00f6gskoleplats"
+            },
+            "valintatapajonoNimi": "Yhteispisteet",
+            "valintatapajonoOid": "1476784379529-748676204640952695",
+            "valintatapajonoPrioriteetti": 1,
+            "valintatuloksenViimeisinMuutos": null,
+            "varalla": null,
+            "varasijaTayttoPaivat": 0,
+            "varasijanNumero": null,
+            "varasijat": 0,
+            "varasijojaKaytetaanAlkaen": null,
+            "varasijojaTaytetaanAsti": null
+          }
+        ],
+        "kaikkiJonotSijoiteltu": true,
+        "pistetiedot": [
+          {
+            "arvo": "1",
+            "laskennallinenArvo": "0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monimuoto_pakollinenosio",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "49",
+            "laskennallinenArvo": "49",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monimuoto_koepisteet",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "1",
+            "laskennallinenArvo": "0",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monimuoto_pakollinenosio",
+            "tyypinKoodiUri": null
+          },
+          {
+            "arvo": "49",
+            "laskennallinenArvo": "49",
+            "osallistuminen": "OSALLISTUI",
+            "tilastoidaan": null,
+            "tunniste": "IB_monimuoto_koepisteet",
+            "tyypinKoodiUri": null
+          }
+        ],
+        "tarjoajaOid": null,
+        "vastaanottotieto": "KESKEN"
+      }
+    ],
+    "sukunimi": null
+  }
+]

@@ -1,66 +1,55 @@
 [
   {
-    "henkilo_oid":"1.2.246.562.24.43306726139",
+    "henkilo_oid":"1.2.246.562.24.22430847549",
     "hakutoiveet":[
       {
-        "hakukohde_oid":"1.2.246.562.20.573444383210",
-        "valinnan_tila":"KESKEN",
-        "valintatapajono":"123456",
-        "hakijan_lopullinen_jonosija":1,
-        "yhteispisteet":12,
-        "ilmoittautumisen_tila":"EI_TEHTY"
-      }
-    ]
-  },
-  {
-    "henkilo_oid":"1.2.246.562.24.88815636131",
-    "hakutoiveet":[
-      {
-        "hakukohde_oid":"1.2.246.562.20.42457490524",
-        "valinnan_tila":"VARALLA",
-        "valintatapajono":"12246562204245749052433955986782",
-        "hakijan_lopullinen_jonosija":2,
-        "yhteispisteet":13,
-        "ilmoittautumisen_tila":"EI_TEHTY"
-      }
-    ]
-  },
-  {
-    "henkilo_oid":"1.2.246.562.24.59275070845",
-    "hakutoiveet":[
-      {
-        "hakukohde_oid":"1.2.246.562.20.93223231619",
-        "valinnan_tila":"KESKEN",
-        "valintatapajono":"1478709339127-1990519119944863207",
-        "hakijan_lopullinen_jonosija":null,
-        "yhteispisteet":null,
-        "ilmoittautumisen_tila":"EI_TEHTY"
-      }
-    ]
-  },
-  {
-    "henkilo_oid":"1.2.246.562.24.20314568726",
-    "hakutoiveet": [
-      {
-        "hakukohde_oid":"1.2.246.562.20.573444383210",
+        "hakukohde_oid":"1.2.246.562.20.72385087522",
         "valinnan_tila":"HYVAKSYTTY",
-        "valintatapajono":"12246562205734443832103395598678",
-        "hakijan_lopullinen_jonosija":null,
+        "valintatapajono":"1476774926762-6272426481946884766",
+        "hakijan_lopullinen_jonosija":104,
+        "yhteispisteet":23.15,
+        "ilmoittautumisen_tila":"EI_TEHTY"
+      },
+      {
+        "hakukohde_oid":"1.2.246.562.20.16902536479",
+        "valinnan_tila":"PERUUNTUNUT",
+        "valintatapajono":"1476784379529-748676204640952695",
+        "hakijan_lopullinen_jonosija":41,
+        "yhteispisteet":55,
+        "ilmoittautumisen_tila":"EI_TEHTY"
+      }
+    ]
+  },
+  {
+    "henkilo_oid":"1.2.246.562.24.11097025100",
+    "hakutoiveet":[
+      {
+        "hakukohde_oid":"1.2.246.562.20.760269451710",
+        "valinnan_tila":"HYLATTY",
+        "valintatapajono":"1474449226093-3944635560658602913",
+        "hakijan_lopullinen_jonosija":211,
         "yhteispisteet":null,
         "ilmoittautumisen_tila":"EI_TEHTY"
       }
     ]
   },
   {
-    "henkilo_oid":"1.2.246.562.24.11017139555",
-    "hakutoiveet":
-    [
+    "henkilo_oid":"1.2.246.562.24.78252877314",
+    "hakutoiveet":[
       {
-        "hakukohde_oid":"1.2.246.562.20.42457490524",
+        "hakukohde_oid":"1.2.246.562.20.72385087522",
         "valinnan_tila":"HYVAKSYTTY",
-        "valintatapajono":"12246562204245749052433955986782",
-        "hakijan_lopullinen_jonosija":null,
-        "yhteispisteet":null,
+        "valintatapajono":"1476774926762-6272426481946884766",
+        "hakijan_lopullinen_jonosija":122,
+        "yhteispisteet":20.45,
+        "ilmoittautumisen_tila":"EI_TEHTY"
+      },
+      {
+        "hakukohde_oid":"1.2.246.562.20.16902536479",
+        "valinnan_tila":"PERUUNTUNUT",
+        "valintatapajono":"1476784379529-748676204640952695",
+        "hakijan_lopullinen_jonosija":16,
+        "yhteispisteet":67,
         "ilmoittautumisen_tila":"EI_TEHTY"
       }
     ]

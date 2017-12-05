@@ -12,15 +12,15 @@
 
 (use-fixtures :once fixture)
 
-(def vastaanotot-json (slurp "test/resources/haku.json"))
+(def vastaanotot-json (slurp "test/resources/streaming.json"))
 
 (defn mock-endpoints [url]
   (log/info url)
   (case url
-    "http://fake.virkailija.opintopolku.fi/valinta-tulos-service/haku/1.2.246.562.29.25191045126" (d/future {:status 200 :body vastaanotot-json })
+    "http://fake.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (d/future {:status 200 :body vastaanotot-json })
     (d/future {:status 404 :body "[]"})))
 
-(deftest odw-api-test
+(deftest vastaanotto-api-test
   (testing "Fetch vastaanotot"
     (with-redefs [get-as-promise (fn [url] (mock-endpoints url))]
       (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126"))
@@ -28,9 +28,8 @@
             body (-> (parse-json-body response))]
         (is (= status 200))
         (print (to-json body))
-        ;(def expected (parse-string (slurp "test/resources/result.json")))
-        ;(def difference (diff expected body))
-        ;(is (= [nil nil expected] difference) difference )
-        ))))
+        (def expected (parse-string (slurp "test/resources/vastaanotto-result.json")))
+        (def difference (diff expected body))
+        (is (= [nil nil expected] difference) difference )))))
 
 (run-tests)
