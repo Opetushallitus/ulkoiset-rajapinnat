@@ -8,7 +8,7 @@
         "ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet": null,
         "hakijaryhmat": [
           {
-            "hakijaryhmatyyppikoodiUri": null,
+            "hakijaryhmatyyppikoodiUri": "hakijaryhmantyypit_ensikertalaiset",
             "hyvaksyttyHakijaryhmasta": false,
             "kiintio": 0,
             "nimi": "Ensikertalaisten hakijaryhm\u00e4",
@@ -337,7 +337,7 @@
         "ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet": null,
         "hakijaryhmat": [
           {
-            "hakijaryhmatyyppikoodiUri": null,
+            "hakijaryhmatyyppikoodiUri": "hakijaryhmantyypit_ensikertalaiset",
             "hyvaksyttyHakijaryhmasta": true,
             "kiintio": 0,
             "nimi": "Ensikertalaisten hakijaryhm\u00e4",

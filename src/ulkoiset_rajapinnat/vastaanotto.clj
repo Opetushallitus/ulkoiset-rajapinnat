@@ -22,6 +22,12 @@
   osallistui_kielikokeeseen
   urheilijan_lisapisteet)
 
+(defn transform-hyvaksytty-ensikertalaisten-hakijaryhmasta [hakijaryhmat]
+  (def ensikertalaisen_hakijaryhma (first (filter #(= (% "hakijaryhmatyyppikoodiUri") "hakijaryhmantyypit_ensikertalaiset") hakijaryhmat)))
+  (if (nil? ensikertalaisen_hakijaryhma)
+    nil
+    (ensikertalaisen_hakijaryhma "hyvaksyttyHakijaryhmasta")))
+
 (defn transform-hakutoive [hakutoive]
   (def valintatapajono (first (hakutoive "hakutoiveenValintatapajonot")))
 
@@ -35,7 +41,8 @@
    "ilmoittautumisen_tila"          (valintatapajono "ilmoittautumisTila")
    "vastaanoton_tila"               (hakutoive "vastaanottotieto")
    "alin_hyvaksytty_pistemaara"     (valintatapajono "alinHyvaksyttyPistemaara")
-   "hyvaksytty_harkinnanvaraisesti" (valintatapajono "hyvaksyttyHarkinnanvaraisesti")})
+   "hyvaksytty_harkinnanvaraisesti" (valintatapajono "hyvaksyttyHarkinnanvaraisesti")
+   "hyvaksytty_ensikertalaisten_hakijaryhmasta" (transform-hyvaksytty-ensikertalaisten-hakijaryhmasta (hakutoive "hakijaryhmat"))})
 
 (defn transform-vastaanotto [vastaanotto]
   {"henkilo_oid" (vastaanotto "hakijaOid")

@@ -13,7 +13,8 @@
         "ilmoittautumisen_tila":"EI_TEHTY",
         "vastaanoton_tila":"EI_VASTAANOTETTU_MAARA_AIKANA",
         "alin_hyvaksytty_pistemaara":19.65,
-        "hyvaksytty_harkinnanvaraisesti":false
+        "hyvaksytty_harkinnanvaraisesti":false,
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta":false
       },
       {
         "hakukohde_oid":"1.2.246.562.20.16902536479",
@@ -26,7 +27,8 @@
         "ilmoittautumisen_tila":"EI_TEHTY",
         "vastaanoton_tila":"KESKEN",
         "alin_hyvaksytty_pistemaara":38,
-        "hyvaksytty_harkinnanvaraisesti":false
+        "hyvaksytty_harkinnanvaraisesti":false,
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta":null
       }
     ]
   },
@@ -44,7 +46,8 @@
         "ilmoittautumisen_tila":"EI_TEHTY",
         "vastaanoton_tila":"KESKEN",
         "alin_hyvaksytty_pistemaara":48.0,
-        "hyvaksytty_harkinnanvaraisesti":false
+        "hyvaksytty_harkinnanvaraisesti":false,
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta":null
       }
     ]
   },
@@ -62,7 +65,8 @@
         "ilmoittautumisen_tila":"EI_TEHTY",
         "vastaanoton_tila":"VASTAANOTTANUT_SITOVASTI",
         "alin_hyvaksytty_pistemaara":19.65,
-        "hyvaksytty_harkinnanvaraisesti":false
+        "hyvaksytty_harkinnanvaraisesti":false,
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta":true
       },
       {
         "hakukohde_oid":"1.2.246.562.20.16902536479",
@@ -75,7 +79,8 @@
         "ilmoittautumisen_tila":"EI_TEHTY",
         "vastaanoton_tila":"KESKEN",
         "alin_hyvaksytty_pistemaara":38,
-        "hyvaksytty_harkinnanvaraisesti":false
+        "hyvaksytty_harkinnanvaraisesti":false,
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta":null
       }
     ]
   }
