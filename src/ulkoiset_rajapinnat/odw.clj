@@ -1,5 +1,5 @@
 (ns ulkoiset-rajapinnat.odw
-  (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-request status body-and-close body to-json get-as-promise parse-json-body exception-response post-as-promise]]
+  (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-request status body-and-close body to-json get-as-promise parse-json-body exception-response post-json-with-cas]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
@@ -12,21 +12,6 @@
 (def hakijaryhmat-api "%s/valintaperusteet-service/resources/hakukohde/hakijaryhmat")
 (def valintaryhmat-api "%s/valintaperusteet-service/resources/hakukohde/valintaryhmat")
 (def syotettavat-arvot-api "%s/valintaperusteet-service/resources/hakukohde/avaimet")
-
-(defn handle-response [url response]
-  (log/info (str url " " (response :status)))
-  (case (response :status)
-    200 (parse-json-body response)
-    404 nil
-    (throw (RuntimeException. (str "Calling " url " failed: status=" (response :status) ", msg=" (response :body))))))
-
-(defn post-with-url [session-id url body]
-  (let [promise (post-as-promise url session-id body)]
-    (log/info (str url "(JSESSIONID=" session-id ")"))
-    (chain promise #(handle-response url %))))
-
-(defn post [host session-id url-template body]
-  (post-with-url session-id (format url-template host) body))
 
 (defn find-first-matching [match-key match-value collection]
   (first (filter #(= match-value (get % match-key)) collection)))
@@ -60,7 +45,7 @@
         username (config :ulkoiset-rajapinnat-cas-username)
         password (config :ulkoiset-rajapinnat-cas-password)]
     (-> (let-flow [session-id (fetch-jsessionid host "/valintaperusteet-service" username password)
-                   post-with-session-id (partial post host session-id)
+                   post-with-session-id (partial post-json-with-cas host session-id)
                    hakukohteet (post-with-session-id hakukohteet-api (parse-json-request request))
                    hakukohde-oidit (map #(get % "oid") hakukohteet)
                    valinnanvaiheet (post-with-session-id valinnanvaiheet-api hakukohde-oidit)

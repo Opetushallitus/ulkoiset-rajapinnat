@@ -44,12 +44,6 @@
   ([url data]
     (post-json-as-promise url data {})))
 
-(defn post-as-promise [url session-id body]
-  (let [deferred (d/deferred)]
-    (http/post url {:headers {"Content-Type" mime-application-json, "Cookie" (str "JSESSIONID=" session-id )} :body (to-json body)} (fn [resp]
-      (d/success! deferred resp)))
-    deferred))
-
 (defn get-as-promise
   ([url]
    (get-as-promise url {}))
@@ -117,3 +111,18 @@
           (status 500)
           (body "{\"error\":\"\"}")
           (close)))))
+
+(defn handle-json-response [url response]
+  (log/info (str url " " (response :status)))
+  (case (response :status)
+    200 (parse-json-body response)
+    404 nil
+    (throw (RuntimeException. (str "Calling " url " failed: status=" (response :status) ", msg=" (response :body))))))
+
+(defn post-json-with-cas
+  ([url session-id body]
+    (let [promise (post-json-as-promise url body {:headers {"Cookie" (str "JSESSIONID=" session-id)}})]
+      (log/info (str url "(JSESSIONID=" session-id ")"))
+      (d/chain promise #(handle-json-response url %))))
+  ([host session-id url-template body]
+    (post-json-with-cas (format url-template host) session-id body)))

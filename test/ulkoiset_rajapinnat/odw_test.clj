@@ -6,7 +6,7 @@
             [clj-log4j2.core :as log]
             [clj-http.client :as client]
             [cheshire.core :refer [parse-string]]
-            [ulkoiset-rajapinnat.utils.rest :refer [post-as-promise parse-json-body]]
+            [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-promise parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
             [ulkoiset-rajapinnat.fixture :refer :all]))
 
@@ -19,7 +19,7 @@
 (def valintaryhmat-json (slurp "test/resources/valintaryhmat.json"))
 (def avaimet-json (slurp "test/resources/avaimet.json"))
 
-(defn mock-endpoints [url options]
+(defn mock-endpoints [url data options]
   (log/info options)
   (case url
     "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/hakukohteet" (d/future {:status 200 :body hakukohteet-json })
@@ -32,7 +32,7 @@
 
 (deftest odw-api-test
   (testing "Odw -> hakukohde not found"
-    (with-redefs [post-as-promise (fn [a b c] (d/future {:status 404 :body "[]"}))
+    (with-redefs [post-json-as-promise (fn [a b c] (d/future {:status 404 :body "[]"}))
                   fetch-jsessionid (fn [a b c d] (str "FAKEJSESSIONID"))]
       (let [response (client/post (api-call "/api/odw/hakukohde") {:body "[\"1.2.3.444\"]" :content-type :json})
             status (-> response :status)
@@ -40,7 +40,7 @@
         (is (= status 200))
         (is (= body "[]")))))
   (testing "Odw -> hakukohteet found"
-    (with-redefs [post-as-promise (fn [a b c] (mock-endpoints a {:headers {"Cookie" b} :body c}))
+    (with-redefs [post-json-as-promise (fn [url data options] (mock-endpoints url data options))
                   fetch-jsessionid (fn [a b c d] (str "FAKEJSESSIONID"))]
       (let [response (client/post (api-call "/api/odw/hakukohde") {:body "[\"1.2.246.562.20.16152550832\", \"1.2.246.562.20.96011436637\", \"1.2.246.562.20.76494006901\", \"1.2.246.562.20.18496942519\"]" :content-type :json})
             status (-> response :status)
