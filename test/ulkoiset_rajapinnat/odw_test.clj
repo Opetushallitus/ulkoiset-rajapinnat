@@ -48,6 +48,6 @@
         (is (= status 200))
         (def expected (parse-string (slurp "test/resources/odw-result.json")))
         (def difference (diff expected body))
-        (is (= [nil nil expected] difference) difference )))))
+        (is (= [nil nil expected] difference) difference)))))
 
 (run-tests)

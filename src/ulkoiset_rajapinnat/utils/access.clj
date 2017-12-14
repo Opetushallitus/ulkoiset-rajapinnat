@@ -4,6 +4,7 @@
             [clj-time.core :as t]
             [ulkoiset-rajapinnat.utils.rest :refer [to-json]]
             [clojure.tools.logging.impl :as impl]
+            [ring.util.http-response :refer :all]
             [org.httpkit.server :refer :all]))
 
 (def ^{:private true} logger (impl/get-logger (impl/find-factory) "ACCESS"))
@@ -60,13 +61,15 @@
       (do-logging start-time (response :status) request)
       response)))
 
-(defn access-log-with-channel [operation]
+(defn access-log-with-ticket-check-with-channel [ticket operation]
   (fn [request]
-    (let [start-time (System/currentTimeMillis)]
-      (with-channel request channel
+    (if-let [some-ticket ticket]
+      (let [start-time (System/currentTimeMillis)]
+        (with-channel request channel
                     (on-close channel (fn [status] (do-logging start-time
                                                                (case status
                                                                  :server-close "200"
                                                                  "Closed by client!")
                                                                request)))
-                    (operation request channel)))))
+                    (operation request channel)))
+      (access-log (bad-request! "Ticket parameter required!")))))

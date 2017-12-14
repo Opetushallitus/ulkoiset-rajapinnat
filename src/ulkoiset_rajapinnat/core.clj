@@ -5,7 +5,7 @@
         [compojure.api.sweet :refer :all]
         [ring.util.http-response :refer :all]
         [ulkoiset-rajapinnat.utils.mongo :refer [create-mongo-client]]
-        [ulkoiset-rajapinnat.utils.access :refer [access-log access-log-with-channel]]
+        [ulkoiset-rajapinnat.utils.access :refer [access-log access-log-with-ticket-check-with-channel]]
         [ulkoiset-rajapinnat.utils.runtime :refer [shutdown-hook]]
         [ulkoiset-rajapinnat.oppija :refer [oppija-resource]]
         [ulkoiset-rajapinnat.haku :refer [haku-resource]]
@@ -32,24 +32,36 @@
       (GET "/healthcheck" []
         :summary "Health check API"
         (access-log (ok "OK")))
-      (GET "/haku-for-year/:vuosi" [vuosi]
+      (GET "/haku-for-year/:vuosi" [vuosi ticket]
         :summary "Haut vuodella"
-        (access-log-with-channel (partial haku-resource config vuosi)))
-      (GET "/hakukohde-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot]
+        (access-log-with-ticket-check-with-channel
+          ticket
+          (partial haku-resource config vuosi)))
+      (GET "/hakukohde-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot ticket]
         :summary "Hakukohteet haku OID:lla"
-        (access-log-with-channel (partial hakukohde-resource config haku-oid palauta-null-arvot)))
-      (GET "/oppija-for-haku/:haku-oid" [haku-oid kausi]
+        (access-log-with-ticket-check-with-channel
+          ticket
+          (partial hakukohde-resource config haku-oid palauta-null-arvot)))
+      (GET "/oppija-for-haku/:haku-oid" [haku-oid kausi ticket]
         :summary "Oppijat haku OID:lla"
-        (access-log-with-channel (partial oppija-resource config haku-oid)))
-      (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi] ; hakuoid + kaudet
+        (access-log-with-ticket-check-with-channel
+          ticket
+          (partial oppija-resource config haku-oid)))
+      (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi ticket] ; hakuoid + kaudet
         :summary "Vastaanotot haku OID:lla"
-        (access-log-with-channel (partial vastaanotto-resource config haku-oid)))
-      (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot] ; hakuoid + kaudet
+        (access-log-with-ticket-check-with-channel
+          ticket
+          (partial vastaanotto-resource config haku-oid)))
+      (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot ticket] ; hakuoid + kaudet
         :summary "Hakemukset haku OID:lla"
-        (access-log-with-channel (partial hakemus-resource config hakuapp-mongo-client haku-oid palauta-null-arvot)))
-      (POST "/odw/hakukohde" []
+        (access-log-with-ticket-check-with-channel
+          ticket
+          (partial hakemus-resource config hakuapp-mongo-client haku-oid palauta-null-arvot)))
+      (POST "/odw/hakukohde" [ticket]
         :summary "ODW-rajapinta"
-        (access-log-with-channel (partial odw-resource config))))
+        (access-log-with-ticket-check-with-channel
+          ticket
+          (partial odw-resource config))))
     (ANY "/*" []
       :responses {404 String}
       :summary "Not found page"
