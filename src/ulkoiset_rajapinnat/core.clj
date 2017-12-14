@@ -35,32 +35,32 @@
       (GET "/haku-for-year/:vuosi" [vuosi ticket]
         :summary "Haut vuodella"
         (access-log-with-ticket-check-with-channel
-          ticket
+          config ticket
           (partial haku-resource config vuosi)))
       (GET "/hakukohde-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot ticket]
         :summary "Hakukohteet haku OID:lla"
         (access-log-with-ticket-check-with-channel
-          ticket
+          config ticket
           (partial hakukohde-resource config haku-oid palauta-null-arvot)))
       (GET "/oppija-for-haku/:haku-oid" [haku-oid kausi ticket]
         :summary "Oppijat haku OID:lla"
         (access-log-with-ticket-check-with-channel
-          ticket
+          config ticket
           (partial oppija-resource config haku-oid)))
       (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi ticket] ; hakuoid + kaudet
         :summary "Vastaanotot haku OID:lla"
         (access-log-with-ticket-check-with-channel
-          ticket
+          config ticket
           (partial vastaanotto-resource config haku-oid)))
       (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot ticket] ; hakuoid + kaudet
         :summary "Hakemukset haku OID:lla"
         (access-log-with-ticket-check-with-channel
-          ticket
+          config ticket
           (partial hakemus-resource config hakuapp-mongo-client haku-oid palauta-null-arvot)))
       (POST "/odw/hakukohde" [ticket]
         :summary "ODW-rajapinta"
         (access-log-with-ticket-check-with-channel
-          ticket
+          config ticket
           (partial odw-resource config))))
     (ANY "/*" []
       :responses {404 String}

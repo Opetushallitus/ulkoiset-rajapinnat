@@ -6,5 +6,10 @@
  :oppijanumerorekisteri-host-virkailija "https://{{host_virkailija}}"
  :vastaanotto-host-virkailija "{{host_alb}}"
  :hakuapp-mongo {:uri "mongodb://{{mongodb_hakemus_auth}}@{{mongodb_hakemus_host}}/hakulomake"}
+ :ldap {:host "{{host_ldap}}"
+        :port 389
+        :password "{{ldap_manager_password}}"
+        :binddn "{{ldap_manager_userdn}}"
+        :basedn "ou=People,dc=opintopolku,dc=fi"}
  :server {:port {{palvelu_portti}}
           :base-url "/ulkoiset-rajapinnat"}}

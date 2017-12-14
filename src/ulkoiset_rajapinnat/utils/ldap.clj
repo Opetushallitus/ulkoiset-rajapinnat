@@ -1,5 +1,6 @@
 (ns ulkoiset-rajapinnat.utils.ldap
-  (:require [clojure.string :as str])
+  (:require [clojure.string :as str]
+            [cheshire.core :refer [parse-string]])
   (:import (com.unboundid.ldap.sdk LDAPConnection SearchRequest SearchScope Filter)))
 
 (defn fetch-user-from-ldap [config username]
@@ -23,7 +24,7 @@
                       (.iterator)
                       (.next))]
         {:username username
-         :roles (.getValue (.getAttribute entry "description"))
+         :roles (set (parse-string (.getValue (.getAttribute entry "description"))))
          :personOid (.getValue (.getAttribute entry "employeeNumber"))})
       (finally (.close connection)))))
 
