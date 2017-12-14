@@ -2,6 +2,7 @@
  :ulkoiset-rajapinnat-cas-username "{{valintalaskentakoostepalvelu_app_username_to_haku}}"
  :ulkoiset-rajapinnat-cas-password "{{valintalaskentakoostepalvelu_app_password_to_haku}}"
  :suoritusrekisteri-host-virkailija "{{host_alb}}"
+ :ataru-host-virkailija "{{host_alb}}"
  :organisaatio-host-virkailija "https://{{host_virkailija}}"
  :oppijanumerorekisteri-host-virkailija "https://{{host_virkailija}}"
  :vastaanotto-host-virkailija "{{host_alb}}"

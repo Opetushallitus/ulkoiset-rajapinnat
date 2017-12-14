@@ -9,11 +9,15 @@
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
+            [ulkoiset-rajapinnat.utils.ataru :refer [fetch-hakemukset-from-ataru]]
             [ulkoiset-rajapinnat.utils.snippets :refer [remove-nils]]
             [org.httpkit.timer :refer :all]
             [clojure.core.async.impl.protocols :as impl])
   (:refer-clojure :rename {merge core-merge
                            loop  core-loop}))
+
+(comment
+  TODO fetch ataru hakemukset (fetch-hakemukset-from-ataru config "1.2.246.562.29.68110837611"))
 
 (def size-of-henkilo-batch-from-onr-at-once 500)
 

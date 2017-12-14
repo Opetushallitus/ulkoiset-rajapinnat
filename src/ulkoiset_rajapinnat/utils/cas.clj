@@ -52,19 +52,24 @@
     st-promise))
 
 (defn service-ticket-channel
-  [host service username password]
-  (go-try
-    (let [absolute-service (str host service "/j_spring_cas_security_check")
-          tgt (<? (tgt-request-channel host username password))
-          st (<? (st-request-channel absolute-service tgt))
-          ]
-      st
-      )))
+  ([host service username password as-absolute-service?]
+   (go-try
+     (let [absolute-service (if as-absolute-service?
+                              (str host service)
+                              (str host service "/j_spring_cas_security_check"))
+           tgt (<? (tgt-request-channel host username password))
+           st (<? (st-request-channel absolute-service tgt))]
+       st)))
+  ([host service username password]
+   (service-ticket-channel host service username password false)))
 
-(defn parse-jsessionid [response]
-  (if-let [sid (nth (re-find #"JSESSIONID=(\w*);" ((response :headers) :set-cookie)) 1)]
+(defn parse-jsessionid
+  ([response]
+    (parse-jsessionid response #"JSESSIONID=(\w*);"))
+  ([response regex]
+  (if-let [sid (first (re-find regex ((response :headers) :set-cookie)))]
     sid
-    (RuntimeException. (format "Unable to parse JSESSIONID! Uri = %s" (get-in response [:opts :url])))))
+    (RuntimeException. (format "Unable to parse session ID! Uri = %s" (get-in response [:opts :url]))))))
 
 (defn post-jsessionid-request
   [host service service-ticket]
