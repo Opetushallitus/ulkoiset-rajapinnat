@@ -5,7 +5,7 @@
         [compojure.api.sweet :refer :all]
         [ring.util.http-response :refer :all]
         [ulkoiset-rajapinnat.utils.mongo :refer [create-mongo-client]]
-        [ulkoiset-rajapinnat.utils.access :refer [access-log access-log-with-channel]]
+        [ulkoiset-rajapinnat.utils.access :refer [access-log access-log-with-ticket-check-with-channel]]
         [ulkoiset-rajapinnat.utils.runtime :refer [shutdown-hook]]
         [ulkoiset-rajapinnat.oppija :refer [oppija-resource]]
         [ulkoiset-rajapinnat.haku :refer [haku-resource]]
@@ -22,34 +22,50 @@
 (defn api-opintopolku-routes [config hakuapp-mongo-client]
   (api
     {:swagger
-     {:ui (-> config :server :base-url)
+     {:ui   (-> config :server :base-url)
       :spec (str (-> config :server :base-url) "/swagger.json")
-      :data {:info {:title "Ulkoiset-rajapinnat"
+      :data {:info {:title       "Ulkoiset-rajapinnat"
                     :description "Ulkoiset-rajapinnat"}
              }}}
-     (context (str (-> config :server :base-url) "/api") []
-              :tags ["api"]
-              (GET "/healthcheck" []
-                   :summary "Health check API"
-                   (access-log (ok "OK")))
-              (GET "/haku-for-year/:vuosi" [vuosi]
-                :summary "Haut vuodella"
-                (access-log-with-channel (partial haku-resource config vuosi)))
-              (GET "/hakukohde-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot]
-                :summary "Hakukohteet haku OID:lla"
-                (access-log-with-channel (partial hakukohde-resource config haku-oid palauta-null-arvot)))
-              (GET "/oppija-for-haku/:haku-oid" [haku-oid kausi]
-                :summary "Oppijat haku OID:lla"
-                (access-log-with-channel (partial oppija-resource config haku-oid)))
-              (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi] ; hakuoid + kaudet
-                :summary "Vastaanotot haku OID:lla"
-                (access-log-with-channel (partial vastaanotto-resource config haku-oid)))
-              (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot] ; hakuoid + kaudet
-                 :summary "Hakemukset haku OID:lla"
-                 (access-log-with-channel (partial hakemus-resource config hakuapp-mongo-client haku-oid palauta-null-arvot)))
-              (POST "/odw/hakukohde" []
-                 :summary "ODW-rajapinta"
-                 (access-log-with-channel (partial odw-resource config))))))
+    (context (str (-> config :server :base-url) "/api") []
+      :tags ["api"]
+      (GET "/healthcheck" []
+        :summary "Health check API"
+        (access-log (ok "OK")))
+      (GET "/haku-for-year/:vuosi" [vuosi ticket]
+        :summary "Haut vuodella"
+        (access-log-with-ticket-check-with-channel
+          config ticket
+          (partial haku-resource config vuosi)))
+      (GET "/hakukohde-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot ticket]
+        :summary "Hakukohteet haku OID:lla"
+        (access-log-with-ticket-check-with-channel
+          config ticket
+          (partial hakukohde-resource config haku-oid palauta-null-arvot)))
+      (GET "/oppija-for-haku/:haku-oid" [haku-oid kausi ticket]
+        :summary "Oppijat haku OID:lla"
+        (access-log-with-ticket-check-with-channel
+          config ticket
+          (partial oppija-resource config haku-oid)))
+      (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi ticket] ; hakuoid + kaudet
+        :summary "Vastaanotot haku OID:lla"
+        (access-log-with-ticket-check-with-channel
+          config ticket
+          (partial vastaanotto-resource config haku-oid)))
+      (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot ticket] ; hakuoid + kaudet
+        :summary "Hakemukset haku OID:lla"
+        (access-log-with-ticket-check-with-channel
+          config ticket
+          (partial hakemus-resource config hakuapp-mongo-client haku-oid palauta-null-arvot)))
+      (POST "/odw/hakukohde" [ticket]
+        :summary "ODW-rajapinta"
+        (access-log-with-ticket-check-with-channel
+          config ticket
+          (partial odw-resource config))))
+    (ANY "/*" []
+      :responses {404 String}
+      :summary "Not found page"
+      (access-log (not-found "Page not found")))))
 
 (defn start-server [args]
   (let [config (read-configuration-file-first-from-varargs-then-from-env-vars args)

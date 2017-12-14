@@ -2,8 +2,13 @@
   (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
             [clj-time.core :as t]
-            [ulkoiset-rajapinnat.utils.rest :refer [to-json]]
+            [full.async :refer :all]
+            [ulkoiset-rajapinnat.utils.rest :refer [status body to-json]]
+            [clojure.core.async :refer [promise-chan >! go put! close!]]
             [clojure.tools.logging.impl :as impl]
+            [ring.util.http-response :refer [unauthorized bad-request]]
+            [ulkoiset-rajapinnat.utils.ldap :refer :all]
+            [ulkoiset-rajapinnat.utils.cas_validator :refer :all]
             [org.httpkit.server :refer :all]))
 
 (def ^{:private true} logger (impl/get-logger (impl/find-factory) "ACCESS"))
@@ -54,19 +59,52 @@
                      :user-agent user-agent
           }))))
 
-(defn access-log [response]
-  (fn [request]
-    (let [start-time (System/currentTimeMillis)]
-      (do-logging start-time (response :status) request)
-      response)))
+(defn access-log
+  ([response]
+   (let [start-time (System/currentTimeMillis)]
+     (access-log response start-time)))
+  ([response start-time]
+   (fn [request]
+     (do-logging start-time (response :status) request)
+     response)))
 
-(defn access-log-with-channel [operation]
+(defn check-ticket-is-valid-and-user-has-required-roles [config ticket]
+  (go
+    (log/error "TICKET VALIDATION IS DISABLED! REAL VALIDATION CODE IN COMMENT BLOCK!"))
+  (comment
+    (go-try
+      (let [host-virkailija (-> config :host-virkailija)
+            service (str host-virkailija "/ulkoiset-rajapinnat")
+            username (<? (validate-service-ticket config service ticket))
+            ldap-user (fetch-user-from-ldap config username)
+            roles (ldap-user :roles)]
+        (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
+          ldap-user
+          (RuntimeException. "Required roles missing!"))))))
+
+(defn handle-unauthorized [channel start-time]
+  (let [message "Ticket was not valid or user doesn't have required roles!"]
+  (access-log
+    (unauthorized message)
+    start-time)
+  (-> channel
+      (status 401)
+      (body (to-json {:error message}))
+      (close))))
+
+(defn access-log-with-ticket-check-with-channel [config ticket operation]
   (fn [request]
-    (let [start-time (System/currentTimeMillis)]
-      (with-channel request channel
-                    (on-close channel (fn [status] (do-logging start-time
-                                                               (case status
-                                                                 :server-close "200"
-                                                                 "Closed by client!")
-                                                               request)))
-                    (operation request channel)))))
+    (if-let [some-ticket ticket]
+      (let [start-time (System/currentTimeMillis)
+            on-close-handler (fn [status] (do-logging start-time
+                                                      (case status :server-close "200" "Closed by client!") request))]
+        (with-channel request channel
+                      (go
+                        (try
+                          (let [user (<? (check-ticket-is-valid-and-user-has-required-roles config ticket))]
+                            (on-close channel on-close-handler)
+                            (try
+                              (operation request channel)
+                              (catch Exception e (log/error "Uncaught exception in request handler!"))))
+                          (catch Exception e (handle-unauthorized channel start-time))))))
+      (access-log (bad-request "Ticket parameter required!")))))

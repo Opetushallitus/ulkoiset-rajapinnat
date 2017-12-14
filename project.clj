@@ -19,6 +19,7 @@
                  [fullcontact/full.async "1.0.0"]
                  [http-kit "2.2.0"]
                  [prismatic/schema "1.1.7"]
+                 [com.unboundid/unboundid-ldapsdk-minimal-edition "3.2.1"]
                  [metosin/compojure-api "1.1.11"]
                  [cheshire "5.8.0"]
                  [org.mongodb/mongodb-driver-reactivestreams "1.6.0"]

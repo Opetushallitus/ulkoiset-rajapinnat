@@ -14,7 +14,7 @@
                    :hakuapp-mongo {:uri (str "mongodb://localhost:" fake-mongo-port "/hakulomake")}
                    :server {:port (get-free-port)
                             :base-url "/ulkoiset-rajapinnat"}})
-(defn api-call [path] (str "http://localhost:" (-> test-configs :server :port) (-> test-configs :server :base-url) path))
+(defn api-call [path] (str "http://localhost:" (-> test-configs :server :port) (-> test-configs :server :base-url) path "?ticket=faketicket"))
 
 (defn test-edn []
   (let [tmp-test-edn-file (data-to-tmp-edn-file test-configs)]
