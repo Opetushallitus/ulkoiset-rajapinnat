@@ -1,6 +1,7 @@
 (ns ulkoiset-rajapinnat.odw
   (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-request status body-and-close body to-json get-as-promise parse-json-body exception-response post-json-with-cas]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
+            [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching merge-if-not-nil]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
             [clojure.tools.logging :as log]
@@ -12,12 +13,6 @@
 (def hakijaryhmat-api "%s/valintaperusteet-service/resources/hakukohde/hakijaryhmat")
 (def valintaryhmat-api "%s/valintaperusteet-service/resources/hakukohde/valintaryhmat")
 (def syotettavat-arvot-api "%s/valintaperusteet-service/resources/hakukohde/avaimet")
-
-(defn find-first-matching [match-key match-value collection]
-  (first (filter #(= match-value (get % match-key)) collection)))
-
-(defn merge-if-not-nil [merge-key merge-collection collection]
-  (if (nil? merge-collection) collection (merge collection {merge-key merge-collection})))
 
 (defn result [all-hakukohteet all-valinnanvaiheet all-valintatapajonot all-hakijaryhmat all-valintaryhmat all-syotettavat-arvot]
   (defn collect-hakukohteen-valinnanvaiheet [hakukohde-oid]
