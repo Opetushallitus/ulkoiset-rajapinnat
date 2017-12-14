@@ -16,9 +16,6 @@
   (:refer-clojure :rename {merge core-merge
                            loop  core-loop}))
 
-(comment
-  TODO fetch ataru hakemukset (fetch-hakemukset-from-ataru config "1.2.246.562.29.68110837611"))
-
 (def size-of-henkilo-batch-from-onr-at-once 500)
 
 (comment
@@ -42,14 +39,15 @@
      :sija                      (.getKey preferences)}))
 
 (defn oppija-data-from-henkilo [henkilo-opt]
-  (let [henkilo (if (nil? henkilo-opt) {} henkilo-opt)]
+  (if-let [henkilo (first henkilo-opt)]
     {:yksiloity       (get henkilo "yksiloity")
      :henkilotunnus   (get henkilo "hetu")
      :syntyma_aika    (get henkilo "syntymaaika")
      :etunimet        (get henkilo "etunimet")
      :sukunimi        (get henkilo "sukunimi")
      :sukupuoli_koodi (get henkilo "sukupuoli")
-     :aidinkieli      (get henkilo "aidinkieli")}))
+     :aidinkieli      (get henkilo "aidinkieli")}
+    {}))
 
 (defn hakutoiveet-from-hakemus [document]
   (let [pref-keys-by-sija (collect-preference-keys-by-sija document)]
@@ -74,6 +72,17 @@
      :pohjakoulutus_kk                                          pohjakoulutus_kk
      :lahtokoulun_organisaatio_oid                              lahtokoulun_organisaatio_oid
      :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa}))
+
+(defn convert-ataru-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo hakemus]
+  (let [data (core-merge
+               (oppija-data-from-henkilo henkilo)
+               {:hakemus_oid  (get hakemus "hakemus_oid")
+                :henkilo_oid  (get hakemus "henkilo_oid")
+                :haku_oid     (get hakemus "haku_oid")
+                :hakutoiveet  (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))})]
+    (if palauta-null-arvot?
+      data
+      (remove-nils data))))
 
 (defn convert-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo document]
   (let [data (core-merge
@@ -129,7 +138,7 @@
 
 (defn document-batch-to-henkilo-oid-list
   [batch]
-  (map #(get % "personOid") batch))
+  (map #(get % "henkilo_oid") batch))
 
 (defn fetch-hakemukset-for-haku
   [config haku-oid palauta-null-arvot? mongo-client channel]
@@ -152,21 +161,41 @@
     (go
       (try
         (let [jsessionid (<<?? jsessionid-channel)
-              pohjakoulutuskkodw (<<?? pohjakoulutuskkodw-channel)]
-        (doseq [batch (<<?? (m/publisher-as-channel publisher size-of-henkilo-batch-from-onr-at-once))]
-          (let [henkilo-oids (document-batch-to-henkilo-oid-list batch)
-                henkilot (<? (fetch-henkilot-channel config (first jsessionid) henkilo-oids))
-                henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
-            (doseq [hakemus batch]
-              (write-object-to-channel
-                is-first-written
-                (convert-hakemus (first pohjakoulutuskkodw) palauta-null-arvot? (get henkilo-by-oid (get hakemus "personOid")) hakemus)
-                channel)
-              ))
-          (let [bs (int (count batch))]
-            (swap! counter (partial + bs)))))
+              pohjakoulutuskkodw (<<?? pohjakoulutuskkodw-channel)
+              haku-app-batch-mapper (fn [batch] {:henkilo_oids (map #(get % "personOid") batch)
+                                                 :batch batch
+                                                 :mapper (fn [henkilo-by-oid hakemus]
+                                                           (convert-hakemus
+                                                             (first pohjakoulutuskkodw)
+                                                             palauta-null-arvot?
+                                                             (get henkilo-by-oid (get hakemus "personOid")) hakemus))})
+              ataru-batch-mapper (fn [part-batch] (let [batch (flatten part-batch)]
+                                                    {:henkilo_oids (document-batch-to-henkilo-oid-list batch)
+                                                     :batch batch
+                                                     :mapper (fn [henkilo-by-oid hakemus]
+                                                          (convert-ataru-hakemus
+                                                            (first pohjakoulutuskkodw)
+                                                            palauta-null-arvot?
+                                                            (get henkilo-by-oid (get hakemus "henkilo_oid")) hakemus))}))
+              ataru-hakemukset (map ataru-batch-mapper
+                                    (partition-all size-of-henkilo-batch-from-onr-at-once
+                                                   (<<?? (fetch-hakemukset-from-ataru config haku-oid))))
+              haku-app-hakemukset (map haku-app-batch-mapper
+                                       (<<?? (m/publisher-as-channel publisher size-of-henkilo-batch-from-onr-at-once)))]
+          (doseq [{henkilo-oids :henkilo_oids
+                   mapper :mapper
+                   batch :batch} (concat haku-app-hakemukset ataru-hakemukset)]
+            (let [henkilot (<? (fetch-henkilot-channel config (first jsessionid) henkilo-oids))
+                  henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
+              (doseq [hakemus batch]
+                (write-object-to-channel
+                  is-first-written
+                  (mapper henkilo-by-oid hakemus)
+                  channel)))
+            (let [bs (int (count batch))]
+              (swap! counter (partial + bs)))))
         (close-channel)
-        (log/info "Returned successfully" @counter "'hakemusta'! Took" (- (System/currentTimeMillis) start-time) "ms!")
+        (log/info "Returned successfully" @counter "'hakemusta' from Haku-App and Ataru! Took" (- (System/currentTimeMillis) start-time) "ms!")
         (catch Exception e
           (do
             (log/error "Failed to write 'hakemukset'!" e)

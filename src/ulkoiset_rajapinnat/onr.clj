@@ -21,13 +21,15 @@
   response)
 
 (defn fetch-henkilot-channel [config jsessionid henkilo-oids]
-  (if-let [sid jsessionid]
-    (let [host (-> config :oppijanumerorekisteri-host-virkailija)
-          url (format oppijanumerorekisteri-api host)
-          start-time (System/currentTimeMillis)]
-      (post-as-channel url
-                       (to-json henkilo-oids)
-                       {:headers {"Content-Type" mime-application-json
-                                  "Cookie"       (str "JSESSIONID=" sid)}}
-                       parse-json-body))
-    (go (RuntimeException. "Trying to fetch 'henkilot' with nil JSESSIONID!"))))
+  (if (empty? henkilo-oids)
+    (go [])
+    (if-let [sid jsessionid]
+      (let [host (-> config :oppijanumerorekisteri-host-virkailija)
+            url (format oppijanumerorekisteri-api host)
+            start-time (System/currentTimeMillis)]
+        (post-as-channel url
+                         (to-json henkilo-oids)
+                         {:headers {"Content-Type" mime-application-json
+                                    "Cookie"       (str "JSESSIONID=" sid)}}
+                         parse-json-body))
+      (go (RuntimeException. "Trying to fetch 'henkilot' with nil JSESSIONID!")))))

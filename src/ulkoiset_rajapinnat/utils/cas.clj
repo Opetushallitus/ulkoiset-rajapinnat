@@ -67,7 +67,7 @@
   ([response]
     (parse-jsessionid response #"JSESSIONID=(\w*);"))
   ([response regex]
-  (if-let [sid (first (re-find regex ((response :headers) :set-cookie)))]
+  (if-let [sid (nth (re-find regex ((response :headers) :set-cookie)) 1)]
     sid
     (RuntimeException. (format "Unable to parse session ID! Uri = %s" (get-in response [:opts :url]))))))
 
