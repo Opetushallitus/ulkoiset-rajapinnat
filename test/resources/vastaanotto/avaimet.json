@@ -1,0 +1,378 @@
+[
+  {
+    "hakukohdeOid": "1.2.246.562.20.72385087522",
+    "valintaperusteDTO": [
+      {
+        "tunniste": "IB_haastattelu",
+        "kuvaus": "Haastattelu",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "16",
+        "arvot": null,
+        "osallistuminenTunniste": "IB_haastattelu-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "IB_monivalinta",
+        "kuvaus": "Monivalintatehtävät",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "IB_monivalinta-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "1ae74f64-1fb0-4e7a-b47a-591c3ec496d9",
+        "kuvaus": "Pelkkä yo-tutkinto pisteet, 0-60p.",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "60",
+        "arvot": null,
+        "osallistuminenTunniste": "1ae74f64-1fb0-4e7a-b47a-591c3ec496d9-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": false,
+        "syotettavissaKaikille": true,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "IB_essee",
+        "kuvaus": "Essee-tehtävä",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "10",
+        "arvot": null,
+        "osallistuminenTunniste": "IB_essee-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "IB_matloog",
+        "kuvaus": "Matemaattis-looginen osio",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "8",
+        "arvot": null,
+        "osallistuminenTunniste": "IB_matloog-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "IB_pakollinenosio",
+        "kuvaus": "Pakollinen osio (esim. kieli) 1=hyväksytty, 0=hylätty",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": null,
+        "max": null,
+        "arvot": [
+          "0",
+          "1"
+        ],
+        "osallistuminenTunniste": "IB_pakollinenosio-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      }
+    ]
+  },
+  {
+    "hakukohdeOid": "1.2.246.562.20.16902536479",
+    "valintaperusteDTO": [
+      {
+        "tunniste": "IB_monimuoto_koepisteet",
+        "kuvaus": "Valintakoepisteet",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "70",
+        "arvot": null,
+        "osallistuminenTunniste": "IB_monimuoto_koepisteet-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "IB_monimuoto_pakollinenosio",
+        "kuvaus": "Pakollinen osio (esim. kieli)",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": null,
+        "max": null,
+        "arvot": [
+          "1",
+          "0"
+        ],
+        "osallistuminenTunniste": "IB_monimuoto_pakollinenosio-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      }
+    ]
+  },
+  {
+    "hakukohdeOid": "1.2.246.562.20.760269451710",
+    "valintaperusteDTO": [
+      {
+        "tunniste": "Sote1_valintakoe",
+        "kuvaus": "Valintakokeen pisteet",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "70",
+        "arvot": null,
+        "osallistuminenTunniste": "Sote1_valintakoe-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "sotelikoe2016s",
+        "kuvaus": "sotelikoe2016s",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "-27",
+        "max": "80",
+        "arvot": null,
+        "osallistuminenTunniste": "sotelikoe2016s-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": true,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": {
+          "uri": "syotettavanarvontyypit_valintakoe",
+          "nimiFi": null,
+          "nimiSv": null,
+          "nimiEn": null,
+          "arvo": null
+        }
+      },
+      {
+        "tunniste": "Sote1_pakollinen_osio",
+        "kuvaus": "Sosiaali- ja terveysalan valintakokeen pakollinen osio",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": null,
+        "max": null,
+        "arvot": [
+          "1",
+          "0"
+        ],
+        "osallistuminenTunniste": "Sote1_pakollinen_osio-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": false,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      }
+    ]
+  },
+  {
+    "hakukohdeOid": "1.2.246.562.20.72385087522",
+    "valintaperusteDTO": [
+      {
+        "tunniste": "IB_monivalinta",
+        "kuvaus": "Monivalintatehtävät",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "6",
+        "arvot": null,
+        "osallistuminenTunniste": "IB_monivalinta-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "IB_haastattelu",
+        "kuvaus": "Haastattelu",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "16",
+        "arvot": null,
+        "osallistuminenTunniste": "IB_haastattelu-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "1ae74f64-1fb0-4e7a-b47a-591c3ec496d9",
+        "kuvaus": "Pelkkä yo-tutkinto pisteet, 0-60p.",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": "0",
+        "max": "60",
+        "arvot": null,
+        "osallistuminenTunniste": "1ae74f64-1fb0-4e7a-b47a-591c3ec496d9-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": false,
+        "syotettavissaKaikille": true,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "IB_essee",
+        "kuvaus": "Essee-tehtävä",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "10",
+        "arvot": null,
+        "osallistuminenTunniste": "IB_essee-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "IB_matloog",
+        "kuvaus": "Matemaattis-looginen osio",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "8",
+        "arvot": null,
+        "osallistuminenTunniste": "IB_matloog-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "IB_pakollinenosio",
+        "kuvaus": "Pakollinen osio (esim. kieli) 1=hyväksytty, 0=hylätty",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": null,
+        "max": null,
+        "arvot": [
+          "0",
+          "1"
+        ],
+        "osallistuminenTunniste": "IB_pakollinenosio-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      }
+    ]
+  },
+  {
+    "hakukohdeOid": "1.2.246.562.20.16902536479",
+    "valintaperusteDTO": [
+      {
+        "tunniste": "IB_monimuoto_koepisteet",
+        "kuvaus": "Valintakoepisteet",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "70",
+        "arvot": null,
+        "osallistuminenTunniste": "IB_monimuoto_koepisteet-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "IB_monimuoto_pakollinenosio",
+        "kuvaus": "Pakollinen osio (esim. kieli)",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": null,
+        "max": null,
+        "arvot": [
+          "1",
+          "0"
+        ],
+        "osallistuminenTunniste": "IB_monimuoto_pakollinenosio-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": null
+      },
+      {
+        "tunniste": "Kielikoe",
+        "kuvaus": "Kielikoe",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": false,
+        "min": null,
+        "max": null,
+        "arvot": [
+          "1",
+          "0"
+        ],
+        "osallistuminenTunniste": "Kielikoe-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": {
+          "uri": "syotettavanarvontyypit_kielikoe",
+          "nimiFi": null,
+          "nimiSv": null,
+          "nimiEn": null,
+          "arvo": null
+        }
+      },
+      {
+        "tunniste": "Pääsy- ja soveltuvuuskoe",
+        "kuvaus": "Valintakoepisteet",
+        "funktiotyyppi": "LUKUARVOFUNKTIO",
+        "lahde": "SYOTETTAVA_ARVO",
+        "onPakollinen": true,
+        "min": "0",
+        "max": "70",
+        "arvot": null,
+        "osallistuminenTunniste": "Pääsy- ja soveltuvuuskoe-OSALLISTUMINEN",
+        "vaatiiOsallistumisen": true,
+        "syotettavissaKaikille": false,
+        "tilastoidaan": false,
+        "syötettavanArvonTyyppi": {
+          "uri": "syotettavanarvontyypit_valintakoe",
+          "nimiFi": null,
+          "nimiSv": null,
+          "nimiEn": null,
+          "arvo": null
+        }
+      }
+    ]
+  }
+]

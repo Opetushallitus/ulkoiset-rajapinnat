@@ -94,3 +94,7 @@
     (let [st (<? (service-ticket-channel host service username password))
           jid (<? (jsessionid-channel host service st))]
       jid)))
+
+(defn jsessionid-fetcher [host username password]
+  (fn [service]
+    (fetch-jsessionid host service username password)))

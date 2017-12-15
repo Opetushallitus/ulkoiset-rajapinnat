@@ -1,0 +1,147 @@
+[
+  {
+    "hakemusOID": "1.2.246.562.11.00007664779",
+    "oppijaOID": "",
+    "pisteet": [
+      {
+        "arvo": "",
+        "osallistuminen": "MERKITSEMATTA",
+        "tallettaja": "migraatio",
+        "tunniste": "1ae74f64-1fb0-4e7a-b47a-591c3ec496d9"
+      },
+      {
+        "arvo": "",
+        "osallistuminen": "EI_OSALLISTUNUT",
+        "tallettaja": "migraatio",
+        "tunniste": "27239ef5-0caf-86d5-9a1e-2b9c009b6e2d"
+      },
+      {
+        "arvo": "",
+        "osallistuminen": "EI_OSALLISTUNUT",
+        "tallettaja": "migraatio",
+        "tunniste": "e685dbce-3163-8678-ff79-61c86a6c072e"
+      },
+      {
+        "arvo": "4.44",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_essee"
+      },
+      {
+        "arvo": "7.11",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_haastattelu"
+      },
+      {
+        "arvo": "7.2",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_matloog"
+      },
+      {
+        "arvo": "55",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_monimuoto_koepisteet"
+      },
+      {
+        "arvo": "1",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_monimuoto_pakollinenosio"
+      },
+      {
+        "arvo": "4.4",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_monivalinta"
+      },
+      {
+        "arvo": "1",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_pakollinenosio"
+      }
+    ]
+  },
+  {
+    "hakemusOID": "1.2.246.562.11.00007664782",
+    "oppijaOID": "",
+    "pisteet": [
+      {
+        "arvo": "",
+        "osallistuminen": "EI_OSALLISTUNUT",
+        "tallettaja": "migraatio",
+        "tunniste": "sotelikoe2016s"
+      }
+    ]
+  },
+  {
+    "hakemusOID": "1.2.246.562.11.00007721463",
+    "oppijaOID": "",
+    "pisteet": [
+      {
+        "arvo": "",
+        "osallistuminen": "MERKITSEMATTA",
+        "tallettaja": "migraatio",
+        "tunniste": "1ae74f64-1fb0-4e7a-b47a-591c3ec496d9"
+      },
+      {
+        "arvo": "5.56",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_essee"
+      },
+      {
+        "arvo": "8.89",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_haastattelu"
+      },
+      {
+        "arvo": "4.0",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_matloog"
+      },
+      {
+        "arvo": "49",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_monimuoto_koepisteet"
+      },
+      {
+        "arvo": "1",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_monimuoto_pakollinenosio"
+      },
+      {
+        "arvo": "2.0",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_monivalinta"
+      },
+      {
+        "arvo": "1",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "IB_pakollinenosio"
+      },
+      {
+        "arvo": "1",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "Pääsy- ja soveltuvuuskoe"
+      },
+      {
+        "arvo": "1",
+        "osallistuminen": "OSALLISTUI",
+        "tallettaja": "migraatio",
+        "tunniste": "Kielikoe"
+      }
+    ]
+  }
+]
+

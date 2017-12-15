@@ -18,3 +18,7 @@
 (defn merge-if-not-nil
   [m-k m-coll coll]
   (if (nil? m-coll) coll (merge coll {m-k m-coll})))
+
+(defn get-value-if-not-nil
+  [k coll]
+  (if (nil? coll) nil (get coll k)))

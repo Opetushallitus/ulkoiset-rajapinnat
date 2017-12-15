@@ -14,7 +14,9 @@
         "vastaanoton_tila":"EI_VASTAANOTETTU_MAARA_AIKANA",
         "alin_hyvaksytty_pistemaara":19.65,
         "hyvaksytty_harkinnanvaraisesti":false,
-        "hyvaksytty_ensikertalaisten_hakijaryhmasta":false
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta":false,
+        "osallistui_paasykokeeseen":null,
+        "osallistui_kielikokeeseen":null
       },
       {
         "hakukohde_oid":"1.2.246.562.20.16902536479",
@@ -28,7 +30,9 @@
         "vastaanoton_tila":"KESKEN",
         "alin_hyvaksytty_pistemaara":38,
         "hyvaksytty_harkinnanvaraisesti":false,
-        "hyvaksytty_ensikertalaisten_hakijaryhmasta":null
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta":null,
+        "osallistui_paasykokeeseen":null,
+        "osallistui_kielikokeeseen":null
       }
     ]
   },
@@ -47,7 +51,9 @@
         "vastaanoton_tila":"KESKEN",
         "alin_hyvaksytty_pistemaara":48.0,
         "hyvaksytty_harkinnanvaraisesti":false,
-        "hyvaksytty_ensikertalaisten_hakijaryhmasta":null
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta":null,
+        "osallistui_paasykokeeseen":false,
+        "osallistui_kielikokeeseen":null
       }
     ]
   },
@@ -66,7 +72,9 @@
         "vastaanoton_tila":"VASTAANOTTANUT_SITOVASTI",
         "alin_hyvaksytty_pistemaara":19.65,
         "hyvaksytty_harkinnanvaraisesti":false,
-        "hyvaksytty_ensikertalaisten_hakijaryhmasta":true
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta":true,
+        "osallistui_paasykokeeseen":null,
+        "osallistui_kielikokeeseen":null
       },
       {
         "hakukohde_oid":"1.2.246.562.20.16902536479",
@@ -80,7 +88,9 @@
         "vastaanoton_tila":"KESKEN",
         "alin_hyvaksytty_pistemaara":38,
         "hyvaksytty_harkinnanvaraisesti":false,
-        "hyvaksytty_ensikertalaisten_hakijaryhmasta":null
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta":null,
+        "osallistui_paasykokeeseen":true,
+        "osallistui_kielikokeeseen":true
       }
     ]
   }
