@@ -1,0 +1,109 @@
+[
+  {
+    "ensikertalainen": true,
+    "id": "1.2.246.562.24.55426278979",
+    "opiskelu": [],
+    "opiskeluoikeudet": [],
+    "oppijanumero": "1.2.246.562.24.22430847549",
+    "suoritukset": []
+  },
+  {
+    "ensikertalainen": false,
+    "id": "1.2.246.562.24.25317210607",
+    "opiskelu": [],
+    "opiskeluoikeudet": [
+      {
+        "aika": {
+          "alku": "2007-09-01T00:00:00.000+03:00",
+          "loppu": "2012-06-15T00:00:00.000+03:00"
+        },
+        "core": {
+          "aika": {
+            "alku": "2007-09-01T00:00:00.000+03:00",
+            "loppu": "2012-06-15T00:00:00.000+03:00"
+          },
+          "henkiloOid": "1.2.246.562.24.25317210607",
+          "komo": "koulutus_631101",
+          "myontaja": "1.2.246.562.10.27756776996"
+        },
+        "henkiloOid": "1.2.246.562.24.25317210607",
+        "id": "a8c9bf05-4ceb-4d53-a7a8-6140ac7bb3b4",
+        "komo": "koulutus_631101",
+        "myontaja": "1.2.246.562.10.27756776996",
+        "source": "1.2.246.562.10.2013112012294919827487"
+      }
+    ],
+    "oppijanumero": "1.2.246.562.24.22430847549",
+    "suoritukset": [
+      {
+        "arvosanat": [
+          {
+            "aine": "kielikoe",
+            "arvio": {
+              "arvosana": "ei_osallistunut",
+              "asteikko": "HYVAKSYTTY"
+            },
+            "id": "6fd9c997-21a7-44e8-a016-145d23a38e60",
+            "lahdeArvot": {},
+            "lisatieto": "FI",
+            "myonnetty": "14.10.2015",
+            "source": "1.2.246.562.10.52251087186",
+            "suoritus": "b4968a24-7e98-4031-8c48-2e5f119a6aa5",
+            "valinnainen": false
+          },
+          {
+            "aine": "kielikoe",
+            "arvio": {
+              "arvosana": "osallistui",
+              "asteikko": "HYVAKSYTTY"
+            },
+            "id": "6fd9c997-21a7-44e8-a016-145d23a38e60",
+            "lahdeArvot": {},
+            "lisatieto": "SV",
+            "myonnetty": "14.10.2015",
+            "source": "1.2.246.562.10.52251087186",
+            "suoritus": "b4968a24-7e98-4031-8c48-2e5f119a6aa5",
+            "valinnainen": false
+          }
+        ],
+        "suoritus": {
+          "henkiloOid": "1.2.246.562.24.25317210607",
+          "id": "b4968a24-7e98-4031-8c48-2e5f119a6aa5",
+          "komo": "ammatillisenKielikoe",
+          "lahdeArvot": {},
+          "myontaja": "1.2.246.562.11.00004577393",
+          "source": "1.2.246.562.24.13379058521",
+          "suoritusKieli": "FI",
+          "tila": "VALMIS",
+          "vahvistettu": true,
+          "valmistuminen": "14.10.2015",
+          "yksilollistaminen": "Ei"
+        }
+      },
+      {
+        "arvosanat": [],
+        "suoritus": {
+          "henkiloOid": "1.2.246.562.24.25317210607",
+          "id": "8a0fbb8f-08f6-4874-bf66-30680b48aae7",
+          "komo": "koulutus_631101",
+          "lahdeArvot": {},
+          "myontaja": "1.2.246.562.10.27756776996",
+          "source": "1.2.246.562.10.2013112012294919827487",
+          "suoritusKieli": "EN",
+          "tila": "VALMIS",
+          "vahvistettu": true,
+          "valmistuminen": "15.06.2012",
+          "yksilollistaminen": "Ei"
+        }
+      }
+    ]
+  },
+  {
+    "ensikertalainen": true,
+    "id": "1.2.246.562.24.68847333464",
+    "opiskelu": [],
+    "opiskeluoikeudet": [],
+    "oppijanumero": "1.2.246.562.24.11097025100",
+    "suoritukset": []
+  }
+]

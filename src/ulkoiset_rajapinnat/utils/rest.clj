@@ -126,3 +126,8 @@
       (d/chain promise #(handle-json-response url %))))
   ([host session-id url-template body]
     (post-json-with-cas (format url-template host) session-id body)))
+
+(defn get-json-with-cas
+  [url session-id]
+  (let [promise (get-as-promise url {:headers {"Cookie" (str "JSESSIONID=" session-id)}})]
+    (d/chain promise #(handle-json-response url %))))

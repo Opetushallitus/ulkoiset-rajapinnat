@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.cas :refer [jsessionid-fetcher]]
-            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json post-json-with-cas post-json-as-promise]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json post-json-with-cas post-json-as-promise get-json-with-cas]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [org.httpkit.server :refer :all]
@@ -12,8 +12,9 @@
 (def valinta-tulos-service-api "%s/valinta-tulos-service/haku/streaming/%s/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true")
 (def valintaperusteet-service-api "%s/valintaperusteet-service/resources/hakukohde/avaimet")
 (def valintapiste-service-api "%s/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent")
+(def suoritusrekisteri-service-api "%s/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=true&haku=%s")
 
-(defn vastaanotto-builder [kokeet valintapisteet]
+(defn vastaanotto-builder [kokeet valintapisteet kielikokeet]
   (defn- hyvaksytty-ensikertalaisen-hakijaryhmasta [hakijaryhmat]
     (let [ensikertalaisen-hakijaryhma (find-first-matching "hakijaryhmatyyppikoodiUri" "hakijaryhmantyypit_ensikertalaiset" hakijaryhmat)]
       (get-value-if-not-nil "hyvaksyttyHakijaryhmasta" ensikertalaisen-hakijaryhma)))
@@ -29,7 +30,15 @@
           false
           (if (some #(= "OSALLISTUI" %) osallistumiset) true nil)))))
 
-  (defn- hakutoive-builder [hakutoiveiden-kokeet hakemuksen-valintapisteet]
+  (defn- ammatilliseen-kielikokeeseen-osallistuminen [hakijan-kielikokeet]
+    (let [osallistuminen (get (first (first hakijan-kielikokeet)) :osallistuminen)]
+      (if (= osallistuminen "ei_osallistunut")
+        false
+        (if (= osallistuminen "osallistui")
+          true
+          nil))))
+
+  (defn- hakutoive-builder [hakutoiveiden-kokeet hakemuksen-valintapisteet hakijan-kielikokeet]
 
     (fn [hakutoive]
       (let [hakutoive-oid (hakutoive "hakukohdeOid")
@@ -38,6 +47,13 @@
             kielikokeiden-tunnisteet (map #(get % :tunniste) (filter #(get % :kielikoe) hakutoiveen-kokeet))
             valintakokeiden-tunnisteet (map #(get % :tunniste) (filter #(get % :valintakoe) hakutoiveen-kokeet))
             osallistuminen (osallistuminen-checker hakemuksen-valintapisteet)]
+
+        (def kielikokeeseen-osallistuminen
+          (let [muuKielikoeOsallistuminen (osallistuminen kielikokeiden-tunnisteet)
+                ammatillinenKielikoeOsallistuminen (ammatilliseen-kielikokeeseen-osallistuminen hakijan-kielikokeet)]
+              (if (not (nil? muuKielikoeOsallistuminen))
+                muuKielikoeOsallistuminen
+                ammatillinenKielikoeOsallistuminen)))
 
         {"hakukohde_oid"                  hakutoive-oid
          "valinnan_tila"                  (valintatapajono "tila")
@@ -52,14 +68,15 @@
          "hyvaksytty_harkinnanvaraisesti" (valintatapajono "hyvaksyttyHarkinnanvaraisesti")
          "hyvaksytty_ensikertalaisten_hakijaryhmasta" (hyvaksytty-ensikertalaisen-hakijaryhmasta (hakutoive "hakijaryhmat"))
          "osallistui_paasykokeeseen"      (osallistuminen valintakokeiden-tunnisteet)
-         "osallistui_kielikokeeseen"      (osallistuminen kielikokeiden-tunnisteet)})))
+         "osallistui_kielikokeeseen"      kielikokeeseen-osallistuminen})))
 
   (fn [vastaanotto]
     (let [hakemus-oid (vastaanotto "hakemusOid")
+          hakija-oid (vastaanotto "hakijaOid")
           hakemuksen-pisteet (valintapisteet hakemus-oid)
-          build-hakutoive (hakutoive-builder kokeet hakemuksen-pisteet)]
-
-      {"henkilo_oid" (vastaanotto "hakijaOid")
+          hakijan-kielikokeet (kielikokeet hakija-oid)
+          build-hakutoive (hakutoive-builder kokeet hakemuksen-pisteet hakijan-kielikokeet)]
+      {"henkilo_oid" hakija-oid
        "hakutoiveet" (map build-hakutoive (vastaanotto "hakutoiveet"))})))
 
 (defn recursive-find-valintakokeet [valintaperusteet]
@@ -76,6 +93,23 @@
     {}
     (merge (find-valintakoe (first valintaperusteet)) (recursive-find-valintakokeet (rest valintaperusteet)))))
 
+(defn recursive-find-kielikokeet [oppijat]
+  (defn- transform-arvosana [arvosana]
+    (if (nil? arvosana) {} {:osallistuminen (get (get arvosana "arvio") "arvosana") :kieli (get arvosana "lisatieto")}))
+
+  (defn- transform-suoritus [suoritus]
+    (let [komo ((suoritus "suoritus") "komo")
+          arvosanat (suoritus "arvosanat")]
+        {:komo komo :arvosanat (map transform-arvosana arvosanat)}))
+
+  (defn- find-kielikoe [o]
+    (let [filtered (filter #(= "ammatillisenKielikoe" (get % :komo)) (map transform-suoritus (get o "suoritukset")))]
+      (if (empty? filtered) {} {(get o "oppijanumero") (map #(get % :arvosanat) filtered)})))
+
+  (if (empty? oppijat)
+    {}
+    (merge (find-kielikoe (first oppijat)) (recursive-find-kielikokeet (rest oppijat)))))
+
 (defn fetch-vastaanotot [host haku-oid]
   (let [promise (get-as-promise (format valinta-tulos-service-api host haku-oid))]
     (chain promise parse-json-body)))
@@ -90,6 +124,11 @@
     (let [promise (post-json-with-cas host jsession-id valintaperusteet-service-api hakukohde-oidit)]
       (chain promise recursive-find-valintakokeet))))
 
+(defn fetch-ammatilliset-kielikokeet [fetch-jsession-id host haku-oid]
+  (let-flow [jsession-id (fetch-jsession-id "/suoritusrekisteri")]
+     (let [promise (get-json-with-cas (format suoritusrekisteri-service-api host haku-oid) jsession-id)]
+       (chain promise recursive-find-kielikokeet))))
+
 (defn vastaanotto-resource [config haku-oid request channel]
   (let [vastaanotto-host-virkailija (config :vastaanotto-host-virkailija)
         vastaanotto-host-internal (config :vastaanotto-host-internal)
@@ -100,8 +139,9 @@
                    hakemus-oidit (map #(% "hakemusOid") vastaanotot)
                    fetch-jsession-id (jsessionid-fetcher vastaanotto-host-virkailija  username password)
                    valintakokeet (fetch-kokeet fetch-jsession-id vastaanotto-host-virkailija hakukohde-oidit)
-                   valintapisteet (fetch-valintapisteet vastaanotto-host-internal hakemus-oidit)]
-                  (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet)
+                   valintapisteet (fetch-valintapisteet vastaanotto-host-internal hakemus-oidit)
+                   kielikokeet (fetch-ammatilliset-kielikokeet  fetch-jsession-id vastaanotto-host-virkailija haku-oid)]
+                  (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet kielikokeet)
                         json (to-json (map build-vastaanotto vastaanotot))]
                     (-> channel
                         (status 200)
