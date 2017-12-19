@@ -10,7 +10,7 @@
 (def fake-mongo-port (get-free-port))
 
 (def test-configs {:host-virkailija "http://fake.virkailija.opintopolku.fi"
-                   :vastaanotto-host-internal "http://fake.internal.aws.opintopolku.fi"
+                   :valintapiste-host-virkailija "http://fake.internal.aws.opintopolku.fi"
                    :vastaanotto-host-virkailija "http://fake.virkailija.opintopolku.fi"
                    :hakuapp-mongo {:uri (str "mongodb://localhost:" fake-mongo-port "/hakulomake")}
                    :server {:port (get-free-port)

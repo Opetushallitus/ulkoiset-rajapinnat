@@ -131,15 +131,16 @@
 
 (defn vastaanotto-resource [config haku-oid request channel]
   (let [vastaanotto-host-virkailija (config :vastaanotto-host-virkailija)
-        vastaanotto-host-internal (config :vastaanotto-host-internal)
+        valintapiste-host-virkailija (config :valintapiste-host-virkailija)
+        host-virkailija (config :host-virkailija)
         username (config :ulkoiset-rajapinnat-cas-username)
         password (config :ulkoiset-rajapinnat-cas-password)]
     (-> (let-flow [vastaanotot (fetch-vastaanotot vastaanotto-host-virkailija haku-oid)
                    hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
                    hakemus-oidit (map #(% "hakemusOid") vastaanotot)
-                   fetch-jsession-id (jsessionid-fetcher vastaanotto-host-virkailija  username password)
+                   fetch-jsession-id (jsessionid-fetcher host-virkailija  username password)
                    valintakokeet (fetch-kokeet fetch-jsession-id vastaanotto-host-virkailija hakukohde-oidit)
-                   valintapisteet (fetch-valintapisteet vastaanotto-host-internal hakemus-oidit)
+                   valintapisteet (fetch-valintapisteet valintapiste-host-virkailija hakemus-oidit)
                    kielikokeet (fetch-ammatilliset-kielikokeet  fetch-jsession-id vastaanotto-host-virkailija haku-oid)]
                   (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet kielikokeet)
                         json (to-json (map build-vastaanotto vastaanotot))]
