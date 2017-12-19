@@ -11,6 +11,7 @@
 
 (def valinta-tulos-service-api "%s/valinta-tulos-service/haku/streaming/%s/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true")
 (def valintaperusteet-service-api "%s/valintaperusteet-service/resources/hakukohde/avaimet")
+;TODO korjaa audit-parametrit, kun CAS-autentikointi päällä
 (def valintapiste-service-api "%s/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent")
 (def suoritusrekisteri-service-api "%s/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=true&haku=%s")
 
