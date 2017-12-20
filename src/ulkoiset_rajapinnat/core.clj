@@ -63,7 +63,6 @@
           config ticket
           (partial odw-resource config))))
     (ANY "/*" []
-      :responses {404 String}
       :summary "Not found page"
       (access-log (not-found "Page not found")))))
 
