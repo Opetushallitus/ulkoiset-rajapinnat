@@ -143,6 +143,16 @@
                    valintakokeet (fetch-kokeet fetch-jsession-id vastaanotto-host-virkailija hakukohde-oidit)
                    valintapisteet (fetch-valintapisteet valintapiste-host-virkailija hakemus-oidit)
                    kielikokeet (fetch-ammatilliset-kielikokeet  fetch-jsession-id vastaanotto-host-virkailija haku-oid)]
+                  (log/info (str "Hakukohde_oidit=" (count hakukohde-oidit)))
+                  (log/info hakukohde-oidit)
+                  (log/info (str "Hakemus_oidit=" (count hakemus-oidit)))
+                  (log/info hakemus-oidit)
+                  (log/info (str "Valintakokeet=" (count valintakokeet)))
+                  ;(log/info valintakokeet)
+                  (log/info (str "Valintapisteet=" (count valintapisteet)))
+                  ;(log/info valintapisteet)
+                  (log/info (str "Kielikokeet=" (count kielikokeet)))
+                  ;(log/info kielikokeet)
                   (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet kielikokeet)
                         json (to-json (map build-vastaanotto vastaanotot))]
                     (-> channel
