@@ -140,9 +140,9 @@
                    hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
                    hakemus-oidit (map #(% "hakemusOid") vastaanotot)
                    fetch-jsession-id (jsessionid-fetcher host-virkailija  username password)
-                   valintakokeet (fetch-kokeet fetch-jsession-id vastaanotto-host-virkailija hakukohde-oidit)
+                   valintakokeet (fetch-kokeet fetch-jsession-id host-virkailija hakukohde-oidit)
                    valintapisteet (fetch-valintapisteet valintapiste-host-virkailija hakemus-oidit)
-                   kielikokeet (fetch-ammatilliset-kielikokeet  fetch-jsession-id vastaanotto-host-virkailija haku-oid)]
+                   kielikokeet (fetch-ammatilliset-kielikokeet  fetch-jsession-id host-virkailija haku-oid)]
                   (log/info (str "Hakukohde_oidit=" (count hakukohde-oidit)))
                   (log/info hakukohde-oidit)
                   (log/info (str "Hakemus_oidit=" (count hakemus-oidit)))
