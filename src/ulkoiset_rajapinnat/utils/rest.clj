@@ -117,7 +117,7 @@
   (case (response :status)
     200 (parse-json-body response)
     404 nil
-    (throw (RuntimeException. (str "Calling " url " failed: status=" (response :status) ", msg=" (response :body))))))
+    (throw (RuntimeException. (str "Calling " url " failed: status=" (response :status) ", msg=" (response :body) ", error=" (response :error))))))
 
 (defn post-json-with-cas
   ([url session-id body]
@@ -129,5 +129,5 @@
 
 (defn get-json-with-cas
   [url session-id]
-  (let [promise (get-as-promise url {:headers {"Cookie" (str "JSESSIONID=" session-id)}})]
+  (let [promise (get-as-promise url {:timeout 200000 :headers {"Cookie" (str "JSESSIONID=" session-id)}})]
     (d/chain promise #(handle-json-response url %))))
