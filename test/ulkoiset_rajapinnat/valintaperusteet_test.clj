@@ -1,4 +1,4 @@
-(ns ulkoiset-rajapinnat.odw-test
+(ns ulkoiset-rajapinnat.valintaperusteet-test
   (:require [manifold.deferred :as d]
             [clojure.test :refer :all]
             [clojure.data :refer [diff]]
@@ -30,23 +30,23 @@
     "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (d/future {:status 200 :body avaimet-json})
     (d/future {:status 404 :body "[]"})))
 
-(deftest odw-api-test
-  (testing "Odw -> hakukohde not found"
+(deftest valintaperusteet-api-test
+  (testing "valintaperusteet -> hakukohde not found"
     (with-redefs [post-json-as-promise (fn [a b c] (d/future {:status 404 :body "[]"}))
                   fetch-jsessionid (fn [a b c d] (str "FAKEJSESSIONID"))]
-      (let [response (client/post (api-call "/api/odw/hakukohde") {:body "[\"1.2.3.444\"]" :content-type :json})
+      (let [response (client/post (api-call "/api/valintaperusteet/hakukohde") {:body "[\"1.2.3.444\"]" :content-type :json})
             status (-> response :status)
             body (-> response :body)]
         (is (= status 200))
         (is (= body "[]")))))
-  (testing "Odw -> hakukohteet found"
+  (testing "valintaperusteet -> hakukohteet found"
     (with-redefs [post-json-as-promise (fn [url data options] (mock-endpoints url data options))
                   fetch-jsessionid (fn [a b c d] (str "FAKEJSESSIONID"))]
-      (let [response (client/post (api-call "/api/odw/hakukohde") {:body "[\"1.2.246.562.20.16152550832\", \"1.2.246.562.20.96011436637\", \"1.2.246.562.20.76494006901\", \"1.2.246.562.20.18496942519\"]" :content-type :json})
+      (let [response (client/post (api-call "/api/valintaperusteet/hakukohde") {:body "[\"1.2.246.562.20.16152550832\", \"1.2.246.562.20.96011436637\", \"1.2.246.562.20.76494006901\", \"1.2.246.562.20.18496942519\"]" :content-type :json})
             status (-> response :status)
             body (-> (parse-json-body response))]
         (is (= status 200))
-        (def expected (parse-string (slurp "test/resources/odw-result.json")))
+        (def expected (parse-string (slurp "test/resources/valintaperusteet-result.json")))
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference)))))
 

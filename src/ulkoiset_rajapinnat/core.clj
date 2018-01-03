@@ -12,7 +12,7 @@
         [ulkoiset-rajapinnat.hakukohde :refer [hakukohde-resource]]
         [ulkoiset-rajapinnat.hakemus :refer [hakemus-resource]]
         [ulkoiset-rajapinnat.vastaanotto :refer [vastaanotto-resource]]
-        [ulkoiset-rajapinnat.odw :refer [odw-resource]]
+        [ulkoiset-rajapinnat.valintaperusteet :refer [valintaperusteet-resource]]
         [ulkoiset-rajapinnat.utils.config :refer :all]
         org.httpkit.server
         )
@@ -58,10 +58,10 @@
           config ticket
           (partial hakemus-resource config hakuapp-mongo-client haku-oid palauta-null-arvot)))
       (POST "/valintaperusteet/hakukohde" [ticket]
-        :summary "ODW-rajapinta"
+        :summary "Hakukohteet valintaperusteista"
         (access-log-with-ticket-check-with-channel
           config ticket
-          (partial odw-resource config))))
+          (partial valintaperusteet-resource config))))
     (ANY "/*" []
       :summary "Not found page"
       (access-log (not-found "Page not found")))))

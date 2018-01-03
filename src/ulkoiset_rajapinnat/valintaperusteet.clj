@@ -1,4 +1,4 @@
-(ns ulkoiset-rajapinnat.odw
+(ns ulkoiset-rajapinnat.valintaperusteet
   (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-request status body-and-close body to-json get-as-promise parse-json-body exception-response post-json-with-cas]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching merge-if-not-nil]]
@@ -35,7 +35,7 @@
           (merge-if-not-nil "valinnanvaiheet" hakukohteen-valinnanvaiheet hakukohde))))
   ) (filter #(not (nil? %)) all-hakukohteet)))
 
-(defn odw-resource [config request channel]
+(defn valintaperusteet-resource [config request channel]
   (let [host (config :host-virkailija)
         username (config :ulkoiset-rajapinnat-cas-username)
         password (config :ulkoiset-rajapinnat-cas-password)]
