@@ -57,7 +57,7 @@
         (access-log-with-ticket-check-with-channel
           config ticket
           (partial hakemus-resource config hakuapp-mongo-client haku-oid palauta-null-arvot)))
-      (POST "/odw/hakukohde" [ticket]
+      (POST "/valintaperusteet/hakukohde" [ticket]
         :summary "ODW-rajapinta"
         (access-log-with-ticket-check-with-channel
           config ticket
