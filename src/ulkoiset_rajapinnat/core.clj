@@ -57,6 +57,11 @@
         (access-log-with-ticket-check-with-channel
           config ticket
           (partial hakemus-resource config hakuapp-mongo-client haku-oid palauta-null-arvot)))
+      (GET "/valintaperusteet/hakukohde/:hakukohde-oid" [hakukohde-oid ticket]
+        :summary "Hakukohde valintaperusteista"
+        (access-log-with-ticket-check-with-channel
+          config ticket
+          (partial valintaperusteet-resource config hakukohde-oid)))
       (POST "/valintaperusteet/hakukohde" [ticket]
         :summary "Hakukohteet valintaperusteista"
         (access-log-with-ticket-check-with-channel

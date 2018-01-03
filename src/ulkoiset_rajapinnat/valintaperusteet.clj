@@ -35,23 +35,27 @@
           (merge-if-not-nil "valinnanvaiheet" hakukohteen-valinnanvaiheet hakukohde))))
   ) (filter #(not (nil? %)) all-hakukohteet)))
 
-(defn valintaperusteet-resource [config request channel]
-  (let [host (config :host-virkailija)
-        username (config :ulkoiset-rajapinnat-cas-username)
-        password (config :ulkoiset-rajapinnat-cas-password)]
-    (-> (let-flow [session-id (fetch-jsessionid host "/valintaperusteet-service" username password)
-                   post-with-session-id (partial post-json-with-cas host session-id)
-                   hakukohteet (post-with-session-id hakukohteet-api (parse-json-request request))
-                   hakukohde-oidit (map #(get % "oid") hakukohteet)
-                   valinnanvaiheet (post-with-session-id valinnanvaiheet-api hakukohde-oidit)
-                   valinnanvaihe-oidit (map #(get % "oid") (flatten (map #(get % "valinnanvaiheet") valinnanvaiheet)))
-                   valintatapajonot (post-with-session-id valintatapajonot-api valinnanvaihe-oidit)
-                   hakijaryhmat (post-with-session-id hakijaryhmat-api hakukohde-oidit)
-                   valintaryhmat (post-with-session-id valintaryhmat-api hakukohde-oidit)
-                   syotettavat-arvot (post-with-session-id syotettavat-arvot-api hakukohde-oidit)]
-                  (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat valintaryhmat syotettavat-arvot))]
-                    (-> channel
-                        (status 200)
-                        (body-and-close json))))
-        (catch Exception (exception-response channel)))
-    (schedule-task (* 1000 60 60) (close channel))))
+(defn valintaperusteet-resource
+  ([config request channel]
+    (valintaperusteet-resource config nil request channel))
+  ([config hakukohde-oid request channel]
+    (def requested-oids (if (nil? hakukohde-oid) (parse-json-request request) (list hakukohde-oid)))
+    (let [host (config :host-virkailija)
+          username (config :ulkoiset-rajapinnat-cas-username)
+          password (config :ulkoiset-rajapinnat-cas-password)]
+      (-> (let-flow [session-id (fetch-jsessionid host "/valintaperusteet-service" username password)
+                     post-with-session-id (partial post-json-with-cas host session-id)
+                     hakukohteet (post-with-session-id hakukohteet-api requested-oids)
+                     hakukohde-oidit (map #(get % "oid") hakukohteet)
+                     valinnanvaiheet (post-with-session-id valinnanvaiheet-api hakukohde-oidit)
+                     valinnanvaihe-oidit (map #(get % "oid") (flatten (map #(get % "valinnanvaiheet") valinnanvaiheet)))
+                     valintatapajonot (post-with-session-id valintatapajonot-api valinnanvaihe-oidit)
+                     hakijaryhmat (post-with-session-id hakijaryhmat-api hakukohde-oidit)
+                     valintaryhmat (post-with-session-id valintaryhmat-api hakukohde-oidit)
+                     syotettavat-arvot (post-with-session-id syotettavat-arvot-api hakukohde-oidit)]
+                    (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat valintaryhmat syotettavat-arvot))]
+                      (-> channel
+                          (status 200)
+                          (body-and-close json))))
+          (catch Exception (exception-response channel)))
+      (schedule-task (* 1000 60 60) (close channel)))))
