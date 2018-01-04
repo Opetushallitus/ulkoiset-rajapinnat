@@ -45,14 +45,15 @@
           password (config :ulkoiset-rajapinnat-cas-password)]
       (-> (let-flow [session-id (fetch-jsessionid host "/valintaperusteet-service" username password)
                      post-with-session-id (partial post-json-with-cas host session-id)
-                     hakukohteet (post-with-session-id hakukohteet-api requested-oids)
+                     post-if-not-empty (fn [api data] (if (not (empty? data)) (post-with-session-id api data)))
+                     hakukohteet (post-if-not-empty hakukohteet-api requested-oids)
                      hakukohde-oidit (map #(get % "oid") hakukohteet)
-                     valinnanvaiheet (post-with-session-id valinnanvaiheet-api hakukohde-oidit)
+                     valinnanvaiheet (post-if-not-empty valinnanvaiheet-api hakukohde-oidit)
                      valinnanvaihe-oidit (map #(get % "oid") (flatten (map #(get % "valinnanvaiheet") valinnanvaiheet)))
-                     valintatapajonot (post-with-session-id valintatapajonot-api valinnanvaihe-oidit)
-                     hakijaryhmat (post-with-session-id hakijaryhmat-api hakukohde-oidit)
-                     valintaryhmat (post-with-session-id valintaryhmat-api hakukohde-oidit)
-                     syotettavat-arvot (post-with-session-id syotettavat-arvot-api hakukohde-oidit)]
+                     valintatapajonot (post-if-not-empty valintatapajonot-api valinnanvaihe-oidit)
+                     hakijaryhmat (post-if-not-empty hakijaryhmat-api hakukohde-oidit)
+                     valintaryhmat (post-if-not-empty valintaryhmat-api hakukohde-oidit)
+                     syotettavat-arvot (post-if-not-empty syotettavat-arvot-api hakukohde-oidit)]
                     (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat valintaryhmat syotettavat-arvot))]
                       (-> channel
                           (status 200)
