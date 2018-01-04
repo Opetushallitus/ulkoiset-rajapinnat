@@ -105,6 +105,8 @@
                             (on-close channel on-close-handler)
                             (try
                               (operation request channel)
-                              (catch Exception e (log/error "Uncaught exception in request handler!"))))
+                              (catch Exception e (do
+                                                   (log/error "Uncaught exception in request handler!")
+                                                   (log/error e)))))
                           (catch Exception e (handle-unauthorized channel start-time))))))
       (access-log (bad-request "Ticket parameter required!")))))
