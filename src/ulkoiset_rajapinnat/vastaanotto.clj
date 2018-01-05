@@ -1,5 +1,5 @@
 (ns ulkoiset-rajapinnat.vastaanotto
-  (:require [manifold.deferred :refer [let-flow catch chain]]
+  (:require [manifold.deferred :refer [let-flow catch chain zip]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.cas :refer [jsessionid-fetcher]]
@@ -13,7 +13,9 @@
 (def valintaperusteet-service-api "%s/valintaperusteet-service/resources/hakukohde/avaimet")
 ;TODO korjaa audit-parametrit, kun CAS-autentikointi päällä
 (def valintapiste-service-api "%s/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent")
-(def suoritusrekisteri-service-api "%s/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=%s")
+(def suoritusrekisteri-service-api "%s/suoritusrekisteri/rest/v1/oppijat/")
+
+(def oppijat_batch_size 5000)
 
 (defn vastaanotto-builder [kokeet valintapisteet kielikokeet]
   (defn- hyvaksytty-ensikertalaisen-hakijaryhmasta [hakijaryhmat]
@@ -125,12 +127,15 @@
     (let [promise (post-json-with-cas host jsession-id valintaperusteet-service-api hakukohde-oidit)]
       (chain promise recursive-find-valintakokeet))))
 
-(defn fetch-ammatilliset-kielikokeet [fetch-jsession-id host haku-oid]
+(defn fetch-ammatilliset-kielikokeet [fetch-jsession-id host haku-oid kaikki-oppijanumerot]
+  (defn- fetch-ammatilliset-kielikokeet-oppijanumeroille [jsession-id oppijanumerot]
+    (let [promise (post-json-with-cas host jsession-id suoritusrekisteri-service-api { "ensikertalaisuudet" false "haku" haku-oid "oppijanumerot" oppijanumerot})]
+      (chain promise recursive-find-kielikokeet)))
   (let-flow [jsession-id (fetch-jsession-id "/suoritusrekisteri")]
-     (let [promise (get-json-with-cas (format suoritusrekisteri-service-api host haku-oid) jsession-id)]
-       (chain promise recursive-find-kielikokeet))))
+            (apply zip (map #(fetch-ammatilliset-kielikokeet-oppijanumeroille jsession-id %) (partition oppijat_batch_size oppijat_batch_size nil kaikki-oppijanumerot)))))
 
 (defn vastaanotto-resource [config haku-oid request channel]
+  (log/info (str "oppijat batch size = " oppijat_batch_size))
   (let [vastaanotto-host-virkailija (config :vastaanotto-host-virkailija)
         valintapiste-host-virkailija (config :valintapiste-host-virkailija)
         host-virkailija (config :host-virkailija)
@@ -142,7 +147,8 @@
                    fetch-jsession-id (jsessionid-fetcher host-virkailija  username password)
                    valintakokeet (fetch-kokeet fetch-jsession-id host-virkailija hakukohde-oidit)
                    valintapisteet (fetch-valintapisteet valintapiste-host-virkailija hakemus-oidit)
-                   kielikokeet (fetch-ammatilliset-kielikokeet  fetch-jsession-id host-virkailija haku-oid)]
+                   oppijanumerot (map #(% "hakijaOid") vastaanotot)
+                   kielikokeet (fetch-ammatilliset-kielikokeet  fetch-jsession-id host-virkailija haku-oid oppijanumerot)]
                   (log/info (str "Hakukohde_oidit=" (count hakukohde-oidit)))
                   (log/info hakukohde-oidit)
                   (log/info (str "Hakemus_oidit=" (count hakemus-oidit)))
@@ -152,8 +158,8 @@
                   (log/info (str "Valintapisteet=" (count valintapisteet)))
                   ;(log/info valintapisteet)
                   (log/info (str "Kielikokeet=" (count kielikokeet)))
-                  ;(log/info kielikokeet)
-                  (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet kielikokeet)
+                  ;(log/info (apply merge kielikokeet))
+                  (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet (apply merge kielikokeet))
                         json (to-json (map build-vastaanotto vastaanotot))]
                     (-> channel
                         (status 200)
