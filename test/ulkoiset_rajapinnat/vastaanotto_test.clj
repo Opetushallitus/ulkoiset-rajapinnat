@@ -23,7 +23,7 @@
     "http://fake.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (d/future {:status 200 :body vastaanotot-json})
     "http://fake.internal.aws.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent" (d/future {:status 200 :body pistetiedot-json })
     "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (d/future {:status 200 :body avaimet-json})
-    "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=true&haku=1.2.246.562.29.25191045126" (d/future {:status 200 :body oppijat-json})
+    "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (d/future {:status 200 :body oppijat-json})
     (d/future {:status 404 :body "[]"})))
 
 (defn mock-get-as-promise

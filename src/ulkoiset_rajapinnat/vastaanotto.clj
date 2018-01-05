@@ -13,7 +13,7 @@
 (def valintaperusteet-service-api "%s/valintaperusteet-service/resources/hakukohde/avaimet")
 ;TODO korjaa audit-parametrit, kun CAS-autentikointi päällä
 (def valintapiste-service-api "%s/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent")
-(def suoritusrekisteri-service-api "%s/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=true&haku=%s")
+(def suoritusrekisteri-service-api "%s/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=%s")
 
 (defn vastaanotto-builder [kokeet valintapisteet kielikokeet]
   (defn- hyvaksytty-ensikertalaisen-hakijaryhmasta [hakijaryhmat]

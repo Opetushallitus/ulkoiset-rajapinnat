@@ -1,6 +1,5 @@
 [
   {
-    "ensikertalainen": true,
     "id": "1.2.246.562.24.55426278979",
     "opiskelu": [],
     "opiskeluoikeudet": [],
@@ -8,7 +7,6 @@
     "suoritukset": []
   },
   {
-    "ensikertalainen": false,
     "id": "1.2.246.562.24.25317210607",
     "opiskelu": [],
     "opiskeluoikeudet": [
@@ -99,7 +97,6 @@
     ]
   },
   {
-    "ensikertalainen": true,
     "id": "1.2.246.562.24.68847333464",
     "opiskelu": [],
     "opiskeluoikeudet": [],
