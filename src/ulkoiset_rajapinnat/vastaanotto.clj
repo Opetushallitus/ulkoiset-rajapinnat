@@ -119,15 +119,18 @@
 
 (defn fetch-valintapisteet [host hakemus-oidit]
   (defn- group-valintapisteet [valintapisteet] (apply merge (map (fn [p] {(p "hakemusOID") (p "pisteet")}) valintapisteet)))
+  (log/info (str "Hakemuksia " (count hakemus-oidit) " kpl"))
   (let [promise (post-json-as-promise (format valintapiste-service-api host) hakemus-oidit {})]
     (chain promise parse-json-body group-valintapisteet)))
 
 (defn fetch-kokeet [fetch-jsession-id host hakukohde-oidit]
+  (log/info (str "Hakukohteita " (count hakukohde-oidit) " kpl"))
   (let-flow [jsession-id (fetch-jsession-id "/valintaperusteet-service")]
     (let [promise (post-json-with-cas host jsession-id valintaperusteet-service-api hakukohde-oidit)]
       (chain promise recursive-find-valintakokeet))))
 
 (defn fetch-ammatilliset-kielikokeet [fetch-jsession-id host haku-oid kaikki-oppijanumerot]
+  (log/info (str "Oppijanumeroita " (count kaikki-oppijanumerot) " kpl"))
   (defn- fetch-ammatilliset-kielikokeet-oppijanumeroille [jsession-id oppijanumerot]
     (let [promise (post-json-with-cas (format suoritusrekisteri-service-api host haku-oid) jsession-id oppijanumerot)]
       (chain promise recursive-find-kielikokeet)))

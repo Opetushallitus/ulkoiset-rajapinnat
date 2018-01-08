@@ -41,6 +41,7 @@
          json-options {:body (to-json data)
                        :headers {"Content-Type" mime-application-json}}
          merged-options (merge-with into json-options options)]
+     (log/info (str "POST " url))
      (http/post url merged-options (fn [resp] (d/success! deferred resp)))
      deferred)))
 
@@ -49,6 +50,7 @@
    (get-as-promise url {}))
   ([url options]
    (let [deferred (d/deferred)]
+     (log/info (str "GET " url))
      (http/get url options (fn [resp]
                         (d/success! deferred resp)
                         ))
@@ -122,7 +124,7 @@
 (defn post-json-with-cas
   ([url session-id body]
     (let [promise (post-json-as-promise url body {:headers {"Cookie" (str "JSESSIONID=" session-id)}})]
-      (log/info (str url "(JSESSIONID=" session-id ")"))
+      (log/debug (str url "(JSESSIONID=" session-id ")"))
       (d/chain promise #(handle-json-response url %))))
   ([host session-id url-template body]
     (post-json-with-cas (format url-template host) session-id body)))
@@ -130,4 +132,5 @@
 (defn get-json-with-cas
   [url session-id]
   (let [promise (get-as-promise url {:timeout 200000 :headers {"Cookie" (str "JSESSIONID=" session-id)}})]
+    (log/debug (str url "(JSESSIONID=" session-id ")"))
     (d/chain promise #(handle-json-response url %))))
