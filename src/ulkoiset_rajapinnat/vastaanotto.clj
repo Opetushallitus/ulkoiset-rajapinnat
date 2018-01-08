@@ -15,7 +15,7 @@
 (def valintapiste-service-api "%s/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent")
 (def suoritusrekisteri-service-api "%s/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=%s")
 
-(def oppijat_batch_size 5000)
+(def oppijat-batch-size 5000)
 
 (defn vastaanotto-builder [kokeet valintapisteet kielikokeet]
   (defn- hyvaksytty-ensikertalaisen-hakijaryhmasta [hakijaryhmat]
@@ -135,10 +135,10 @@
     (let [promise (post-json-with-cas (format suoritusrekisteri-service-api host haku-oid) jsession-id oppijanumerot)]
       (chain promise recursive-find-kielikokeet)))
   (let-flow [jsession-id (fetch-jsession-id "/suoritusrekisteri")]
-            (apply zip (map #(fetch-ammatilliset-kielikokeet-oppijanumeroille jsession-id %) (partition oppijat_batch_size oppijat_batch_size nil kaikki-oppijanumerot)))))
+            (apply zip (map #(fetch-ammatilliset-kielikokeet-oppijanumeroille jsession-id %) (partition oppijat-batch-size oppijat-batch-size nil kaikki-oppijanumerot)))))
 
 (defn vastaanotto-resource [config haku-oid request channel]
-  (log/info (str "oppijat batch size = " oppijat_batch_size))
+  (log/info (str "oppijat batch size = " oppijat-batch-size))
   (let [vastaanotto-host-virkailija (config :vastaanotto-host-virkailija)
         valintapiste-host-virkailija (config :valintapiste-host-virkailija)
         host-virkailija (config :host-virkailija)

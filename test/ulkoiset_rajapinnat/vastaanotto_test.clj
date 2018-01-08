@@ -9,7 +9,7 @@
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise parse-json-body to-json post-json-as-promise get-json-with-cas to-json]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
             [ulkoiset-rajapinnat.fixture :refer :all]
-            [ulkoiset-rajapinnat.vastaanotto :refer [oppijat_batch_size]]))
+            [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size]]))
 
 (use-fixtures :once fixture)
 
@@ -36,7 +36,7 @@
 
 (deftest vastaanotto-api-test
   (testing "Fetch vastaanotot"
-    (with-redefs [oppijat_batch_size 2
+    (with-redefs [oppijat-batch-size 2
                   post-json-as-promise (fn [url data options] (mock-endpoints url data options))
                   fetch-jsessionid (fn [a b c d] (str "FAKEJSESSIONID"))
                   get-as-promise (partial mock-get-as-promise)]
