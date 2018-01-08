@@ -70,9 +70,6 @@
      response)))
 
 (defn check-ticket-is-valid-and-user-has-required-roles [ticket]
-  (go
-    (log/error "TICKET VALIDATION IS DISABLED! REAL VALIDATION CODE IN COMMENT BLOCK!"))
-  (comment
     (go-try
       (let [host-virkailija (resolve-url :cas-client.host)
             service (str host-virkailija "/ulkoiset-rajapinnat")
@@ -81,7 +78,7 @@
             roles (ldap-user :roles)]
         (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
           ldap-user
-          (RuntimeException. "Required roles missing!"))))))
+          (RuntimeException. "Required roles missing!")))))
 
 (defn handle-exception [channel start-time exception]
   (let [message (.getMessage exception)]
