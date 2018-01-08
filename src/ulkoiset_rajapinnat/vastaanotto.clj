@@ -13,7 +13,7 @@
 (def valintaperusteet-service-api "%s/valintaperusteet-service/resources/hakukohde/avaimet")
 ;TODO korjaa audit-parametrit, kun CAS-autentikointi päällä
 (def valintapiste-service-api "%s/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent")
-(def suoritusrekisteri-service-api "%s/suoritusrekisteri/rest/v1/oppijat/")
+(def suoritusrekisteri-service-api "%s/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=%s")
 
 (def oppijat_batch_size 5000)
 
@@ -129,7 +129,7 @@
 
 (defn fetch-ammatilliset-kielikokeet [fetch-jsession-id host haku-oid kaikki-oppijanumerot]
   (defn- fetch-ammatilliset-kielikokeet-oppijanumeroille [jsession-id oppijanumerot]
-    (let [promise (post-json-with-cas host jsession-id suoritusrekisteri-service-api { "ensikertalaisuudet" false "haku" haku-oid "oppijanumerot" oppijanumerot})]
+    (let [promise (post-json-with-cas (format suoritusrekisteri-service-api host haku-oid) jsession-id oppijanumerot)]
       (chain promise recursive-find-kielikokeet)))
   (let-flow [jsession-id (fetch-jsession-id "/suoritusrekisteri")]
             (apply zip (map #(fetch-ammatilliset-kielikokeet-oppijanumeroille jsession-id %) (partition oppijat_batch_size oppijat_batch_size nil kaikki-oppijanumerot)))))
