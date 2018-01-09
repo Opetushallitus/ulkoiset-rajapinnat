@@ -9,12 +9,14 @@ const [username, password, hostname] = fs.readFileSync(file_with_creds_and_host,
 
 request.post(hostname + '/cas/v1/tickets', {form:{username:username, password:password}}, (error,response,htmlPageWithTicket) => {
 	$ = cheerio.load(htmlPageWithTicket)
-	const ticket = $('form').attr('action')
+	const tgt = $('form').attr('action')
 
-	const url = hostname + '/ulkoiset-rajapinnat/api/haku-for-year/2001?ticket=' + ticket
-	console.log('Calling URL ' + url)
-	request.get(url, (e,r,body) => {
-		console.log(body)
+	request.post(tgt, {form:{service:hostname+'/ulkoiset-rajapinnat'}},(error,response,serviceticket) => {
+		const url = hostname + '/ulkoiset-rajapinnat/api/haku-for-year/2001?ticket=' + serviceticket
+		console.log('Calling URL ' + url)
+		request.get(url, (e,r,body) => {
+			console.log(body)
+		})
 	})
 })
 
