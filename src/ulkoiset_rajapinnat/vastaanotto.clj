@@ -16,6 +16,7 @@
 (def suoritusrekisteri-service-api "%s/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=%s")
 
 (def oppijat-batch-size 5000)
+(def valintapisteet-batch-size 30000)
 
 (defn vastaanotto-builder [kokeet valintapisteet kielikokeet]
   (defn- hyvaksytty-ensikertalaisen-hakijaryhmasta [hakijaryhmat]
@@ -117,11 +118,14 @@
   (let [promise (get-as-promise (format valinta-tulos-service-api host haku-oid))]
     (chain promise parse-json-body)))
 
-(defn fetch-valintapisteet [host hakemus-oidit]
+(defn fetch-valintapisteet [host kaikki-hakemus-oidit]
+  (log/info (str "Hakemuksia " (count kaikki-hakemus-oidit) " kpl"))
+  (def url (format valintapiste-service-api host))
   (defn- group-valintapisteet [valintapisteet] (apply merge (map (fn [p] {(p "hakemusOID") (p "pisteet")}) valintapisteet)))
-  (log/info (str "Hakemuksia " (count hakemus-oidit) " kpl"))
-  (let [promise (post-json-as-promise (format valintapiste-service-api host) hakemus-oidit {})]
-    (chain promise parse-json-body group-valintapisteet)))
+  (defn- fetch-valintapisteet-hakemuksille [hakemus-oidit]
+    (let [promise (post-json-as-promise url hakemus-oidit {})]
+      (chain promise parse-json-body group-valintapisteet)))
+  (apply zip (map #(fetch-valintapisteet-hakemuksille %) (partition valintapisteet-batch-size valintapisteet-batch-size nil kaikki-hakemus-oidit))))
 
 (defn fetch-kokeet [fetch-jsession-id host hakukohde-oidit]
   (log/info (str "Hakukohteita " (count hakukohde-oidit) " kpl"))
@@ -162,7 +166,7 @@
                   ;(log/info valintapisteet)
                   (log/info (str "Kielikokeet=" (count kielikokeet)))
                   ;(log/info (apply merge kielikokeet))
-                  (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet (apply merge kielikokeet))
+                  (let [build-vastaanotto (vastaanotto-builder valintakokeet (into {} valintapisteet) (apply merge kielikokeet))
                         json (to-json (map build-vastaanotto vastaanotot))]
                     (-> channel
                         (status 200)

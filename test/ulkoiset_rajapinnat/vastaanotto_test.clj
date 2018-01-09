@@ -9,7 +9,7 @@
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise parse-json-body to-json post-json-as-promise get-json-with-cas to-json]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
             [ulkoiset-rajapinnat.fixture :refer :all]
-            [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size]]))
+            [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size valintapisteet-batch-size]]))
 
 (use-fixtures :once fixture)
 
@@ -20,12 +20,14 @@
 
 (defn oppijat-chunk [oppijanumerot]
   (to-json (filter (fn [x] (some #(= (get x "oppijanumero") %) oppijanumerot)) (parse-string oppijat-json))))
+(defn valintapisteet-chunk [hakemus-oidit]
+  (to-json (filter (fn [x] (some #(= (get x "hakemusOID") %) hakemus-oidit)) (parse-string pistetiedot-json))))
 
 (defn mock-endpoints [url data options]
   (log/info url)
   (case url
     "http://fake.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (d/future {:status 200 :body vastaanotot-json})
-    "http://fake.internal.aws.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent" (d/future {:status 200 :body pistetiedot-json })
+    "http://fake.internal.aws.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent" (d/future {:status 200 :body (valintapisteet-chunk data) })
     "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (d/future {:status 200 :body avaimet-json})
     "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (d/future {:status 200 :body (oppijat-chunk data)})
     (d/future {:status 404 :body "[]"})))
@@ -37,6 +39,7 @@
 (deftest vastaanotto-api-test
   (testing "Fetch vastaanotot"
     (with-redefs [oppijat-batch-size 2
+                  valintapisteet-batch-size 2
                   post-json-as-promise (fn [url data options] (mock-endpoints url data options))
                   fetch-jsessionid (fn [a b c d] (str "FAKEJSESSIONID"))
                   get-as-promise (partial mock-get-as-promise)]
