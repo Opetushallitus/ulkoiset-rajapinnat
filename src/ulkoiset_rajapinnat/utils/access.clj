@@ -70,15 +70,17 @@
      response)))
 
 (defn check-ticket-is-valid-and-user-has-required-roles [ticket]
-    (go-try
-      (let [host-virkailija (resolve-url :cas-client.host)
-            service (str host-virkailija "/ulkoiset-rajapinnat")
-            username (<? (validate-service-ticket service ticket))
-            ldap-user (fetch-user-from-ldap username)
-            roles (ldap-user :roles)]
-        (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
-          ldap-user
-          (RuntimeException. "Required roles missing!")))))
+  (go-try
+    (let [host-virkailija (resolve-url :cas-client.host)
+          service (str host-virkailija "/ulkoiset-rajapinnat")
+          username (<? (validate-service-ticket service ticket))
+          ldap-user (fetch-user-from-ldap username)
+          roles (ldap-user :roles)]
+      (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
+        ldap-user
+        (do
+          (log/error "User" username "is missing role APP_ULKOISETRAJAPINNAT_READ!")
+          (RuntimeException. "Required roles missing!"))))))
 
 (defn handle-exception [channel start-time exception]
   (let [message (.getMessage exception)]
