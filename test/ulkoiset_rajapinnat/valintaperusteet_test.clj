@@ -6,6 +6,8 @@
             [clj-http.client :as client]
             [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string]]
+            [clojure.core.async :refer [go]]
+            [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles]]
             [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json post-json-as-channel]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.fixture :refer :all]
@@ -35,16 +37,18 @@
 
 (deftest valintaperusteet-api-test
   (testing "valintaperusteet -> hakukohde not found"
-    (with-redefs [post-json-as-channel (fn [url data mapper j-session-id] (throw (RuntimeException. (str "GOT 404 FROM URL " url))) )
-                  fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go {}))
+                  post-json-as-channel (fn [url data mapper j-session-id] (throw (RuntimeException. (str "GOT 404 FROM URL " url))) )
+                  fetch-jsessionid-channel (fn [& _] (mock-channel "FAKEJSESSIONID"))]
       (try
         (let [response (client/post (api-call "/api/valintaperusteet/hakukohde") {:body "[\"1.2.3.444\"]" :content-type :json})]
             (is (= false true)))
         (catch Exception e
           (is (= 500 ((ex-data e) :status)))))))
   (testing "valintaperusteet -> hakukohteet found"
-    (with-redefs [http/post (fn [url options transform] (mock-http url options transform))
-                  fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go {}))
+                  http/post (fn [url options transform] (mock-http url options transform))
+                  fetch-jsessionid-channel (fn [& _] (mock-channel "FAKEJSESSIONID"))]
       (let [response (client/post (api-call "/api/valintaperusteet/hakukohde") {:body "[\"1.2.246.562.20.16152550832\", \"1.2.246.562.20.96011436637\", \"1.2.246.562.20.76494006901\", \"1.2.246.562.20.18496942519\"]" :content-type :json})
             status (-> response :status)
             body (-> (parse-json-body response))]

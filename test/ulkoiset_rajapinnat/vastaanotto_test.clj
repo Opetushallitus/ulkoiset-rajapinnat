@@ -7,6 +7,8 @@
             [clj-http.client :as client]
             [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string]]
+            [clojure.core.async :refer [go]]
+            [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles]]
             [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json to-json]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.fixture :refer :all]
@@ -38,7 +40,8 @@
 
 (deftest vastaanotto-api-test
   (testing "No vastaanotot found"
-    (with-redefs [oppijat-batch-size 2
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [c t] (go {}))
+                  oppijat-batch-size 2
                   valintapisteet-batch-size 2
                   http/get (fn [url options transform] (channel-response transform url 404 ""))
                   http/post (fn [url options transform] (channel-response transform url 404 ""))
@@ -49,7 +52,8 @@
         (catch Exception e
           (is (= 500 ((ex-data e) :status)))))))
   (testing "Fetch vastaanotot"
-    (with-redefs [oppijat-batch-size 2
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [c t] (go {}))
+                  oppijat-batch-size 2
                   valintapisteet-batch-size 2
                   http/get (fn [url options transform] (mock-http url options transform))
                   http/post (fn [url options transform] (mock-http url options transform))
