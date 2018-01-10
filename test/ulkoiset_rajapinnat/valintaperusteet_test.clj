@@ -37,7 +37,7 @@
 
 (deftest valintaperusteet-api-test
   (testing "valintaperusteet -> hakukohde not found"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go {}))
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   post-json-as-channel (fn [url data mapper j-session-id] (throw (RuntimeException. (str "GOT 404 FROM URL " url))) )
                   fetch-jsessionid-channel (fn [& _] (mock-channel "FAKEJSESSIONID"))]
       (try
@@ -46,7 +46,7 @@
         (catch Exception e
           (is (= 500 ((ex-data e) :status)))))))
   (testing "valintaperusteet -> hakukohteet found"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go {}))
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   http/post (fn [url options transform] (mock-http url options transform))
                   fetch-jsessionid-channel (fn [& _] (mock-channel "FAKEJSESSIONID"))]
       (let [response (client/post (api-call "/api/valintaperusteet/hakukohde") {:body "[\"1.2.246.562.20.16152550832\", \"1.2.246.562.20.96011436637\", \"1.2.246.562.20.76494006901\", \"1.2.246.562.20.18496942519\"]" :content-type :json})
