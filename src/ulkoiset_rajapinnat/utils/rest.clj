@@ -23,6 +23,16 @@
       (log/error "Expected 200 OK! But got STATUS =" (response :status) " from url =" (get-in response [:opts :url]) "!")
       (throw (new RuntimeException "Expected 200 OK!")))))
 
+(defn parse-json-body-stream [response]
+  (if (= (response :status) 200)
+    (try
+      (parse-stream (new java.io.InputStreamReader (response :body)))
+      (catch Exception e
+        (log/error "Failed to read JSON!" e)))
+    (do
+      (log/error "Expected 200 OK! But got STATUS =" (response :status) " from url =" (get-in response [:opts :url]) "!")
+      (throw (new RuntimeException "Expected 200 OK!")))))
+
 (defn to-json [obj]
   (generate-string obj))
 

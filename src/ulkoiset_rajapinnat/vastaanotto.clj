@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.cas :refer [jsessionid-fetcher]]
-            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json post-json-with-cas post-json-as-promise get-json-with-cas]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json post-json-with-cas post-json-as-promise get-json-with-cas parse-json-body-stream]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [org.httpkit.server :refer :all]
@@ -115,8 +115,8 @@
     (merge (find-kielikoe (first oppijat)) (recursive-find-kielikokeet (rest oppijat)))))
 
 (defn fetch-vastaanotot [host haku-oid]
-  (let [promise (get-as-promise (format valinta-tulos-service-api host haku-oid))]
-    (chain promise parse-json-body)))
+  (let [promise (get-as-promise (format valinta-tulos-service-api host haku-oid) {:as :stream})]
+    (chain promise parse-json-body-stream)))
 
 (defn fetch-valintapisteet [host kaikki-hakemus-oidit]
   (log/info (str "Hakemuksia " (count kaikki-hakemus-oidit) " kpl"))
@@ -151,7 +151,7 @@
     (-> (let-flow [vastaanotot (fetch-vastaanotot vastaanotto-host-virkailija haku-oid)
                    hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
                    hakemus-oidit (map #(% "hakemusOid") vastaanotot)
-                   fetch-jsession-id (jsessionid-fetcher host-virkailija  username password)
+                   fetch-jsession-id (jsessionid-fetcher host-virkailija username password)
                    valintakokeet (fetch-kokeet fetch-jsession-id host-virkailija hakukohde-oidit)
                    valintapisteet (fetch-valintapisteet valintapiste-host-virkailija hakemus-oidit)
                    oppijanumerot (map #(% "hakijaOid") vastaanotot)
