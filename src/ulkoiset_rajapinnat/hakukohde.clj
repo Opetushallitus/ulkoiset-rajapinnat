@@ -2,6 +2,7 @@
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
+            [schema.core :as s]
             [ulkoiset-rajapinnat.haku :refer [fetch-koulutukset fetch-hakukohde-tulos]]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json]]
@@ -12,6 +13,24 @@
             [manifold.deferred :as d]))
 
 (def hakukohde-api "%s/tarjonta-service/rest/v1/hakukohde/search?hakuOid=%s&tila=JULKAISTU")
+
+(s/defschema Hakukohde
+             {:hakukohteen_oid s/Str
+              (s/optional-key :organisaatiot) {
+                                               (s/optional-key :organisaation_oid) s/Str
+                                               (s/optional-key :koulutustoimijan_ytunnus) s/Str
+                                               (s/optional-key :oppilaitos_koodi) s/Str
+                                               (s/optional-key :organisaation_kuntakoodi) s/Str
+                                               (s/optional-key :organisaation_nimi) s/Str }
+              (s/optional-key :hakukohteen_nimi) {:fi s/Str :en s/Str :sv s/Str}
+              (s/optional-key :koulutuksen_opetuskieli) [s/Str]
+              (s/optional-key :hakukohteen_koulutuskoodit) [s/Str]
+              (s/optional-key :hakukohteen_koodi) s/Str
+              (s/optional-key :pohjakoulutusvaatimus) s/Str
+              (s/optional-key :hakijalle_ilmoitetut_aloituspaikat) s/Int
+              (s/optional-key :valintojen_aloituspaikat) s/Int
+              (s/optional-key :ensikertalaisten_aloituspaikat) s/Str
+              })
 
 (defn transform-organisaatio
   [organisaatio-entry]

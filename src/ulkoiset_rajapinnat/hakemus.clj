@@ -3,6 +3,7 @@
             [clojure.core.async :refer :all]
             [clojure.tools.logging :as log]
             [full.async :refer :all]
+            [schema.core :as s]
             [ulkoiset-rajapinnat.onr :refer :all]
             [ulkoiset-rajapinnat.utils.mongo :as m]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-for-oids]]
@@ -17,6 +18,34 @@
                            loop  core-loop}))
 
 (def size-of-henkilo-batch-from-onr-at-once 500)
+
+(s/defschema Hakemus
+  {:haku_oid s/Str
+   :hakemus_oid s/Str
+   :henkilo_oid s/Str
+   (s/optional-key :yksiloity) s/Str
+   (s/optional-key :henkilotunnus) s/Str
+   (s/optional-key :syntyma_aika) s/Str
+   (s/optional-key :etunimet) s/Str
+   (s/optional-key :sukunimi) s/Str
+   (s/optional-key :sukupuoli_koodi) s/Str
+   (s/optional-key :aidinkieli) s/Str
+
+   (s/optional-key :hakijan_asuinmaa) s/Str
+   (s/optional-key :hakijan_kotikunta) s/Str
+   (s/optional-key :hakijan_kansalaisuus) s/Str
+
+   (s/optional-key :hakijan_koulusivistyskieli) s/Str
+   (s/optional-key :pohjakoulutus_2aste) s/Str
+   (s/optional-key :pohjakoulutus_kk) s/Str
+   (s/optional-key :lahtokoulun_organisaatio_oid) s/Str
+   (s/optional-key :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa) s/Str
+
+   :hakutoiveet {
+                 (s/optional-key :hakukohde_oid) s/Str
+                 (s/optional-key :harkinnanvarainen_valinta) s/Str
+                 (s/optional-key :sija) s/Str
+                 }})
 
 (comment
   ; missing fields

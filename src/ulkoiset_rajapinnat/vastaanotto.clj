@@ -2,12 +2,32 @@
   (:require [manifold.deferred :refer [let-flow catch chain zip]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
+            [schema.core :as s]
             [ulkoiset-rajapinnat.utils.cas :refer [jsessionid-fetcher]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json post-json-with-cas post-json-as-promise get-json-with-cas]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
+
+(s/defschema Vastaanotto
+  {:henkilo_oid s/Str
+   (s/optional-key :hakutoiveet) {
+                                  (s/optional-key :hakukohde_oid) s/Any
+                                  (s/optional-key :valinnan_tila) s/Any
+                                  (s/optional-key :valinnan_tilan_lisatieto) s/Any
+                                  (s/optional-key :valintatapajono) s/Any
+                                  (s/optional-key :hakijan_lopullinen_jonosija) s/Any
+                                  (s/optional-key :hakijan_jonosijan_tarkenne) s/Any
+                                  (s/optional-key :yhteispisteet) s/Any
+                                  (s/optional-key :ilmoittautumisen_tila) s/Any
+                                  (s/optional-key :vastaanoton_tila) s/Any
+                                  (s/optional-key :alin_hyvaksytty_pistemaara) s/Any
+                                  (s/optional-key :hyvaksytty_harkinnanvaraisesti) s/Any
+                                  (s/optional-key :hyvaksytty_ensikertalaisten_hakijaryhmasta) s/Any
+                                  (s/optional-key :osallistui_paasykokeeseen) s/Any
+                                  (s/optional-key :osallistui_kielikokeeseen) s/Any
+                                  }})
 
 (def valinta-tulos-service-api "%s/valinta-tulos-service/haku/streaming/%s/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true")
 (def valintaperusteet-service-api "%s/valintaperusteet-service/resources/hakukohde/avaimet")

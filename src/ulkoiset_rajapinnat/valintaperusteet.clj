@@ -3,9 +3,13 @@
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching merge-if-not-nil]]
             [org.httpkit.server :refer :all]
+            [schema.core :as s]
             [org.httpkit.timer :refer :all]
             [clojure.tools.logging :as log]
             [manifold.deferred :refer [let-flow catch chain on-realized zip loop]]))
+
+(s/defschema Valintaperusteet
+  {})
 
 (def hakukohteet-api "%s/valintaperusteet-service/resources/hakukohde/hakukohteet")
 (def valinnanvaiheet-api "%s/valintaperusteet-service/resources/hakukohde/valinnanvaiheet")

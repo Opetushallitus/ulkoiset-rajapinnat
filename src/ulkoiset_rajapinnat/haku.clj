@@ -2,23 +2,43 @@
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
+            [schema.core :as s]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
+
+(s/defschema Haku
+             {:haku_oid s/Str
+              (s/optional-key :haku_nimi) {:FI s/Str :EN s/Str :SV s/Str}
+              (s/optional-key :haun_hakukohteiden_oidit) [s/Str]
+              (s/optional-key :hakuvuosi) s/Int
+              (s/optional-key :hakukausi) s/Str
+              (s/optional-key :koulutuksen_alkamisvuosi) s/Int
+              (s/optional-key :koulutuksen_alkamiskausi) s/Str
+              (s/optional-key :hakutyyppi_koodi) s/Str
+              (s/optional-key :hakutapa_koodi) s/Str
+              (s/optional-key :hakukohteiden_priorisointi) s/Bool
+              (s/optional-key :haun_kohdejoukko) s/Str
+              (s/optional-key :haun_kohdejoukon_tarkenne) s/Str
+              })
 
 (def haku-api "%s/tarjonta-service/rest/v1/haku/find?TILA=JULKAISTU&HAKUVUOSI=%s")
 (def haku-api-hakukohde-tulos "%s/tarjonta-service/rest/v1/haku/%s/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1")
 (def haku-api-koulutus "%s/tarjonta-service/rest/v1/koulutus/search?hakuOid=%s")
 
 (defn haku-to-names [kieli haku]
-  (let [a (map #(vector (str "haku_nimi." (get kieli (first %))) (last %)) (haku "nimi"))]
-    (into (sorted-map) (filter #((comp not str/blank?) (last %)) a))))
+  (let [nimet (filter #((comp not str/blank?) (last %)) (haku "nimi"))
+        koodisto_kieli_nimet (map (fn [e] [(get kieli (first e)) (last e)]) nimet)
+        ;a (map #(vector (str "haku_nimi." (get kieli (first %))) (last %)) )
+        ]
+    ;(into (sorted-map) (filter #((comp not str/blank?) (last %)) a))))
+    (into (sorted-map) koodisto_kieli_nimet)))
 
 (defn transform-haku [kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne haku]
   (merge
-    (haku-to-names kieli haku)
     {"haku_oid" (haku "oid")
+     "haku_nimi" (haku-to-names kieli haku)
      "haun_hakukohteiden_oidit" (haku "hakukohdeOids")
      "hakuvuosi" (haku "hakukausiVuosi")
      "hakukausi" (get kausi (strip-version-from-tarjonta-koodisto-uri (haku "hakukausiUri")))

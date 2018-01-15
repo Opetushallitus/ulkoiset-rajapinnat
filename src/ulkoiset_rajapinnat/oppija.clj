@@ -2,6 +2,7 @@
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
+            [schema.core :as s]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket]]
@@ -9,6 +10,9 @@
             [org.httpkit.timer :refer :all]))
 
 (def oppija-api "%s/suoritusrekisteri/rest/v1/oppijat?haku=%s&ticket=%s")
+
+(s/defschema Oppija
+  {:henkilo_oid s/Str})
 
 (comment
   henkilo_oid
