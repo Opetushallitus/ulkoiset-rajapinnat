@@ -9,7 +9,6 @@
         [ulkoiset-rajapinnat.utils.mongo :refer [create-mongo-client]]
         [ulkoiset-rajapinnat.utils.access :refer [access-log access-log-with-ticket-check-with-channel]]
         [ulkoiset-rajapinnat.utils.runtime :refer [shutdown-hook]]
-        [ulkoiset-rajapinnat.oppija :refer [Oppija oppija-resource]]
         [ulkoiset-rajapinnat.haku :refer [Haku haku-resource]]
         [ulkoiset-rajapinnat.hakukohde :refer [Hakukohde hakukohde-resource]]
         [ulkoiset-rajapinnat.hakemus :refer [Hakemus hakemus-resource]]
@@ -49,13 +48,6 @@
         (access-log-with-ticket-check-with-channel
           config ticket
           (partial hakukohde-resource config haku-oid palauta-null-arvot)))
-      (GET "/oppija-for-haku/:haku-oid" [haku-oid kausi ticket]
-        :summary "Oppijat haku OID:lla"
-        :query-params [ticket :- String]
-        :responses {200 {:schema [Oppija]}}
-        (access-log-with-ticket-check-with-channel
-          config ticket
-          (partial oppija-resource config haku-oid)))
       (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi ticket] ; hakuoid + kaudet
         :summary "Vastaanotot haku OID:lla"
         :query-params [ticket :- String]
