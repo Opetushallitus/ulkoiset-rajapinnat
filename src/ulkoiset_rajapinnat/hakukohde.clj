@@ -3,7 +3,6 @@
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [schema.core :as s]
-            [ulkoiset-rajapinnat.haku :refer [fetch-koulutukset fetch-hakukohde-tulos]]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-type-and-version-from-tarjonta-koodisto-uri]]
@@ -13,6 +12,10 @@
             [manifold.deferred :as d]))
 
 (def hakukohde-api "%s/tarjonta-service/rest/v1/hakukohde/search?hakuOid=%s&tila=JULKAISTU")
+
+(defn log-fetch [resource-name start-time response]
+  (log/debug "Fetching '{}' ready with status {}! Took {}ms!" resource-name (response :status) (- (System/currentTimeMillis) start-time))
+  response)
 
 (s/defschema Hakukohde
              {:hakukohteen_oid s/Str
@@ -75,6 +78,23 @@
   (if (= (some-hakukohde "koulutusasteTyyppi") "KORKEAKOULUTUS")
     (d/success! (d/deferred) [])
     (d/success! (d/deferred) [])))
+
+(def haku-api-hakukohde-tulos "%s/tarjonta-service/rest/v1/haku/%s/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1")
+
+(defn fetch-hakukohde-tulos [host-virkailija haku-oid]
+  (let [start-time (System/currentTimeMillis)
+        promise (get-as-promise (format haku-api-hakukohde-tulos host-virkailija haku-oid))]
+    (chain promise (partial log-fetch "hakukohde-tulos" start-time) parse-json-body #(% "tulokset"))))
+
+(def haku-api-koulutus "%s/tarjonta-service/rest/v1/koulutus/search?hakuOid=%s")
+
+(defn- handle-koulutus-result [koulutus-result]
+  (mapcat #(get % "tulokset") (get-in koulutus-result ["result" "tulokset"])))
+
+(defn fetch-koulutukset [host-virkailija haku-oid]
+  (let [start-time (System/currentTimeMillis)
+        promise (get-as-promise (format haku-api-koulutus host-virkailija haku-oid))]
+    (chain promise (partial log-fetch "koulutukset" start-time) parse-json-body handle-koulutus-result)))
 
 (defn hakukohde-resource [config haku-oid palauta-null-arvot? request channel]
   (let [host-virkailija (config :host-virkailija)

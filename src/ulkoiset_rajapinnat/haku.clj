@@ -1,10 +1,11 @@
 (ns ulkoiset-rajapinnat.haku
-  (:require [manifold.deferred :refer [let-flow catch chain]]
+  (:require [full.async :refer :all]
             [clojure.string :as str]
+            [clojure.core.async :refer [go]]
             [clojure.tools.logging :as log]
             [schema.core :as s]
-            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json]]
-            [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body to-json]]
+            [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
 
@@ -24,15 +25,11 @@
               })
 
 (def haku-api "%s/tarjonta-service/rest/v1/haku/find?TILA=JULKAISTU&HAKUVUOSI=%s")
-(def haku-api-hakukohde-tulos "%s/tarjonta-service/rest/v1/haku/%s/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1")
-(def haku-api-koulutus "%s/tarjonta-service/rest/v1/koulutus/search?hakuOid=%s")
 
 (defn haku-to-names [kieli haku]
   (let [nimet (filter #((comp not str/blank?) (last %)) (haku "nimi"))
         koodisto_kieli_nimet (map (fn [e] [(get kieli (first e)) (last e)]) nimet)
-        ;a (map #(vector (str "haku_nimi." (get kieli (first %))) (last %)) )
         ]
-    ;(into (sorted-map) (filter #((comp not str/blank?) (last %)) a))))
     (into (sorted-map) koodisto_kieli_nimet)))
 
 (defn transform-haku [kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne haku]
@@ -56,38 +53,36 @@
 
 (defn fetch-haku [host-virkailija vuosi]
   (let [start-time (System/currentTimeMillis)
-        promise (get-as-promise (format haku-api host-virkailija vuosi))]
-    (chain promise (partial log-fetch "haku" start-time) parse-json-body #(% "result"))))
-
-(defn fetch-hakukohde-tulos [host-virkailija haku-oid]
-  (let [start-time (System/currentTimeMillis)
-        promise (get-as-promise (format haku-api-hakukohde-tulos host-virkailija haku-oid))]
-    (chain promise (partial log-fetch "hakukohde-tulos" start-time) parse-json-body #(% "tulokset"))))
-
-(defn- handle-koulutus-result [koulutus-result]
-  (mapcat #(get % "tulokset") (get-in koulutus-result ["result" "tulokset"])))
-
-(defn fetch-koulutukset [host-virkailija haku-oid]
-  (let [start-time (System/currentTimeMillis)
-        promise (get-as-promise (format haku-api-koulutus host-virkailija haku-oid))]
-    (chain promise (partial log-fetch "koulutukset" start-time) parse-json-body handle-koulutus-result)))
+        mapper (comp #(% "result") parse-json-body (partial log-fetch "haku" start-time))]
+    (get-as-channel (format haku-api host-virkailija vuosi) {} mapper)))
 
 (defn haku-resource [config vuosi request channel]
-  (let [host-virkailija (config :host-virkailija)]
-    (-> (let-flow [kieli (fetch-koodisto host-virkailija "kieli")
-                   kausi (fetch-koodisto host-virkailija "kausi")
-                   hakutyyppi (fetch-koodisto host-virkailija "hakutyyppi")
-                   hakutapa (fetch-koodisto host-virkailija "hakutapa")
-                   haunkohdejoukko (fetch-koodisto host-virkailija "haunkohdejoukko")
-                   haunkohdejoukontarkenne (fetch-koodisto host-virkailija "haunkohdejoukontarkenne")
-                   haku (fetch-haku host-virkailija vuosi)]
-                  (let [haku-converter (partial transform-haku kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
-                        converted-hakus (map haku-converter haku)
-                        json (to-json converted-hakus)]
-                    (-> channel
-                        (status 200)
-                        (body-and-close json))))
-        (catch Exception (exception-response channel))))
+  (go
+    (try
+    (let [host-virkailija (config :host-virkailija)
+          kieli (<<?? (koodisto-as-channel config "kieli"))
+          kausi (<<?? (koodisto-as-channel config "kausi"))
+          hakutyyppi (<<?? (koodisto-as-channel config "hakutyyppi"))
+          hakutapa (<<?? (koodisto-as-channel config "hakutapa"))
+          haunkohdejoukko (<<?? (koodisto-as-channel config "haunkohdejoukko"))
+          haunkohdejoukontarkenne (<<?? (koodisto-as-channel config "haunkohdejoukontarkenne"))
+          haku (<<?? (fetch-haku host-virkailija vuosi))
+          ]
+      (let [haku-converter (apply partial
+                                  (into [transform-haku]
+                                        (map first [kieli
+                                         kausi
+                                         hakutyyppi
+                                         hakutapa
+                                         haunkohdejoukko
+                                         haunkohdejoukontarkenne])))
+            converted-hakus (map haku-converter (first haku))
+            json (to-json converted-hakus)
+            ]
+            (-> channel
+                  (status 200)
+                  (body-and-close json))))
+        (catch Exception e ((exception-response channel) e))))
   (schedule-task (* 1000 60 60) (close channel)))
 
 

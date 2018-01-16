@@ -121,7 +121,7 @@
       (log/error "Internal server error!" exception)
       (-> channel
           (status 500)
-          (body "{\"error\":\"\"}")
+          (body (to-json {:error (.getMessage exception)}))
           (close)))))
 
 (defn handle-json-response [url response]
