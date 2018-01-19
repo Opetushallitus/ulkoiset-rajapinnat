@@ -47,10 +47,6 @@
                  (s/optional-key :sija) s/Str
                  }})
 
-(comment
-  ; missing fields
-  ensikertalaisuus)
-
 (defn collect-preference-keys-by-sija [document]
   (let [ht (get-in document ["answers" "hakutoiveet"])
         preference-keys (filter not-empty (map #(re-matches #"preference(\d)-(.*)" %) (keys ht)))]
@@ -142,28 +138,11 @@
                (m/in "state" "ACTIVE" "INCOMPLETE")
                (m/eq "applicationSystemId" haku-oid)))))
 
-(defn atomic-take! [atom batch]
-  (core-loop [oldval @atom]
-    (if (>= (count oldval) batch)
-      (let [spl (split-at batch oldval)]
-        (if (compare-and-set! atom oldval (vec (second spl)))
-          (vec (first spl))
-          (recur @atom)))
-      nil)))
-
 (defn drain! [atom]
   (core-loop [oldval @atom]
     (if (compare-and-set! atom oldval [])
       oldval
       (recur @atom))))
-
-(defn handle-document-batch [document-batch document-batch-channel]
-  (let [last-batch? false]
-    (if-let [batch (atomic-take! document-batch size-of-henkilo-batch-from-onr-at-once)]
-      (do
-        (go
-          (log/debug "Putting batch of size {}!" (count batch))
-          (>! document-batch-channel [last-batch? batch]))))))
 
 (defn document-batch-to-henkilo-oid-list
   [batch]
