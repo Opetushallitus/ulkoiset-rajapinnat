@@ -124,12 +124,14 @@
       (remove-nils data))))
 
 (defn write-object-to-channel [is-first-written obj channel]
-  (let [json (to-json obj)]
-    (if (compare-and-set! is-first-written false true)
-      (do
-        (status channel 200)
-        (body channel (str "[" json)))
-      (body channel (str "," json)))))
+  (if (open? channel)
+    (let [json (to-json obj)]
+      (if (compare-and-set! is-first-written false true)
+        (do
+          (status channel 200)
+          (body channel (str "[" json)))
+        (body channel (str "," json))))
+    (throw (RuntimeException. "Client closed channel so no point writing!"))))
 
 (defn drain! [atom]
   (core-loop [oldval @atom]
@@ -166,14 +168,14 @@
   (let [start-time (System/currentTimeMillis)
         counter (atom 0)
         host-virkailija (config :host-virkailija)
-        pohjakoulutuskkodw-channel (koodisto-as-channel config "pohjakoulutuskkodw")
-        jsessionid-channel (onr-sessionid-channel config)
         is-first-written (atom false)
         haku-app-channel (fetch-hakemukset-from-haku-app-as-streaming-channel
                            config haku-oid [] size-of-henkilo-batch-from-onr-at-once)
         ataru-channel (fetch-hakemukset-from-ataru config haku-oid)
         close-channel (fn []
                         (do
+                          (close! haku-app-channel)
+                          (close! ataru-channel)
                           (if (compare-and-set! is-first-written false true)
                             (do (status channel 200)
                                 (body channel "[]")
@@ -182,8 +184,8 @@
                                 (close channel)))))]
     (go
       (try
-        (let [jsessionid (<<?? jsessionid-channel)
-              pohjakoulutuskkodw (<<?? pohjakoulutuskkodw-channel)
+        (let [jsessionid (<<?? (onr-sessionid-channel config))
+              pohjakoulutuskkodw (<<?? (koodisto-as-channel config "pohjakoulutuskkodw"))
               haku-app-batch-mapper (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)
               ataru-batch-mapper (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?)
               ataru-hakemukset (map ataru-batch-mapper
