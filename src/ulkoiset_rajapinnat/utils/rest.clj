@@ -33,8 +33,10 @@
       (log/error "Expected 200 OK! But got STATUS =" (response :status) " from url =" (get-in response [:opts :url]) "!")
       (throw (new RuntimeException "Expected 200 OK!")))))
 
-(defn to-json [obj]
-  (generate-string obj))
+(defn to-json
+  ([obj] (generate-string obj))
+  ([obj pretty] (if pretty (generate-string obj {:pretty true}) (to-json obj)))
+  )
 
 (defn post-form-as-promise [url form]
   (let [deferred (d/deferred)]
@@ -89,6 +91,7 @@
   ([url options]
    (get-as-channel url options nil))
   ([url options mapper]
+   (log/info (str "GET -> " url))
    (call-as-channel http/get url options mapper)))
 
 (defn post-as-channel
@@ -97,6 +100,7 @@
   ([url body options]
    (post-as-channel url body options nil))
   ([url body options mapper]
+   (log/info (str "POST -> " url))
    (call-as-channel http/post url (merge-with into options {:body body}) mapper)))
 
 (defn post-form-as-channel [url form mapper]
@@ -133,14 +137,8 @@
 
 (defn post-json-with-cas
   ([url session-id body]
-    (let [promise (post-json-as-promise url body {:headers {"Cookie" (str "JSESSIONID=" session-id)}})]
+    (let [promise (post-json-as-promise url body {:timeout 200000 :headers {"Cookie" (str "JSESSIONID=" session-id)}})]
       (log/debug (str url "(JSESSIONID=" session-id ")"))
       (d/chain promise #(handle-json-response url %))))
   ([host session-id url-template body]
     (post-json-with-cas (format url-template host) session-id body)))
-
-(defn get-json-with-cas
-  [url session-id]
-  (let [promise (get-as-promise url {:timeout 200000 :headers {"Cookie" (str "JSESSIONID=" session-id)}})]
-    (log/debug (str url "(JSESSIONID=" session-id ")"))
-    (d/chain promise #(handle-json-response url %))))
