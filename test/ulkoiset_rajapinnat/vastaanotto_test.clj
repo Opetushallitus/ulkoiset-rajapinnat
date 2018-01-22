@@ -12,7 +12,7 @@
             [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json to-json]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.fixture :refer :all]
-            [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size valintapisteet-batch-size]])
+            [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size valintapisteet-batch-size trim-streaming-response]])
   (:import (java.io ByteArrayInputStream)))
 
 (use-fixtures :once fixture)
@@ -63,6 +63,12 @@
           (log/info (to-json body true))
           (def expected (parse-string (slurp "test/resources/vastaanotto/result.json")))
           (def difference (diff expected body))
-          (is (= [nil nil expected] difference) difference)))))
+          (is (= [nil nil expected] difference) difference))))
+    (testing "Trim streaming response"
+      (let [parsed (trim-streaming-response (parse-string vastaanotot-json))]
+        ;(log/info (to-json parsed true))
+        (def expected (parse-string (slurp "test/resources/vastaanotto/parsed.json")))
+        (def difference (diff expected parsed))
+        (is (= [nil nil expected] difference) difference))))
 
   (run-tests)

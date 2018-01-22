@@ -1,0 +1,143 @@
+[
+  {
+    "hakemusOid": "1.2.246.562.11.00007664779",
+    "hakijaOid": "1.2.246.562.24.22430847549",
+    "hakutoiveet": [
+      {
+        "hakijaryhmat": [
+          {
+            "hakijaryhmatyyppikoodiUri": "hakijaryhmantyypit_ensikertalaiset",
+            "hyvaksyttyHakijaryhmasta": false
+          }
+        ],
+        "hakukohdeOid": "1.2.246.562.20.72385087522",
+        "hakutoiveenValintatapajonot": [
+          {
+            "alinHyvaksyttyPistemaara": 19.65,
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "ilmoittautumisTila": "EI_TEHTY",
+            "jonosija": 104,
+            "pisteet": 23.15,
+            "tasasijaJonosija": 1,
+            "tila": "HYVAKSYTTY",
+            "tilanKuvaukset": {},
+            "valintatapajonoOid": "1476774926762-6272426481946884766"
+          }
+        ],
+        "vastaanottotieto": "EI_VASTAANOTETTU_MAARA_AIKANA"
+      },
+      {
+        "hakijaryhmat": [
+          {
+            "hakijaryhmatyyppikoodiUri": null,
+            "hyvaksyttyHakijaryhmasta": false
+          }
+        ],
+        "hakukohdeOid": "1.2.246.562.20.16902536479",
+        "hakutoiveenValintatapajonot": [
+          {
+            "alinHyvaksyttyPistemaara": 38,
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "ilmoittautumisTila": "EI_TEHTY",
+            "jonosija": 41,
+            "pisteet": 55,
+            "tasasijaJonosija": 1,
+            "tila": "PERUUNTUNUT",
+            "tilanKuvaukset": {
+              "EN": "Cancelled, accepted for a study place with higher priority",
+              "FI": "Peruuntunut, hyv\u00e4ksytty ylemm\u00e4lle hakutoiveelle",
+              "SV": "Annullerad, godk\u00e4nt till ans\u00f6kningsm\u00e5l med h\u00f6gre prioritet"
+            },
+            "valintatapajonoOid": "1476784379529-748676204640952695"
+          }
+        ],
+        "vastaanottotieto": "KESKEN"
+      }
+    ]
+  },
+  {
+    "hakemusOid": "1.2.246.562.11.00007664782",
+    "hakijaOid": "1.2.246.562.24.11097025100",
+    "hakutoiveet": [
+      {
+        "hakijaryhmat": [
+          {
+            "hakijaryhmatyyppikoodiUri": null,
+            "hyvaksyttyHakijaryhmasta": false
+          }
+        ],
+        "hakukohdeOid": "1.2.246.562.20.760269451710",
+        "hakutoiveenValintatapajonot": [
+          {
+            "alinHyvaksyttyPistemaara": 48.0,
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "ilmoittautumisTila": "EI_TEHTY",
+            "jonosija": 211,
+            "pisteet": null,
+            "tasasijaJonosija": 27,
+            "tila": "HYLATTY",
+            "tilanKuvaukset": {},
+            "valintatapajonoOid": "1474449226093-3944635560658602913"
+          }
+        ],
+        "vastaanottotieto": "KESKEN"
+      }
+    ]
+  },
+  {
+    "hakemusOid": "1.2.246.562.11.00007721463",
+    "hakijaOid": "1.2.246.562.24.78252877314",
+    "hakutoiveet": [
+      {
+        "hakijaryhmat": [
+          {
+            "hakijaryhmatyyppikoodiUri": "hakijaryhmantyypit_ensikertalaiset",
+            "hyvaksyttyHakijaryhmasta": true
+          }
+        ],
+        "hakukohdeOid": "1.2.246.562.20.72385087522",
+        "hakutoiveenValintatapajonot": [
+          {
+            "alinHyvaksyttyPistemaara": 19.65,
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "ilmoittautumisTila": "EI_TEHTY",
+            "jonosija": 122,
+            "pisteet": 20.45,
+            "tasasijaJonosija": 1,
+            "tila": "HYVAKSYTTY",
+            "tilanKuvaukset": {},
+            "valintatapajonoOid": "1476774926762-6272426481946884766"
+          }
+        ],
+        "vastaanottotieto": "VASTAANOTTANUT_SITOVASTI"
+      },
+      {
+        "hakijaryhmat": [
+          {
+            "hakijaryhmatyyppikoodiUri": null,
+            "hyvaksyttyHakijaryhmasta": false
+          }
+        ],
+        "hakukohdeOid": "1.2.246.562.20.16902536479",
+        "hakutoiveenValintatapajonot": [
+          {
+            "alinHyvaksyttyPistemaara": 38,
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "ilmoittautumisTila": "EI_TEHTY",
+            "jonosija": 16,
+            "pisteet": 67,
+            "tasasijaJonosija": 1,
+            "tila": "PERUUNTUNUT",
+            "tilanKuvaukset": {
+              "EN": "Cancelled, accepted another higher education study place",
+              "FI": "Peruuntunut, vastaanottanut toisen korkeakoulupaikan",
+              "SV": "Annullerad, tagit emot en annan h\u00f6gskoleplats"
+            },
+            "valintatapajonoOid": "1476784379529-748676204640952695"
+          }
+        ],
+        "vastaanottotieto": "KESKEN"
+      }
+    ]
+  }
+]
