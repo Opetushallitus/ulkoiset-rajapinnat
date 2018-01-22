@@ -14,6 +14,7 @@
                  [environ "1.1.0"]
                  [compojure "1.6.0"]
                  [clj-time "0.14.0"]
+                 [clj-http "3.7.0"]
                  [manifold "0.1.6"]
                  [org.clojure/data.xml "0.0.8"]
                  [fullcontact/full.async "1.0.0"]
@@ -49,6 +50,5 @@
                                   [tempfile "0.2.0"]
                                   [de.flapdoodle.embed/de.flapdoodle.embed.mongo "2.0.0"]
                                   ;[com.github.fakemongo/fongo "2.1.0"]
-                                  [clj-http "3.7.0"]
                                   [ring/ring-mock "0.3.1"]]}})
 
