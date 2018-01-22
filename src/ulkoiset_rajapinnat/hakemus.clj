@@ -141,6 +141,26 @@
   [batch]
   (map #(get % "henkilo_oid") batch))
 
+
+(defn haku-app-adapter [pohjakoulutuskkodw palauta-null-arvot?]
+  (fn [batch] {:henkilo_oids (map #(get % "personOid") batch)
+               :batch batch
+               :mapper (fn [henkilo-by-oid hakemus]
+                         (convert-hakemus
+                           (first pohjakoulutuskkodw)
+                           palauta-null-arvot?
+                           (get henkilo-by-oid (get hakemus "personOid")) hakemus))}))
+
+(defn ataru-adapter [pohjakoulutuskkodw palauta-null-arvot?]
+  (fn [part-batch] (let [batch (flatten part-batch)]
+                     {:henkilo_oids (document-batch-to-henkilo-oid-list batch)
+                      :batch batch
+                      :mapper (fn [henkilo-by-oid hakemus]
+                                (convert-ataru-hakemus
+                                  (first pohjakoulutuskkodw)
+                                  palauta-null-arvot?
+                                  (get henkilo-by-oid (get hakemus "henkilo_oid")) hakemus))})))
+
 (defn fetch-hakemukset-for-haku
   [config haku-oid palauta-null-arvot? channel]
   (let [start-time (System/currentTimeMillis)
@@ -148,7 +168,6 @@
         host-virkailija (config :host-virkailija)
         pohjakoulutuskkodw-channel (koodisto-as-channel config "pohjakoulutuskkodw")
         jsessionid-channel (onr-sessionid-channel config)
-        document-batch (atom [])
         is-first-written (atom false)
         haku-app-channel (fetch-hakemukset-from-haku-app-as-streaming-channel
                            config haku-oid [] size-of-henkilo-batch-from-onr-at-once)
@@ -165,21 +184,8 @@
       (try
         (let [jsessionid (<<?? jsessionid-channel)
               pohjakoulutuskkodw (<<?? pohjakoulutuskkodw-channel)
-              haku-app-batch-mapper (fn [batch] {:henkilo_oids (map #(get % "personOid") batch)
-                                                 :batch batch
-                                                 :mapper (fn [henkilo-by-oid hakemus]
-                                                           (convert-hakemus
-                                                             (first pohjakoulutuskkodw)
-                                                             palauta-null-arvot?
-                                                             (get henkilo-by-oid (get hakemus "personOid")) hakemus))})
-              ataru-batch-mapper (fn [part-batch] (let [batch (flatten part-batch)]
-                                                    {:henkilo_oids (document-batch-to-henkilo-oid-list batch)
-                                                     :batch batch
-                                                     :mapper (fn [henkilo-by-oid hakemus]
-                                                          (convert-ataru-hakemus
-                                                            (first pohjakoulutuskkodw)
-                                                            palauta-null-arvot?
-                                                            (get henkilo-by-oid (get hakemus "henkilo_oid")) hakemus))}))
+              haku-app-batch-mapper (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)
+              ataru-batch-mapper (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?)
               ataru-hakemukset (map ataru-batch-mapper
                                     (partition-all size-of-henkilo-batch-from-onr-at-once
                                                    (<<?? ataru-channel)))
