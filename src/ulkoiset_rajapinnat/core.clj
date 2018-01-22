@@ -1,12 +1,10 @@
 (ns ulkoiset-rajapinnat.core
-  (:use [compojure.handler :only [site]]
+  (:require [compojure.handler :only [site]]
         [org.httpkit.timer :refer :all]
-        [manifold.deferred :only [let-flow catch]]
         [compojure.api.sweet :refer :all]
         [ring.util.http-response :refer :all]
         [schema.core :as s]
         [compojure.api.middleware :refer [no-response-coercion]]
-        [ulkoiset-rajapinnat.utils.mongo :refer [create-mongo-client]]
         [ulkoiset-rajapinnat.utils.access :refer [access-log access-log-with-ticket-check-with-channel]]
         [ulkoiset-rajapinnat.utils.runtime :refer [shutdown-hook]]
         [ulkoiset-rajapinnat.haku :refer [Haku haku-resource]]
@@ -15,12 +13,11 @@
         [ulkoiset-rajapinnat.vastaanotto :refer [Vastaanotto vastaanotto-resource]]
         [ulkoiset-rajapinnat.valintaperusteet :refer [Valintaperusteet valintaperusteet-resource]]
         [ulkoiset-rajapinnat.utils.config :refer :all]
-        org.httpkit.server
-        )
-  (:require [clojure.tools.logging :as log])
+        [org.httpkit.server :refer :all]
+            [clojure.tools.logging :as log])
   (:gen-class))
 
-(defn api-opintopolku-routes [config hakuapp-mongo-client]
+(defn api-opintopolku-routes [config]
   (api
     {:coercion no-response-coercion
      :swagger
@@ -61,7 +58,7 @@
         :responses {200 {:schema [Hakemus]}}
         (access-log-with-ticket-check-with-channel
           config ticket
-          (partial hakemus-resource config hakuapp-mongo-client haku-oid palauta-null-arvot)))
+          (partial hakemus-resource config haku-oid palauta-null-arvot)))
       (GET "/valintaperusteet/hakukohde/:hakukohde-oid" [hakukohde-oid ticket]
         :summary "Hakukohde valintaperusteista"
         :query-params [ticket :- String]
@@ -82,17 +79,13 @@
 
 (defn start-server [args]
   (let [config (read-configuration-file-first-from-varargs-then-from-env-vars args)
-        port (-> config :server :port)
-        hakuapp-mongo-uri (-> config :hakuapp-mongo :uri)
-        hakuapp-mongo-client (create-mongo-client hakuapp-mongo-uri)]
+        port (-> config :server :port)]
 
     (log/info "Starting server in port {}" port)
-    (let [server (run-server (api-opintopolku-routes config hakuapp-mongo-client) {:port port})
-          close-handle (fn [] (do
-                                (-> (meta server)
+    (let [server (run-server (api-opintopolku-routes config) {:port port})
+          close-handle (fn [] (-> (meta server)
                                     :server
-                                    (.stop 100))
-                                (.close hakuapp-mongo-client)))]
+                                    (.stop 100)))]
       (do
         (shutdown-hook #(close-handle))
         close-handle))))

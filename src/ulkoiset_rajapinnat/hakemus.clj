@@ -5,7 +5,7 @@
             [full.async :refer :all]
             [schema.core :as s]
             [ulkoiset-rajapinnat.onr :refer :all]
-            [ulkoiset-rajapinnat.utils.mongo :as m]
+            [ulkoiset-rajapinnat.utils.haku_app :refer :all]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-for-oids]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
@@ -131,13 +131,6 @@
         (body channel (str "[" json)))
       (body channel (str "," json)))))
 
-(defn create-hakemus-publisher [mongo-client haku-oid]
-  (-> (.getDatabase mongo-client "hakulomake")
-      (.getCollection "application")
-      (.find (m/and
-               (m/in "state" "ACTIVE" "INCOMPLETE")
-               (m/eq "applicationSystemId" haku-oid)))))
-
 (defn drain! [atom]
   (core-loop [oldval @atom]
     (if (compare-and-set! atom oldval [])
@@ -149,7 +142,7 @@
   (map #(get % "henkilo_oid") batch))
 
 (defn fetch-hakemukset-for-haku
-  [config haku-oid palauta-null-arvot? mongo-client channel]
+  [config haku-oid palauta-null-arvot? channel]
   (let [start-time (System/currentTimeMillis)
         counter (atom 0)
         host-virkailija (config :host-virkailija)
@@ -157,7 +150,9 @@
         jsessionid-channel (onr-sessionid-channel config)
         document-batch (atom [])
         is-first-written (atom false)
-        publisher (create-hakemus-publisher mongo-client haku-oid)
+        haku-app-channel (fetch-hakemukset-from-haku-app-as-streaming-channel
+                           config haku-oid [] size-of-henkilo-batch-from-onr-at-once)
+        ataru-channel (fetch-hakemukset-from-ataru config haku-oid)
         close-channel (fn []
                         (do
                           (if (compare-and-set! is-first-written false true)
@@ -187,9 +182,9 @@
                                                             (get henkilo-by-oid (get hakemus "henkilo_oid")) hakemus))}))
               ataru-hakemukset (map ataru-batch-mapper
                                     (partition-all size-of-henkilo-batch-from-onr-at-once
-                                                   (<<?? (fetch-hakemukset-from-ataru config haku-oid))))
+                                                   (<<?? ataru-channel)))
               haku-app-hakemukset (map haku-app-batch-mapper
-                                       (<<?? (m/publisher-as-channel publisher size-of-henkilo-batch-from-onr-at-once)))]
+                                       (<<?? haku-app-channel))]
           (doseq [{henkilo-oids :henkilo_oids
                    mapper :mapper
                    batch :batch} (concat haku-app-hakemukset ataru-hakemukset)]
@@ -213,6 +208,6 @@
             (close-channel)))
         ))))
 
-(defn hakemus-resource [config mongo-client haku-oid palauta-null-arvot? request channel]
-  (fetch-hakemukset-for-haku config haku-oid palauta-null-arvot? mongo-client channel)
+(defn hakemus-resource [config haku-oid palauta-null-arvot? request channel]
+  (fetch-hakemukset-for-haku config haku-oid palauta-null-arvot? channel)
   (schedule-task (* 1000 60 60 12) (close channel)))
