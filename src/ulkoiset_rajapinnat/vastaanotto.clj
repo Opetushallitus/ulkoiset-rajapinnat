@@ -1,11 +1,11 @@
 (ns ulkoiset-rajapinnat.vastaanotto
-  (:require [manifold.deferred :refer [let-flow catch chain zip]]
+  (:require [full.async :refer :all]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [schema.core :as s]
-            [ulkoiset-rajapinnat.utils.cas :refer [jsessionid-fetcher]]
-            [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response parse-json-body to-json post-json-with-cas post-json-as-promise get-json-with-cas parse-json-body-stream]]
-            [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
+            [clojure.core.async :as async]
+            [ulkoiset-rajapinnat.utils.cas :refer [jsessionid-fetcher-channel]]
+            [ulkoiset-rajapinnat.utils.rest :refer [post-as-channel get-as-channel status body-and-close exception-response to-json parse-json-body-stream]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
@@ -55,7 +55,7 @@
           (if (some #(= "OSALLISTUI" %) osallistumiset) true nil)))))
 
   (defn- ammatilliseen-kielikokeeseen-osallistuminen [hakijan-kielikokeet]
-    (let [osallistuminen (get (first (first hakijan-kielikokeet)) :osallistuminen)]
+    (let [osallistuminen (get (first hakijan-kielikokeet) :osallistuminen)]
       (if (= osallistuminen "ei_osallistunut")
         false
         (if (= osallistuminen "osallistui")
@@ -103,93 +103,110 @@
       {"henkilo_oid" hakija-oid
        "hakutoiveet" (map build-hakutoive (vastaanotto "hakutoiveet"))})))
 
-(defn recursive-find-valintakokeet [valintaperusteet]
+(defn find-valintakokeet [valintaperusteet]
   (defn- transform-dto [dto]
     (let [tyyppi (dto "syötettavanArvonTyyppi")
           uri (if (nil? tyyppi) nil (tyyppi "uri"))]
       { :tunniste (dto "tunniste") :kielikoe (= uri "syotettavanarvontyypit_kielikoe") :valintakoe (= uri "syotettavanarvontyypit_valintakoe")}))
 
-  (defn- find-valintakoe [vp]
-    (let [filtered (filter (fn [v] (or (v :kielikoe) (v :valintakoe)) ) (map transform-dto (vp "valintaperusteDTO")))]
-      (if (empty? filtered) {} {(vp "hakukohdeOid") filtered})))
+  (defn- uri [dto]
+    (let [tyyppi (dto "syötettavanArvonTyyppi")]
+      uri (if (nil? tyyppi) nil (tyyppi "uri"))))
 
-  (if (empty? valintaperusteet)
-    {}
-    (merge (find-valintakoe (first valintaperusteet)) (recursive-find-valintakokeet (rest valintaperusteet)))))
+  (defn- find-valintaperusteen-kokeet [valintaperuste]
+    (let [hakukohteen-kokeet (filter #(let [u (uri %)] (or (= u "syotettavanarvontyypit_kielikoe") (= u "syotettavanarvontyypit_valintakoe"))) (valintaperuste "valintaperusteDTO"))]
+      {(valintaperuste "hakukohdeOid") (map transform-dto hakukohteen-kokeet)}))
 
-(defn recursive-find-kielikokeet [oppijat]
+  (apply merge (map find-valintaperusteen-kokeet valintaperusteet)))
+
+(defn find-kielikokeet [oppijat]
   (defn- transform-arvosana [arvosana]
     (if (nil? arvosana) {} {:osallistuminen (get (get arvosana "arvio") "arvosana") :kieli (get arvosana "lisatieto")}))
 
-  (defn- transform-suoritus [suoritus]
-    (let [komo ((suoritus "suoritus") "komo")
-          arvosanat (suoritus "arvosanat")]
-        {:komo komo :arvosanat (map transform-arvosana arvosanat)}))
+  (defn- arvosanat [suoritus]
+    (map transform-arvosana (suoritus "arvosanat")))
 
-  (defn- find-kielikoe [o]
-    (let [filtered (filter #(= "ammatillisenKielikoe" (get % :komo)) (map transform-suoritus (get o "suoritukset")))]
-      (if (empty? filtered) {} {(get o "oppijanumero") (map #(get % :arvosanat) filtered)})))
+  (defn- komo [suoritus]
+    (get (get suoritus "suoritus") "komo"))
 
-  (if (empty? oppijat)
-    {}
-    (merge (find-kielikoe (first oppijat)) (recursive-find-kielikokeet (rest oppijat)))))
+  (defn- find-oppijan-kielikokeet [oppija]
+    (let [oppijan-kielikokeet (filter #(= "ammatillisenKielikoe" (komo %)) (get oppija "suoritukset"))]
+      (if (empty? oppijan-kielikokeet) {} {(get oppija "oppijanumero") (flatten (map arvosanat oppijan-kielikokeet))})))
 
-(defn fetch-vastaanotot [host haku-oid]
-  (let [promise (get-as-promise (format valinta-tulos-service-api host haku-oid) {:as :stream})]
-    (chain promise parse-json-body-stream)))
+  (let [result (apply merge (map find-oppijan-kielikokeet oppijat))]
+    (if (empty? result) {} result)))
 
-(defn fetch-valintapisteet [host kaikki-hakemus-oidit]
-  (log/info (str "Hakemuksia " (count kaikki-hakemus-oidit) " kpl"))
+(defn vastaanotot-channel [host haku-oid]
+  (log/info (format "Haku %s haetaan vastaanotot..." haku-oid))
+  (let [mapper (comp parse-json-body-stream)]
+    (get-as-channel (format valinta-tulos-service-api host haku-oid) {:as :stream} mapper)))
+
+(defn post-json-with-cas-channel [url data jsession-id mapper]
+  (let [options {:as :stream :timeout 200000 :headers {"Content-Type" "application/json; charset=utf-8" "Cookie" (str "JSESSIONID=" jsession-id)}}]
+    (post-as-channel url (to-json data) options mapper)))
+
+(defn fetch-kokeet-channel [fetch-jsession-id host haku-oid hakukohde-oidit]
+  (log/info (format "Haku %s haetaan valintakokeet %d hakukohteelle..." haku-oid (count hakukohde-oidit)))
+  (go-try
+    (let [jsession-id (<? (fetch-jsession-id "/valintaperusteet-service"))
+          mapper (comp find-valintakokeet parse-json-body-stream)
+          valintaperusteet (<? (post-json-with-cas-channel (format valintaperusteet-service-api host) hakukohde-oidit jsession-id mapper))]
+      valintaperusteet)))
+
+(defn fetch-valintapisteet-channel [host haku-oid kaikki-hakemus-oidit]
+  (log/info (format "Haku %s haetaan valintapisteet %d hakemukselle..." haku-oid (count kaikki-hakemus-oidit)))
   (def url (format valintapiste-service-api host))
-  (defn- group-valintapisteet [valintapisteet] (apply merge (map (fn [p] {(p "hakemusOID") (p "pisteet")}) valintapisteet)))
+  (defn- group-valintapisteet [valintapisteet]
+    (apply merge (map (fn [p] {(p "hakemusOID") (p "pisteet")}) valintapisteet)))
+  (def mapper (comp group-valintapisteet parse-json-body-stream))
   (defn- fetch-valintapisteet-hakemuksille [hakemus-oidit]
-    (let [promise (post-json-as-promise url hakemus-oidit {})]
-      (chain promise parse-json-body group-valintapisteet)))
-  (apply zip (map #(fetch-valintapisteet-hakemuksille %) (partition valintapisteet-batch-size valintapisteet-batch-size nil kaikki-hakemus-oidit))))
+    (post-as-channel url (to-json hakemus-oidit) {:as :stream :timeout 200000 :headers {"Content-Type" "application/json; charset=utf-8"}} mapper))
+  (async/map vector (map #(fetch-valintapisteet-hakemuksille %) (partition valintapisteet-batch-size valintapisteet-batch-size nil kaikki-hakemus-oidit))))
 
-(defn fetch-kokeet [fetch-jsession-id host hakukohde-oidit]
-  (log/info (str "Hakukohteita " (count hakukohde-oidit) " kpl"))
-  (let-flow [jsession-id (fetch-jsession-id "/valintaperusteet-service")]
-    (let [promise (post-json-with-cas host jsession-id valintaperusteet-service-api hakukohde-oidit)]
-      (chain promise recursive-find-valintakokeet))))
-
-(defn fetch-ammatilliset-kielikokeet [fetch-jsession-id host haku-oid kaikki-oppijanumerot]
-  (log/info (str "Oppijanumeroita " (count kaikki-oppijanumerot) " kpl"))
+(defn fetch-ammatilliset-kielikokeet-channel [fetch-jsession-id host haku-oid kaikki-oppijanumerot]
+  (log/info (format "Haku %s haetaan ammatilliset kielikokeet %d oppijalle..." haku-oid (count kaikki-oppijanumerot)))
+  (def mapper (comp find-kielikokeet parse-json-body-stream))
   (defn- fetch-ammatilliset-kielikokeet-oppijanumeroille [jsession-id oppijanumerot]
-    (let [promise (post-json-with-cas (format suoritusrekisteri-service-api host haku-oid) jsession-id oppijanumerot)]
-      (chain promise recursive-find-kielikokeet)))
-  (let-flow [jsession-id (fetch-jsession-id "/suoritusrekisteri")]
-            (apply zip (map #(fetch-ammatilliset-kielikokeet-oppijanumeroille jsession-id %) (partition oppijat-batch-size oppijat-batch-size nil kaikki-oppijanumerot)))))
+    (post-json-with-cas-channel (format suoritusrekisteri-service-api host haku-oid) oppijanumerot jsession-id mapper))
+  (go-try
+    (let [jsession-id (<? (fetch-jsession-id "/suoritusrekisteri"))
+          partitions (partition oppijat-batch-size oppijat-batch-size nil kaikki-oppijanumerot)
+          valintaperusteet (<? (async/map vector (map #(fetch-ammatilliset-kielikokeet-oppijanumeroille jsession-id %) partitions)))]
+      (apply merge valintaperusteet))))
 
-(defn vastaanotto-resource [config haku-oid request channel]
-  (log/info (str "oppijat batch size = " oppijat-batch-size))
+(defn vastaanotot-for-haku [config haku-oid request channel]
+
   (let [vastaanotto-host-virkailija (config :vastaanotto-host-virkailija)
         valintapiste-host-virkailija (config :valintapiste-host-virkailija)
         host-virkailija (config :host-virkailija)
         username (config :ulkoiset-rajapinnat-cas-username)
         password (config :ulkoiset-rajapinnat-cas-password)]
-    (-> (let-flow [vastaanotot (fetch-vastaanotot vastaanotto-host-virkailija haku-oid)
-                   hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
-                   hakemus-oidit (map #(% "hakemusOid") vastaanotot)
-                   fetch-jsession-id (jsessionid-fetcher host-virkailija username password)
-                   valintakokeet (fetch-kokeet fetch-jsession-id host-virkailija hakukohde-oidit)
-                   valintapisteet (fetch-valintapisteet valintapiste-host-virkailija hakemus-oidit)
-                   oppijanumerot (map #(% "hakijaOid") vastaanotot)
-                   kielikokeet (fetch-ammatilliset-kielikokeet  fetch-jsession-id host-virkailija haku-oid oppijanumerot)]
-                  (log/info (str "Hakukohde_oidit=" (count hakukohde-oidit)))
-                  (log/info hakukohde-oidit)
-                  (log/info (str "Hakemus_oidit=" (count hakemus-oidit)))
-                  (log/info hakemus-oidit)
-                  (log/info (str "Valintakokeet=" (count valintakokeet)))
-                  ;(log/info valintakokeet)
-                  (log/info (str "Valintapisteet=" (count valintapisteet)))
-                  ;(log/info valintapisteet)
-                  (log/info (str "Kielikokeet=" (count kielikokeet)))
-                  ;(log/info (apply merge kielikokeet))
-                  (let [build-vastaanotto (vastaanotto-builder valintakokeet (into {} valintapisteet) (apply merge kielikokeet))
-                        json (to-json (map build-vastaanotto vastaanotot))]
-                    (-> channel
-                        (status 200)
-                        (body-and-close json))))
-        (catch Exception (exception-response channel))))
-  (schedule-task (* 1000 60 60) (close channel)))
+    (async/go
+      (try
+          (let [vastaanotot (<? (vastaanotot-channel vastaanotto-host-virkailija haku-oid))
+                hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
+                hakemus-oidit (map #(% "hakemusOid") vastaanotot)
+                fetch-jsession-id (jsessionid-fetcher-channel host-virkailija username password)
+                valintakokeet (<? (fetch-kokeet-channel fetch-jsession-id host-virkailija haku-oid hakukohde-oidit))
+                valintapisteet (<? (fetch-valintapisteet-channel valintapiste-host-virkailija haku-oid hakemus-oidit))
+                oppijanumerot (map #(% "hakijaOid") vastaanotot)
+                kielikokeet (<? (fetch-ammatilliset-kielikokeet-channel  fetch-jsession-id host-virkailija haku-oid oppijanumerot))]
+            (log/info (format "Haku %s hakijoita %d kpl" haku-oid (count hakemus-oidit)))
+            (log/info (format "Haku %s hakukohteita %d kpl" haku-oid (count hakukohde-oidit)))
+            (log/info (format "Haku %s hakemuksia %d kpl" haku-oid (count hakemus-oidit)))
+            (log/info (format "Haku %s valintakokeet %d kpl" haku-oid (count valintakokeet)))
+            (log/info (format "Haku %s valintapisteitä %d kpl" haku-oid (count valintapisteet)))
+            (log/info (format "Haku %s kielikokeita %d kpl" haku-oid (count kielikokeet)))
+            (let [build-vastaanotto (vastaanotto-builder valintakokeet (apply merge valintapisteet) kielikokeet)
+                  json (to-json (map build-vastaanotto vastaanotot))]
+              (-> channel
+                  (status 200)
+                  (body-and-close json))))
+          (catch Exception e
+            (do
+              (log/error (format "Virhe haettaessa vastaanottoja haulle %s!" haku-oid), e)
+              (exception-response channel)))))))
+
+(defn vastaanotto-resource [config haku-oid request channel]
+  (vastaanotot-for-haku config haku-oid request channel)
+  (schedule-task (* 1000 60 60 12) (close channel)))
