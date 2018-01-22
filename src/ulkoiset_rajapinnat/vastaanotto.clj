@@ -136,9 +136,30 @@
   (let [result (apply merge (map find-oppijan-kielikokeet oppijat))]
     (if (empty? result) {} result)))
 
+(def valintatapajono-trim-keys ["ehdollisenHyvaksymisenEhtoEN" "ehdollisenHyvaksymisenEhtoFI" "ehdollisenHyvaksymisenEhtoKoodi"
+                                  "ehdollisenHyvaksymisenEhtoSV" "ehdollisestiHyvaksyttavissa" "eiVarasijatayttoa"
+                                  "hakemuksenTilanViimeisinMuutos" "hakeneet" "hyvaksytty" "hyvaksyttyVarasijalta"
+                                  "paasyJaSoveltuvuusKokeenTulos" "julkaistavissa" "tayttojono" "valintatapajonoNimi"
+                                  "valintatapajonoPrioriteetti" "valintatuloksenViimeisinMuutos" "varalla"
+                                  "varasijaTayttoPaivat" "varasijanNumero" "varasijat" "varasijojaKaytetaanAlkaen"
+                                  "varasijojaTaytetaanAsti"])
+
+(defn trim-streaming-response [vastaanotot]
+  (defn trim-hakutoive [h]
+    (let [hakutoive (dissoc h "pistetiedot" "tarjoajaOid" "ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet" "kaikkiJonotSijoiteltu" "hakutoive")
+          valintatapajonot (map #(apply dissoc % valintatapajono-trim-keys) (h "hakutoiveenValintatapajonot"))
+          hakijaryhmat (map #(dissoc % "kiintio" "nimi" "oid" "valintatapajonoOid") (h "hakijaryhmat"))]
+      (assoc hakutoive "hakijaryhmat" hakijaryhmat "hakutoiveenValintatapajonot" valintatapajonot)))
+
+  (defn trim-vastaanotto [v]
+    (let [hakutoiveet (map trim-hakutoive (v "hakutoiveet"))
+          vastaanotto (dissoc v "etunimi" "sukunimi")]
+        (assoc vastaanotto "hakutoiveet" hakutoiveet)))
+  (map trim-vastaanotto vastaanotot))
+
 (defn vastaanotot-channel [host haku-oid]
   (log/info (format "Haku %s haetaan vastaanotot..." haku-oid))
-  (let [mapper (comp parse-json-body-stream)]
+  (let [mapper (comp trim-streaming-response parse-json-body-stream)]
     (get-as-channel (format valinta-tulos-service-api host haku-oid) {:as :stream} mapper)))
 
 (defn post-json-with-cas-channel [url data jsession-id mapper]
