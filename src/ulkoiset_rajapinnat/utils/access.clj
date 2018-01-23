@@ -6,7 +6,7 @@
             [ulkoiset-rajapinnat.utils.rest :refer [status body to-json]]
             [clojure.core.async :refer [promise-chan >! go put! close!]]
             [clojure.tools.logging.impl :as impl]
-            [ring.util.http-response :refer [unauthorized bad-request]]
+            [ring.util.http-response :refer [unauthorized bad-request internal-server-error]]
             [ulkoiset-rajapinnat.utils.ldap :refer :all]
             [ulkoiset-rajapinnat.utils.cas_validator :refer :all]
             [org.httpkit.server :refer :all]))
@@ -82,6 +82,16 @@
           ldap-user
           (RuntimeException. "Required roles missing!"))))))
 
+(defn handle-exception [channel start-time exception]
+  (let [message (.getMessage exception)]
+    (access-log
+      (internal-server-error message)
+      start-time)
+    (-> channel
+        (status 500)
+        (body (to-json {:error message}))
+        (close))))
+
 (defn handle-unauthorized [channel start-time]
   (let [message "Ticket was not valid or user doesn't have required roles!"]
   (access-log
@@ -107,6 +117,7 @@
                               (operation request channel)
                               (catch Exception e (do
                                                    (log/error "Uncaught exception in request handler!")
-                                                   (log/error e)))))
+                                                   (log/error e)
+                                                   (handle-exception channel start-time e)))))
                           (catch Exception e (handle-unauthorized channel start-time))))))
       (access-log (bad-request "Ticket parameter required!")))))

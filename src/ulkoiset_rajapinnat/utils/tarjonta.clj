@@ -16,5 +16,7 @@
       (mapcat #(% "hakukohdeOids") (filter #(= haku-oid (% "oid")) (data "result"))))))
 
 (defn hakukohde-oids-for-kausi-and-vuosi-channel [config haku-oid kausi vuosi]
+  (if (not (every? some? [kausi vuosi haku-oid]))
+    (throw (RuntimeException. "Haku-oid, kausi and vuosi are mandatory parameters!")))
   (let [url (haku-alkamiskaudella-api (config :host-virkailija) vuosi kausi)]
     (get-as-channel url {} (filter-only-haku haku-oid))))

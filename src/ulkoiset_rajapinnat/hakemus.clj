@@ -5,6 +5,7 @@
             [full.async :refer :all]
             [schema.core :as s]
             [ulkoiset-rajapinnat.onr :refer :all]
+            [ulkoiset-rajapinnat.utils.tarjonta :refer :all]
             [ulkoiset-rajapinnat.utils.haku_app :refer :all]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-for-oids]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
@@ -164,14 +165,17 @@
                                   (get henkilo-by-oid (get hakemus "henkilo_oid")) hakemus))})))
 
 (defn fetch-hakemukset-for-haku
-  [config haku-oid palauta-null-arvot? channel]
+  [config haku-oid vuosi kausi palauta-null-arvot? channel]
   (let [start-time (System/currentTimeMillis)
         counter (atom 0)
         host-virkailija (config :host-virkailija)
         is-first-written (atom false)
-        haku-app-channel (fetch-hakemukset-from-haku-app-as-streaming-channel
-                           config haku-oid [] size-of-henkilo-batch-from-onr-at-once)
         ataru-channel (fetch-hakemukset-from-ataru config haku-oid)
+        hakukohde-oids-for-hakukausi (if-let [oids (<?? (hakukohde-oids-for-kausi-and-vuosi-channel config haku-oid kausi vuosi))]
+                                       oids
+                                       [])
+        haku-app-channel (fetch-hakemukset-from-haku-app-as-streaming-channel
+                           config haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once)
         close-channel (fn []
                         (do
                           (close! haku-app-channel)
@@ -207,7 +211,7 @@
               (swap! counter (partial + bs)))))
         (close-channel)
         (log/info "Returned successfully" @counter "'hakemusta' from Haku-App and Ataru! Took" (- (System/currentTimeMillis) start-time) "ms!")
-        (catch Exception e
+        (catch Throwable e
           (do
             (log/error "Failed to write 'hakemukset'!" e)
             (write-object-to-channel is-first-written
@@ -216,6 +220,6 @@
             (close-channel)))
         ))))
 
-(defn hakemus-resource [config haku-oid palauta-null-arvot? request channel]
-  (fetch-hakemukset-for-haku config haku-oid palauta-null-arvot? channel)
+(defn hakemus-resource [config haku-oid vuosi kausi palauta-null-arvot? request channel]
+  (fetch-hakemukset-for-haku config haku-oid vuosi kausi palauta-null-arvot? channel)
   (schedule-task (* 1000 60 60 12) (close channel)))

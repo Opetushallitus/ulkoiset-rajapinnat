@@ -30,16 +30,20 @@
      (go
        (try
          (let [st (<? service-ticket-channel)
-               body-stream ((client/post (str host haku-streaming-api) {:headers {"CasSecurityTicket" st
-                                                                                  "Content-Type" "application/json"}
-                                                                        :as :stream
-                                                                        :body (to-json query)}) :body)
-               lazy-hakemus-seq (parse-stream (clojure.java.io/reader body-stream))]
+               response (client/post (str host haku-streaming-api) {:headers {"CasSecurityTicket" st
+                                                                     "Content-Type" "application/json"}
+                                                           :as :stream
+                                                           :body (to-json query)})
+               body-stream (response :body)
+               lazy-hakemus-seq (parse-stream (clojure.java.io/reader body-stream))
+               ]
            (doseq [hakemus (partition-all batch-size lazy-hakemus-seq)]
              (if-let [error (get hakemus "error")]
                (throw (RuntimeException. error))
                (async/put! channel hakemus (fn [open?]
                                              (if (not open?)
-                                               (.close body-stream)))))))
-         (catch Exception e (async/put! channel e))))
+                                               (.close body-stream))))))
+           (close! channel))
+         (catch Exception e (do (async/put! channel e)
+                                (close! channel)))))
      channel)))

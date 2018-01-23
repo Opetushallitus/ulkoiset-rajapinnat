@@ -52,13 +52,15 @@
         (access-log-with-ticket-check-with-channel
           config ticket
           (partial vastaanotto-resource config haku-oid)))
-      (GET "/hakemus-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot ticket] ; hakuoid + kaudet
+      (GET "/hakemus-for-haku/:haku-oid" [haku-oid vuosi kausi palauta-null-arvot ticket] ; hakuoid + kaudet
         :summary "Hakemukset haku OID:lla"
-        :query-params [ticket :- String]
+        :query-params [ticket :- String
+                       vuosi :- String
+                       kausi :- String]
         :responses {200 {:schema [Hakemus]}}
         (access-log-with-ticket-check-with-channel
           config ticket
-          (partial hakemus-resource config haku-oid palauta-null-arvot)))
+          (partial hakemus-resource config haku-oid vuosi kausi palauta-null-arvot)))
       (GET "/valintaperusteet/hakukohde/:hakukohde-oid" [hakukohde-oid ticket]
         :summary "Hakukohde valintaperusteista"
         :query-params [ticket :- String]
