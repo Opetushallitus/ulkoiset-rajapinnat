@@ -164,6 +164,15 @@
                                   palauta-null-arvot?
                                   (get henkilo-by-oid (get hakemus "henkilo_oid")) hakemus))})))
 
+(defn hakukohde-oids-for-hakukausi [config haku-oid vuosi kausi]
+  (if (is-jatkuva-haku (<?? (haku-for-haku-oid-channel config haku-oid)))
+    (let [oids (<?? (hakukohde-oids-for-kausi-and-vuosi-channel config haku-oid kausi vuosi))]
+      (if (not-empty oids)
+        oids
+        (throw (RuntimeException. (format "No hakukohde-oids found for 'jatkuva haku' %s with vuosi %s and kausi %s!"
+                                          haku-oid vuosi kausi)))))
+    []))
+
 (defn fetch-hakemukset-for-haku
   [config haku-oid vuosi kausi palauta-null-arvot? channel]
   (let [start-time (System/currentTimeMillis)
@@ -171,9 +180,7 @@
         host-virkailija (config :host-virkailija)
         is-first-written (atom false)
         ataru-channel (fetch-hakemukset-from-ataru config haku-oid)
-        hakukohde-oids-for-hakukausi (if-let [oids (<?? (hakukohde-oids-for-kausi-and-vuosi-channel config haku-oid kausi vuosi))]
-                                       oids
-                                       [])
+        hakukohde-oids-for-hakukausi (hakukohde-oids-for-hakukausi config haku-oid vuosi kausi)
         haku-app-channel (fetch-hakemukset-from-haku-app-as-streaming-channel
                            config haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once)
         close-channel (fn []
