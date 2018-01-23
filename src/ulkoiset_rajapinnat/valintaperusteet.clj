@@ -9,7 +9,85 @@
             [manifold.deferred :refer [let-flow catch chain on-realized zip loop]]))
 
 (s/defschema Valintaperusteet
-  {})
+  {
+   (s/optional-key :tila) s/Str
+   (s/optional-key :valintaryhmaOid) s/Str
+   (s/optional-key :oid) s/Str
+   (s/optional-key :hakuoid) s/Str
+   (s/optional-key :nimi) s/Str
+   (s/optional-key :tarjoajaOid) s/Str
+
+   (s/optional-key :hakukohdekoodi) {
+                                     (s/optional-key :uri) s/Str
+                                     (s/optional-key :nimiFi) s/Str
+                                     (s/optional-key :nimiSv) s/Str
+                                     (s/optional-key :nimiEn) s/Str
+                                     (s/optional-key :arvo) s/Str
+                                     }
+   (s/optional-key :valintaryhma) {
+                                   (s/optional-key :vastuuorganisaatioOid) s/Str
+                                   (s/optional-key :lapsihakukohde) s/Bool
+                                   (s/optional-key :organisaatiot) [s/Str]
+                                   (s/optional-key :kohdejoukko) s/Str
+                                   (s/optional-key :oid) s/Str
+                                   (s/optional-key :hakuoid) s/Str
+                                   (s/optional-key :lapsivalintaryhma) s/Bool
+                                   (s/optional-key :hakukohdekoodit) [s/Str]
+                                   (s/optional-key :nimi) s/Str
+                                   (s/optional-key :viimeinenKaynnistyspaiva) s/Str
+                                   (s/optional-key :hakuvuosi) s/Str
+                                   (s/optional-key :valintakoekoodit) [s/Str]
+                                   }
+   (s/optional-key :syotettavatArvot) [{
+                                       (s/optional-key :vaatiiOsallistumisen) s/Bool
+                                       (s/optional-key :funktiotyyppi) s/Str
+                                       (s/optional-key :min) s/Str
+                                       (s/optional-key :syotettavissaKaikille) s/Bool
+                                       (s/optional-key :kuvaus) s/Str
+                                       (s/optional-key :max) s/Str
+                                       (s/optional-key :tunniste) s/Str
+                                       (s/optional-key :tilastoidaan) s/Bool
+                                       (s/optional-key :onPakollinen) s/Bool
+                                       (s/optional-key :lahde) s/Str
+                                       (s/optional-key :syötettavanArvonTyyppi) s/Str
+                                       (s/optional-key :arvot) s/Str
+                                       (s/optional-key :osallistuminenTunniste) s/Str
+                                       }]
+   (s/optional-key :valinnanvaiheet) [{
+                                      (s/optional-key :nimi) s/Str
+                                      (s/optional-key :kuvaus) s/Str
+                                      (s/optional-key :aktiivinen) s/Bool
+                                      (s/optional-key :valinnanVaiheTyyppi) s/Str
+                                      (s/optional-key :oid) s/Str
+                                      (s/optional-key :inheritance) s/Bool
+                                      (s/optional-key :hasValisijoittelu) s/Bool
+                                      (s/optional-key :prioriteetti) s/Int
+                                      (s/optional-key :valintatapajonot) [{
+                                                                           (s/optional-key :aloituspaikat) s/Int
+                                                                           (s/optional-key :tayttojono) s/Str
+                                                                           (s/optional-key :tasapistesaanto) s/Str
+                                                                           (s/optional-key :eiVarasijatayttoa) s/Bool
+                                                                           (s/optional-key :kaikkiEhdonTayttavatHyvaksytaan) s/Bool
+                                                                           (s/optional-key :automaattinenLaskentaanSiirto) s/Bool
+                                                                           (s/optional-key :kuvaus) s/Str
+                                                                           (s/optional-key :siirretaanSijoitteluun) s/Bool
+                                                                           (s/optional-key :inheritance) s/Bool
+                                                                           (s/optional-key :poissaOlevaTaytto) s/Bool
+                                                                           (s/optional-key :prioriteetti) s/Int
+                                                                           (s/optional-key :oid) s/Str
+                                                                           (s/optional-key :varasijat) s/Int
+                                                                           (s/optional-key :aktiivinen) s/Bool
+                                                                           (s/optional-key :varasijaTayttoPaivat) s/Int
+                                                                           (s/optional-key :poistetaankoHylatyt) s/Bool
+                                                                           (s/optional-key :varasijojaKaytetaanAlkaen) s/Str
+                                                                           (s/optional-key :nimi) s/Str
+                                                                           (s/optional-key :valisijoittelu) s/Bool
+                                                                           (s/optional-key :kaytetaanValintalaskentaa) s/Bool
+                                                                           (s/optional-key :tyyppi) s/Str
+                                                                           (s/optional-key :varasijojaTaytetaanAsti) s/Int
+                                                                           }]
+                                      }]
+   })
 
 (def hakukohteet-api "%s/valintaperusteet-service/resources/hakukohde/hakukohteet")
 (def valinnanvaiheet-api "%s/valintaperusteet-service/resources/hakukohde/valinnanvaiheet")
