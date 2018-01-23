@@ -16,7 +16,7 @@
         "hyvaksytty_harkinnanvaraisesti":false,
         "hyvaksytty_ensikertalaisten_hakijaryhmasta":false,
         "osallistui_paasykokeeseen":null,
-        "osallistui_kielikokeeseen":false
+        "osallistui_kielikokeeseen":true
       },
       {
         "hakukohde_oid":"1.2.246.562.20.16902536479",
@@ -32,7 +32,7 @@
         "hyvaksytty_harkinnanvaraisesti":false,
         "hyvaksytty_ensikertalaisten_hakijaryhmasta":null,
         "osallistui_paasykokeeseen":null,
-        "osallistui_kielikokeeseen":false
+        "osallistui_kielikokeeseen":true
       }
     ]
   },

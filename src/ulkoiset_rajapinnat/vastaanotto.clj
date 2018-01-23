@@ -50,17 +50,13 @@
 
     (fn [tunnisteet]
       (let [osallistumiset (map kokeeseen-osallistuminen tunnisteet)]
-        (if (some #(= "EI_OSALLISTUNUT" %) osallistumiset)
-          false
-          (if (some #(= "OSALLISTUI" %) osallistumiset) true nil)))))
+        (if (some #(= "OSALLISTUI" %) osallistumiset) true
+          (if (some #(= "EI_OSALLISTUNUT" %) osallistumiset) false nil)))))
 
   (defn- ammatilliseen-kielikokeeseen-osallistuminen [hakijan-kielikokeet]
-    (let [osallistuminen (get (first hakijan-kielikokeet) :osallistuminen)]
-      (if (= osallistuminen "ei_osallistunut")
-        false
-        (if (= osallistuminen "osallistui")
-          true
-          nil))))
+    (let [osallistumiset (map #(% :osallistuminen) hakijan-kielikokeet)]
+      (if (some #(= "osallistui" %) osallistumiset) true
+        (if (some #(= "ei_osallistunut" %) osallistumiset) false nil))))
 
   (defn- hakutoive-builder [hakutoiveiden-kokeet hakemuksen-valintapisteet hakijan-kielikokeet]
 
@@ -75,9 +71,8 @@
         (def kielikokeeseen-osallistuminen
           (let [muuKielikoeOsallistuminen (osallistuminen kielikokeiden-tunnisteet)
                 ammatillinenKielikoeOsallistuminen (ammatilliseen-kielikokeeseen-osallistuminen hakijan-kielikokeet)]
-              (if (not (nil? muuKielikoeOsallistuminen))
-                muuKielikoeOsallistuminen
-                ammatillinenKielikoeOsallistuminen)))
+            (if (or muuKielikoeOsallistuminen ammatillinenKielikoeOsallistuminen) true
+              (if (or (false? muuKielikoeOsallistuminen) (false? ammatillinenKielikoeOsallistuminen)) false nil))))
 
         {"hakukohde_oid"                  hakutoive-oid
          "valinnan_tila"                  (valintatapajono "tila")
