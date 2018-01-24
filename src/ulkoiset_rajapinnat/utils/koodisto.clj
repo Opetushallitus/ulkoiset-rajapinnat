@@ -33,6 +33,5 @@
         options {}
         response-mapper (comp #(into (sorted-map) %)
                               #(map transform-uri-to-arvo-format %)
-                              parse-json-body)
-        kc (get-as-channel url options response-mapper)]
-    kc))
+                              parse-json-body)]
+    (get-as-channel url options response-mapper)))

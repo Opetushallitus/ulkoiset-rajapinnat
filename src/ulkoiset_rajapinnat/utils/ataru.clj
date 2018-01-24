@@ -1,7 +1,6 @@
 (ns ulkoiset-rajapinnat.utils.ataru
   (:require [clojure.string :as str]
             [full.async :refer :all]
-            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel fetch-jsessionid parse-jsessionid jsessionid-channel]]
             [clojure.core.async :refer [<! promise-chan >! go put! close!]]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.config :refer :all]
