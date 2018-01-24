@@ -173,6 +173,11 @@
                                           haku-oid vuosi kausi)))))
     []))
 
+(defn- close-and-drain! [channel]
+  (go
+    (close! channel)
+    (while (<! channel))))
+
 (defn fetch-hakemukset-for-haku
   [config haku-oid vuosi kausi palauta-null-arvot? channel]
   (let [start-time (System/currentTimeMillis)
@@ -185,8 +190,8 @@
                            config haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once)
         close-channel (fn []
                         (do
-                          (close! haku-app-channel)
-                          (close! ataru-channel)
+                          (close-and-drain! haku-app-channel)
+                          (close-and-drain! ataru-channel)
                           (if (compare-and-set! is-first-written false true)
                             (do (status channel 200)
                                 (body channel "[]")
@@ -216,16 +221,15 @@
                   channel)))
             (let [bs (int (count batch))]
               (swap! counter (partial + bs)))))
-        (close-channel)
         (log/info "Returned successfully" @counter "'hakemusta' from Haku-App and Ataru! Took" (- (System/currentTimeMillis) start-time) "ms!")
         (catch Throwable e
           (do
             (log/error "Failed to write 'hakemukset'!" e)
             (write-object-to-channel is-first-written
                                      {:error (.getMessage e)}
-                                     channel)
-            (close-channel)))
-        ))))
+                                     channel)))
+        (finally
+          (close-channel))))))
 
 (defn hakemus-resource [config haku-oid vuosi kausi palauta-null-arvot? request channel]
   (fetch-hakemukset-for-haku config haku-oid vuosi kausi palauta-null-arvot? channel)
