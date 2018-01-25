@@ -1,12 +1,13 @@
 (ns ulkoiset-rajapinnat.valintaperusteet
-  (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-request status body-and-close body to-json get-as-promise parse-json-body exception-response post-json-with-cas]]
-            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid]]
+  (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body-stream post-json-as-channel parse-json-request status body-and-close body to-json get-as-promise parse-json-body exception-response post-json-with-cas]]
+            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching merge-if-not-nil]]
             [org.httpkit.server :refer :all]
             [schema.core :as s]
+            [full.async :refer :all]
+            [clojure.core.async :as async]
             [org.httpkit.timer :refer :all]
-            [clojure.tools.logging :as log]
-            [manifold.deferred :refer [let-flow catch chain on-realized zip loop]]))
+            [clojure.tools.logging :as log]))
 
 (s/defschema Valintaperusteet
   {
@@ -125,20 +126,25 @@
     (let [host (config :host-virkailija)
           username (config :ulkoiset-rajapinnat-cas-username)
           password (config :ulkoiset-rajapinnat-cas-password)]
-      (-> (let-flow [session-id (fetch-jsessionid host "/valintaperusteet-service" username password)
-                     post-with-session-id (partial post-json-with-cas host session-id)
-                     post-if-not-empty (fn [api data] (if (not (empty? data)) (post-with-session-id api data)))
-                     hakukohteet (post-if-not-empty hakukohteet-api requested-oids)
-                     hakukohde-oidit (map #(get % "oid") hakukohteet)
-                     valinnanvaiheet (post-if-not-empty valinnanvaiheet-api hakukohde-oidit)
-                     valinnanvaihe-oidit (map #(get % "oid") (flatten (map #(get % "valinnanvaiheet") valinnanvaiheet)))
-                     valintatapajonot (post-if-not-empty valintatapajonot-api valinnanvaihe-oidit)
-                     hakijaryhmat (post-if-not-empty hakijaryhmat-api hakukohde-oidit)
-                     valintaryhmat (post-if-not-empty valintaryhmat-api hakukohde-oidit)
-                     syotettavat-arvot (post-if-not-empty syotettavat-arvot-api hakukohde-oidit)]
-                    (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat valintaryhmat syotettavat-arvot))]
-                      (-> channel
-                          (status 200)
-                          (body-and-close json))))
-          (catch Exception (exception-response channel)))
+      (async/go
+        (try (let [session-id (fetch-jsessionid-channel host "/valintaperusteet-service" username password)
+                   post-with-session-id (fn [api data] (post-json-as-channel (format api host) data parse-json-body-stream session-id))
+                   post-if-not-empty (fn [api data] (if (not (empty? data)) (post-with-session-id api data)))
+                   hakukohteet (<? (post-if-not-empty hakukohteet-api requested-oids))
+                   hakukohde-oidit (map #(get % "oid") hakukohteet)
+                   valinnanvaiheet (<? (post-if-not-empty valinnanvaiheet-api hakukohde-oidit))
+                   valinnanvaihe-oidit (map #(get % "oid") (flatten (map #(get % "valinnanvaiheet") valinnanvaiheet)))
+                   valintatapajonot (<? (post-if-not-empty valintatapajonot-api valinnanvaihe-oidit))
+                   hakijaryhmat (<? (post-if-not-empty hakijaryhmat-api hakukohde-oidit))
+                   valintaryhmat (<? (post-if-not-empty valintaryhmat-api hakukohde-oidit))
+                   syotettavat-arvot (<? (post-if-not-empty syotettavat-arvot-api hakukohde-oidit))]
+               (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat valintaryhmat syotettavat-arvot))]
+                 (log/info (type hakukohteet))
+                 (-> channel
+                     (status 200)
+                     (body-and-close json))))
+             (catch Exception e
+               (do
+                 (log/error (format "Virhe haettaessa valintaperusteita %d hakukohteelle!" (count requested-oids)), e)
+                 ((exception-response channel) e)))))
       (schedule-task (* 1000 60 60) (close channel)))))

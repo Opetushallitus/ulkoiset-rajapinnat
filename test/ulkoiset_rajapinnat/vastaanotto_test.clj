@@ -50,6 +50,17 @@
       p))
 
   (deftest vastaanotto-api-test
+    (testing "No vastaanotot found"
+      (with-redefs [oppijat-batch-size 2
+                    valintapisteet-batch-size 2
+                    http/get (fn [url options transform] (channel-response transform url 404 ""))
+                    http/post (fn [url options transform] (channel-response transform url 404 ""))
+                    fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
+        (try
+          (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126"))]
+            (is (= false true)))
+          (catch Exception e
+            (is (= 500 ((ex-data e) :status)))))))
     (testing "Fetch vastaanotot"
       (with-redefs [oppijat-batch-size 2
                     valintapisteet-batch-size 2

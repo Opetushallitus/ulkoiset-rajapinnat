@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.core.async :refer [go]]
             [clojure.tools.logging :as log]
-            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel fetch-jsessionid]]
+            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel jsessionid-channel]]
             [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json post-as-channel post-json-as-promise get-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
