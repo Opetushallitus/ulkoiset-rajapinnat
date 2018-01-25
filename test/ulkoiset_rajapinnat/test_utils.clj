@@ -1,0 +1,15 @@
+(ns ulkoiset-rajapinnat.test_utils
+  (:require [clojure.core.async :refer [promise-chan put! close!]])
+  (:import (java.io ByteArrayInputStream)))
+
+(defn to-input-stream [string]
+  (new ByteArrayInputStream (.getBytes string)))
+
+(defn channel-response [transform url status data]
+  (transform {:opts {:url url} :status status :body (to-input-stream data)}))
+
+(defn mock-channel [result]
+  (let [p (promise-chan)]
+    (put! p result)
+    (close! p)
+    p))
