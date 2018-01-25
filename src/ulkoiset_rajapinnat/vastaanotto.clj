@@ -210,7 +210,7 @@
           (catch Exception e
             (do
               (log/error (format "Virhe haettaessa vastaanottoja haulle %s!" haku-oid), e)
-              (exception-response channel)))))))
+              ((exception-response channel) e)))))))
 
 (defn vastaanotto-resource [config haku-oid request channel]
   (vastaanotot-for-haku config haku-oid request channel)

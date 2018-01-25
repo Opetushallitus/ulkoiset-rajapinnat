@@ -71,22 +71,11 @@
     sid
     (RuntimeException. (format "Unable to parse session ID! Uri = %s" (get-in response [:opts :url]))))))
 
-(defn post-jsessionid-request
-  [host service service-ticket]
-  (get-as-promise (str host service)
-                  {:headers {"CasSecurityTicket" service-ticket}}))
-
 (defn jsessionid-channel
   [host service service-ticket]
   (get-as-channel (str host service)
                   {:headers {"CasSecurityTicket" service-ticket}}
                   parse-jsessionid))
-
-(defn fetch-jsessionid
-  [host service username password]
-  (let-flow [st (fetch-service-ticket host service username password)
-             js (post-jsessionid-request host service st)]
-            (parse-jsessionid js)))
 
 (defn fetch-jsessionid-channel
   [host service username password]

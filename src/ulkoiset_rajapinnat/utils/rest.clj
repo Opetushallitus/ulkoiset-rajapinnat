@@ -144,7 +144,7 @@
 (defn handle-json-response [url response]
   (log/info (str url " " (response :status)))
   (case (response :status)
-    200 (parse-json-body response)
+    200 (parse-json-body-stream response)
     404 nil
     (throw (RuntimeException. (str "Calling " url " failed: status=" (response :status) ", msg=" (response :body) ", error=" (response :error))))))
 
