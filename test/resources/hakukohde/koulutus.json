@@ -1,0 +1,82 @@
+{
+  "accessRights": { },
+  "result": {
+    "tulokset": [
+      {
+        "oid": "1.2.246.562.10.82958623314",
+        "version": 0,
+        "nimi": {
+          "fi": "Ankkalinnan ammattikorkeakoulu",
+          "en": "Ankkalinna University of Applied Sciences"
+        },
+        "tulokset": [
+          {
+            "oid": "1.2.246.562.17.952391103810",
+            "nimi": {
+              "fi": "Kuvataiteilija (ylempi AMK), Kuvataide"
+            },
+            "kausi": {
+              "fi": "Kevät",
+              "sv": "Vår",
+              "en": "Spring"
+            },
+            "kausiUri": "kausi_k#1",
+            "vuosi": 2017,
+            "tila": "JULKAISTU",
+            "koulutusasteTyyppi": "KORKEAKOULUTUS",
+            "toteutustyyppiEnum": "KORKEAKOULUTUS",
+            "koulutuskoodi": "koulutus_721301#6",
+            "tarjoajat": [
+              "1.2.246.562.10.82958623314"
+            ],
+            "koulutusmoduuliTyyppi": "TUTKINTO",
+            "komoOid": "1.2.246.562.13.80374633735",
+            "opetuskielet": [
+              "kieli_fi"
+            ],
+            "koulutuslaji": { }
+          }
+        ]
+      },
+      {
+        "oid": "1.2.246.562.10.72590401013",
+        "version": 0,
+        "nimi": {
+          "fi": "Ankkalinnan yliopisto"
+        },
+        "tulokset": [
+          {
+            "oid": "1.2.246.562.17.447540392110",
+            "nimi": {
+              "sv": "",
+              "fi": "Agrologi (AMK), monimuotototeutus",
+              "en": ""
+            },
+            "kausi": {
+              "fi": "Kevät",
+              "sv": "Vår",
+              "en": "Spring"
+            },
+            "kausiUri": "kausi_k#1",
+            "vuosi": 2017,
+            "tila": "JULKAISTU",
+            "koulutusasteTyyppi": "KORKEAKOULUTUS",
+            "toteutustyyppiEnum": "KORKEAKOULUTUS",
+            "koulutuskoodi": "koulutus_661101#5",
+            "tarjoajat": [
+              "1.2.246.562.10.72590401013"
+            ],
+            "koulutusmoduuliTyyppi": "TUTKINTO",
+            "komoOid": "1.2.246.562.13.24407348275",
+            "opetuskielet": [
+              "kieli_fi"
+            ],
+            "koulutuslaji": { }
+          }
+        ]
+      }
+    ],
+    "tuloksia": 2
+  },
+  "status": "OK"
+}

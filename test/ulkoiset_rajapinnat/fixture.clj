@@ -11,6 +11,7 @@
 (def test-configs {:host-virkailija "http://fake.virkailija.opintopolku.fi"
                    :valintapiste-host-virkailija "http://fake.internal.aws.opintopolku.fi"
                    :vastaanotto-host-virkailija "http://fake.virkailija.opintopolku.fi"
+                   :organisaatio-host-virkailija "http://fake.virkailija.opintopolku.fi"
                    :server {:port (get-free-port)
                             :base-url "/ulkoiset-rajapinnat"}})
 (defn api-call [path] (str "http://localhost:" (-> test-configs :server :port) (-> test-configs :server :base-url) path

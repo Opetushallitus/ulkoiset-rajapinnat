@@ -5,8 +5,11 @@
 (defn to-input-stream [string]
   (new ByteArrayInputStream (.getBytes string)))
 
-(defn channel-response [transform url status data]
-  (transform {:opts {:url url} :status status :body (to-input-stream data)}))
+(defn channel-response
+  ([transform url status data input-stream]
+   (transform {:opts {:url url} :status status :body (if (true? input-stream) (to-input-stream data) data)}))
+  ([transform url status data]
+    (channel-response transform url status data true)))
 
 (defn mock-channel [result]
   (let [p (promise-chan)]

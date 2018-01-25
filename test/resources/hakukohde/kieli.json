@@ -1,0 +1,68 @@
+[
+  {
+    "koodiUri": "kieli_fi",
+    "metadata": [
+      {
+        "nimi": "suomi",
+        "lyhytNimi": "suomi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Finnish",
+        "lyhytNimi": "Finnish",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "finska",
+        "lyhytNimi": "finska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "FI"
+  },
+  {
+    "koodiUri": "kieli_sv",
+    "metadata": [
+      {
+        "nimi": "ruotsi",
+        "lyhytNimi": "ruotsi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Swedish",
+        "lyhytNimi": "Swedish",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "svenska",
+        "lyhytNimi": "svenska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SV"
+  },
+  {
+    "koodiUri": "kieli_en",
+    "metadata": [
+      {
+        "nimi": "English",
+        "lyhytNimi": "English",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "engelska",
+        "lyhytNimi": "engelska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "englanti",
+        "lyhytNimi": "englanti",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "EN"
+  }
+]
