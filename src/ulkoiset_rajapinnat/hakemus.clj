@@ -184,7 +184,7 @@
         counter (atom 0)
         host-virkailija (config :host-virkailija)
         is-first-written (atom false)
-        ataru-channel (fetch-hakemukset-from-ataru config haku-oid)
+        ataru-channel (fetch-hakemukset-from-ataru config haku-oid size-of-henkilo-batch-from-onr-at-once)
         hakukohde-oids-for-hakukausi (hakukohde-oids-for-hakukausi config haku-oid vuosi kausi)
         haku-app-channel (fetch-hakemukset-from-haku-app-as-streaming-channel
                            config haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once)
@@ -204,11 +204,8 @@
               pohjakoulutuskkodw (<<?? (koodisto-as-channel config "pohjakoulutuskkodw"))
               haku-app-batch-mapper (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)
               ataru-batch-mapper (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?)
-              ataru-hakemukset (map ataru-batch-mapper
-                                    (partition-all size-of-henkilo-batch-from-onr-at-once
-                                                   (<<?? ataru-channel)))
-              haku-app-hakemukset (map haku-app-batch-mapper
-                                       (<<?? haku-app-channel))]
+              ataru-hakemukset (map ataru-batch-mapper (<<?? ataru-channel))
+              haku-app-hakemukset (map haku-app-batch-mapper (<<?? haku-app-channel))]
           (doseq [{henkilo-oids :henkilo_oids
                    mapper :mapper
                    batch :batch} (concat haku-app-hakemukset ataru-hakemukset)]
