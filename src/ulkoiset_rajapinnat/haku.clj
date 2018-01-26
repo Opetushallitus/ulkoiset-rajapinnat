@@ -5,7 +5,7 @@
             [clojure.tools.logging :as log]
             [schema.core :as s]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body to-json]]
-            [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
 
