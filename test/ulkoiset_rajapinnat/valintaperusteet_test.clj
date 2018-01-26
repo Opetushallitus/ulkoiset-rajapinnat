@@ -1,16 +1,15 @@
 (ns ulkoiset-rajapinnat.valintaperusteet-test
-  (:require [manifold.deferred :as d]
-            [clojure.test :refer :all]
+  (:require [clojure.test :refer :all]
             [clojure.data :refer [diff]]
             [clojure.java.io :as io]
             [clj-log4j2.core :as log]
             [clj-http.client :as client]
             [org.httpkit.client :as http]
-            [clojure.core.async :refer [promise-chan >! go go-loop put! close! timeout <! <!!]]
             [cheshire.core :refer [parse-string]]
             [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json post-json-as-channel]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
-            [ulkoiset-rajapinnat.fixture :refer :all])
+            [ulkoiset-rajapinnat.fixture :refer :all]
+            [ulkoiset-rajapinnat.test_utils :refer :all])
   (:import (java.io ByteArrayInputStream)))
 
 (use-fixtures :once fixture)
@@ -21,18 +20,6 @@
 (def hakijaryhmat-json (slurp "test/resources/hakijaryhmat.json"))
 (def valintaryhmat-json (slurp "test/resources/valintaryhmat.json"))
 (def avaimet-json (slurp "test/resources/avaimet.json"))
-
-(defn to-input-stream [string]
-  (new ByteArrayInputStream (.getBytes string)))
-
-(defn channel-response [transform url status data]
-  (transform {:opts {:url url} :status status :body (to-input-stream data)}))
-
-(defn mock-channel [result]
-  (let [p (promise-chan)]
-    (put! p result)
-    (close! p)
-    p))
 
 (defn mock-http [url options transform]
   (log/info (str "Mocking url " url))

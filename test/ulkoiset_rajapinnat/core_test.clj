@@ -2,7 +2,6 @@
   (:require [clojure.test :refer :all]
             [clj-log4j2.core :as log]
             [clj-http.client :as client]
-            [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket]]
             [ulkoiset-rajapinnat.fixture :refer :all]))
 
 (use-fixtures :once fixture)

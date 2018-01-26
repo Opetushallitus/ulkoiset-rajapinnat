@@ -1,0 +1,481 @@
+[
+  {
+    "yhteishaunKoulukoodi": "1704",
+    "oid": "1.2.246.562.10.72590401013",
+    "nimi": {
+      "fi": "Ankkalinnan yliopisto"
+    },
+    "yhteystiedot": [
+      {
+        "kieli": "kieli_fi#1",
+        "yhteystietoOid": "1.2.246.562.5.97820788772",
+        "id": "1796675",
+        "email": "mail@ankkalinnan-yliopisto.fi"
+      },
+      {
+        "kieli": "kieli_fi#1",
+        "numero": "020 124 5001",
+        "tyyppi": "faksi",
+        "yhteystietoOid": "1.2.246.562.5.71868040867",
+        "id": "1796676"
+      },
+      {
+        "kieli": "kieli_fi#1",
+        "numero": "234242343234",
+        "tyyppi": "puhelin",
+        "yhteystietoOid": "1.2.246.562.5.43176768075",
+        "id": "1796677"
+      },
+      {
+        "kieli": "kieli_fi#1",
+        "www": "http://www.ankkalinnan-yliopisto.fi",
+        "yhteystietoOid": "1.2.246.562.5.47103535689",
+        "id": "1796678"
+      },
+      {
+        "osavaltio": null,
+        "lng": null,
+        "osoiteTyyppi": "posti",
+        "coordinateType": null,
+        "kieli": "kieli_fi#1",
+        "postinumeroUri": "posti_60800",
+        "yhteystietoOid": "1.2.246.562.5.90602663198",
+        "lap": null,
+        "id": "1796679",
+        "maaUri": null,
+        "postitoimipaikka": "ANKKALINNA",
+        "osoite": "Ankkalinnantie 525",
+        "ytjPaivitysPvm": null,
+        "extraRivi": null
+      },
+      {
+        "osavaltio": null,
+        "lng": null,
+        "osoiteTyyppi": "kaynti",
+        "coordinateType": null,
+        "kieli": "kieli_fi#1",
+        "postinumeroUri": "posti_60800",
+        "yhteystietoOid": "1.2.246.562.5.61896661099",
+        "lap": null,
+        "id": "1796680",
+        "maaUri": null,
+        "postitoimipaikka": "ANKKALINNA",
+        "osoite": "Ankkalinnantie 525",
+        "ytjPaivitysPvm": null,
+        "extraRivi": null
+      }
+    ],
+    "ryhmatyypit": [],
+    "kayttoryhmat": [],
+    "metadata": {
+      "nimi": {},
+      "yhteystiedot": [
+        {
+          "osavaltio": null,
+          "lng": null,
+          "osoiteTyyppi": "kaynti",
+          "coordinateType": null,
+          "kieli": "kieli_fi#1",
+          "postinumeroUri": "posti_60320",
+          "yhteystietoOid": "1.2.246.562.5.18938078240",
+          "lap": null,
+          "id": "1796667",
+          "maaUri": null,
+          "postitoimipaikka": "ANKKALINNA",
+          "osoite": "Ankkalinnantie 525",
+          "ytjPaivitysPvm": null,
+          "extraRivi": null
+        },
+        {
+          "kieli": "kieli_fi#1",
+          "yhteystietoOid": "14004783939180.16806517016586497",
+          "id": "1796669",
+          "email": "hakijapalvelut@ankkalinnan-yliopisto.fi"
+        }
+      ],
+      "hakutoimistoEctsNimi": {},
+      "hakutoimistoEctsEmail": {},
+      "hakutoimistoEctsPuhelin": {},
+      "hakutoimistoEctsTehtavanimike": {},
+      "hakutoimistonNimi": {
+        "kieli_fi#1": "Ankkalinnan yliopisto Hakijapalvelut"
+      },
+      "kuvaEncoded": "absdaedaed",
+      "luontiPvm": 1396528706264,
+      "muokkausPvm": 1396528706264,
+      "data": {
+        "KANSAINVALISET_KOULUTUSOHJELMAT": {
+          "kieli_fi#1": "<p>Tässä toimipisteessä ei järjestetä vieraskielistä tutkintoon johtavaa koulutusta.</p>"
+        },
+        "YLEISKUVAUS": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "KIELIOPINNOT": {
+          "kieli_fi#1": "<p>Plaa.</p>"
+        },
+        "TERVEYDENHUOLTOPALVELUT": {
+          "kieli_fi#1": "<p>Plaa.</p>"
+        },
+        "TEHTAVANIMIKE": {},
+        "SAHKOPOSTIOSOITE": {},
+        "RAHOITUS": {
+          "kieli_fi#1": "<p>Plaa </p>"
+        },
+        "AIEMMIN_HANKITTU_OSAAMINEN": {
+          "kieli_fi#1": "<p>Plaa.</p>"
+        },
+        "sosiaalinenmedia_7#1": {},
+        "sosiaalinenmedia_5#1": {},
+        "sosiaalinenmedia_6#1": {},
+        "OPISKELIJALIIKKUVUUS": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "VAKUUTUKSET": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "OPISKELIJA_JARJESTOT": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "VALINTAMENETTELY": {},
+        "sosiaalinenmedia_3#1": {},
+        "sosiaalinenmedia_4#1": {},
+        "sosiaalinenmedia_1#1": {
+          "kieli_fi#1": "https://www.facebook.com/ayo"
+        },
+        "VASTUUHENKILOT": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "KUSTANNUKSET": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "OPPIMISYMPARISTO": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "sosiaalinenmedia_2#1": {},
+        "PUHELINNUMERO": {},
+        "NIMI": {},
+        "OPISKELIJALIIKUNTA": {
+          "kieli_fi#1": "<p>Plaa.</p>"
+        },
+        "VUOSIKELLO": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "OPISKELIJARUOKAILU": {
+          "kieli_fi#1": "<p>Plaa.</p>"
+        },
+        "VAPAA_AIKA": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "ESTEETOMYYS": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "TIETOA_ASUMISESTA": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "TYOHARJOITTELU": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        }
+      }
+    },
+    "alkuPvm": "2004-08-01",
+    "parentOid": "1.2.246.562.10.54453921329",
+    "postiosoite": {
+      "osavaltio": null,
+      "lng": null,
+      "postinumeroUri": "posti_60800",
+      "osoiteTyyppi": "posti",
+      "coordinateType": null,
+      "yhteystietoOid": "1.2.246.562.5.90602663198",
+      "lap": null,
+      "maaUri": null,
+      "postitoimipaikka": "Ankkalinna",
+      "osoite": "Ankkatie 525",
+      "ytjPaivitysPvm": null,
+      "extraRivi": null
+    },
+    "kuvaus2": {},
+    "opetuspisteenJarjNro": "13",
+    "tyypit": [
+      "Toimipiste"
+    ],
+    "yhteystietoArvos": [],
+    "nimet": [
+      {
+        "nimi": {
+          "fi": "Ankkalinnan yliopisto"
+        },
+        "alkuPvm": "2004-08-01",
+        "version": 1
+      }
+    ],
+    "parentOidPath": "|1.2.246.562.10.00000000001|1.2.246.562.10.2014041511401945349694|1.2.246.562.10.54453921329|",
+    "vuosiluokat": [],
+    "kayntiosoite": {
+      "osavaltio": null,
+      "lng": null,
+      "postinumeroUri": "posti_60800",
+      "osoiteTyyppi": "kaynti",
+      "coordinateType": null,
+      "yhteystietoOid": "1.2.246.562.5.61896661099",
+      "lap": null,
+      "maaUri": null,
+      "postitoimipaikka": "Ankkalinna",
+      "osoite": "Ankkatie 525",
+      "ytjPaivitysPvm": null,
+      "extraRivi": null
+    },
+    "kieletUris": [
+      "oppilaitoksenopetuskieli_1#1"
+    ],
+    "kotipaikkaUri": "kunta_145",
+    "maaUri": "maatjavaltiot1_fin",
+    "toimipistekoodi": "0247213",
+    "version": 38,
+    "status": "AKTIIVINEN"
+  },
+  {
+    "yhteishaunKoulukoodi": "1231",
+    "oid": "1.2.246.562.10.82958623314",
+    "nimi": {
+      "fi": "Ankkalinnan ammattikorkeakoulu",
+      "en": "Ankkalinna University of Applied Sciences"
+    },
+    "yhteystiedot": [
+      {
+        "kieli": "kieli_en#1",
+        "www": "http://www.ankkaamk.fi",
+        "yhteystietoOid": "14029040978440.7152943495819654",
+        "id": "1934952"
+      },
+      {
+        "kieli": "kieli_en#1",
+        "yhteystietoOid": "14029040978440.13804168642667747",
+        "id": "1934953",
+        "email": "opintotoimisto@ankkaamk.fi"
+      },
+      {
+        "kieli": "kieli_en#1",
+        "numero": "1231231414",
+        "tyyppi": "puhelin",
+        "yhteystietoOid": "1.2.246.562.5.89810102347",
+        "id": "1934955"
+      },
+      {
+        "osavaltio": null,
+        "lng": null,
+        "osoiteTyyppi": "ulkomainen_posti",
+        "coordinateType": null,
+        "kieli": "kieli_en#1",
+        "postinumeroUri": null,
+        "yhteystietoOid": "1.2.246.562.5.23409299765",
+        "lap": null,
+        "id": "1934956",
+        "maaUri": null,
+        "postitoimipaikka": null,
+        "osoite": "Ankkakatu 2, Ankkalinna",
+        "ytjPaivitysPvm": null,
+        "extraRivi": null
+      },
+      {
+        "kieli": "kieli_fi#1",
+        "www": "http://www.ankkaamk.fi",
+        "yhteystietoOid": "1.2.246.562.5.21670353263",
+        "id": "1934960"
+      },
+      {
+        "kieli": "kieli_fi#1",
+        "numero": "1234",
+        "tyyppi": "puhelin",
+        "yhteystietoOid": "1.2.246.562.5.49824315821",
+        "id": "1934961"
+      }
+    ],
+    "ryhmatyypit": [],
+    "kayttoryhmat": [],
+    "metadata": {
+      "nimi": {},
+      "yhteystiedot": [
+        {
+          "osavaltio": null,
+          "lng": null,
+          "osoiteTyyppi": "kaynti",
+          "coordinateType": null,
+          "kieli": "kieli_fi#1",
+          "postinumeroUri": "posti_53850",
+          "yhteystietoOid": "1.2.246.562.5.84104814298",
+          "lap": null,
+          "id": "1934938",
+          "maaUri": null,
+          "postitoimipaikka": "Ankkalinna",
+          "osoite": "Ankkakatu 36",
+          "ytjPaivitysPvm": null,
+          "extraRivi": null
+        },
+        {
+          "kieli": "kieli_fi#1",
+          "www": "http://www.ankkaamk.fi",
+          "yhteystietoOid": "14029003136470.36873782176491665",
+          "id": "1934941"
+        },
+        {
+          "kieli": "kieli_fi#1",
+          "numero": "1234567",
+          "tyyppi": "puhelin",
+          "yhteystietoOid": "1.2.246.562.5.69231076694",
+          "id": "1934942"
+        },
+        {
+          "kieli": "kieli_en#1",
+          "yhteystietoOid": "14029004078740.7216085703686148",
+          "id": "1934946",
+          "email": "admissions@ankkaamk.fi"
+        },
+        {
+          "kieli": "kieli_en#1",
+          "www": "http://www.ankkaamk.fi",
+          "yhteystietoOid": "14029004078740.05067688478526877",
+          "id": "1934947"
+        }
+      ],
+      "hakutoimistoEctsNimi": {},
+      "hakutoimistoEctsEmail": {},
+      "hakutoimistoEctsPuhelin": {},
+      "hakutoimistoEctsTehtavanimike": {},
+      "hakutoimistonNimi": {
+        "kieli_en#1": "Admissions Office",
+        "kieli_fi#1": "Ankkalinnan ammattikorkeakoulun hakijapalvelut"
+      },
+      "luontiPvm": 1396510763987,
+      "muokkausPvm": 1396510763987,
+      "data": {
+        "KANSAINVALISET_KOULUTUSOHJELMAT": {
+          "kieli_fi#1": "<p>Tässä toimipisteessä ei järjestetä vieraskielistä tutkintoon johtavaa koulutusta.</p>"
+        },
+        "YLEISKUVAUS": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "KIELIOPINNOT": {
+          "kieli_fi#1": "<p>Plaa.</p>"
+        },
+        "TERVEYDENHUOLTOPALVELUT": {
+          "kieli_fi#1": "<p>Plaa.</p>"
+        },
+        "TEHTAVANIMIKE": {},
+        "SAHKOPOSTIOSOITE": {},
+        "RAHOITUS": {
+          "kieli_fi#1": "<p>Plaa </p>"
+        },
+        "AIEMMIN_HANKITTU_OSAAMINEN": {
+          "kieli_fi#1": "<p>Plaa.</p>"
+        },
+        "sosiaalinenmedia_7#1": {},
+        "sosiaalinenmedia_5#1": {},
+        "sosiaalinenmedia_6#1": {},
+        "OPISKELIJALIIKKUVUUS": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "VAKUUTUKSET": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "OPISKELIJA_JARJESTOT": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "VALINTAMENETTELY": {},
+        "sosiaalinenmedia_3#1": {},
+        "sosiaalinenmedia_4#1": {},
+        "sosiaalinenmedia_1#1": {
+          "kieli_fi#1": "https://www.facebook.com/ayo"
+        },
+        "VASTUUHENKILOT": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "KUSTANNUKSET": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "OPPIMISYMPARISTO": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "sosiaalinenmedia_2#1": {},
+        "PUHELINNUMERO": {},
+        "NIMI": {},
+        "OPISKELIJALIIKUNTA": {
+          "kieli_fi#1": "<p>Plaa.</p>"
+        },
+        "VUOSIKELLO": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "OPISKELIJARUOKAILU": {
+          "kieli_fi#1": "<p>Plaa.</p>"
+        },
+        "VAPAA_AIKA": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "ESTEETOMYYS": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "TIETOA_ASUMISESTA": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        },
+        "TYOHARJOITTELU": {
+          "kieli_fi#1": "<p>Plaa</p>"
+        }
+      }
+    },
+    "alkuPvm": "1999-08-01",
+    "parentOid": "1.2.246.562.10.16758825075",
+    "postiosoite": {
+      "osavaltio": null,
+      "lng": null,
+      "postinumeroUri": "posti_55120",
+      "osoiteTyyppi": "posti",
+      "coordinateType": null,
+      "yhteystietoOid": "1.2.246.562.5.31630350812",
+      "lap": null,
+      "maaUri": null,
+      "postitoimipaikka": "Ankkalinna",
+      "osoite": "Ankkakatu 3",
+      "ytjPaivitysPvm": null,
+      "extraRivi": null
+    },
+    "kuvaus2": {},
+    "opetuspisteenJarjNro": "03",
+    "tyypit": [
+      "Toimipiste"
+    ],
+    "yhteystietoArvos": [],
+    "nimet": [
+      {
+        "nimi": {
+          "fi": "Ankkalinnan ammattikorkeakoulu",
+          "en": "Ankkalinna University of Applied Sciences"
+        },
+        "alkuPvm": "1999-08-01",
+        "version": 1
+      }
+    ],
+    "parentOidPath": "|1.2.246.562.10.00000000001|1.2.246.562.10.39804091914|1.2.246.562.10.16758825075|",
+    "vuosiluokat": [],
+    "kayntiosoite": {
+      "osavaltio": null,
+      "lng": null,
+      "postinumeroUri": "posti_55120",
+      "osoiteTyyppi": "kaynti",
+      "coordinateType": null,
+      "yhteystietoOid": "1.2.246.562.5.29325751997",
+      "lap": null,
+      "maaUri": null,
+      "postitoimipaikka": "Ankkalinna",
+      "osoite": "Ankkakatu 3",
+      "ytjPaivitysPvm": null,
+      "extraRivi": null
+    },
+    "kieletUris": [
+      "oppilaitoksenopetuskieli_1#1"
+    ],
+    "kotipaikkaUri": "kunta_153",
+    "maaUri": "maatjavaltiot1_fin",
+    "toimipistekoodi": "0260903",
+    "version": 49,
+    "status": "AKTIIVINEN"
+  }
+]

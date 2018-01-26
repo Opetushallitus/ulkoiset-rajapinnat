@@ -1,0 +1,50 @@
+{
+  "kokonaismaara": 2,
+  "tulokset": [
+    {
+      "hakukohdeOid": "1.2.246.562.20.573444383210",
+      "tarjoajaOid": "1.2.246.562.10.82958623314",
+      "tarjoajaNimi": {
+        "fi": "Ankkalinnan ammattikorkeakoulu",
+        "en": "Ankkalinna University of Applied Sciences"
+      },
+      "hakukohdeNimi": {
+        "fi": "Kuvataiteilija (ylempi AMK), Kuvataide, Imatra, lisähaku"
+      },
+      "hakukohdeTila": "JULKAISTU",
+      "hakuVuosi": 0,
+      "koulutusVuosi": 0,
+      "organisaatioOids": [
+        "1.2.246.562.10.82958623314"
+      ],
+      "opetuskielet": [
+        "kieli_fi"
+      ],
+      "koulutusOids": [
+        "1.2.246.562.17.952391103810"
+      ]
+    },
+    {
+      "hakukohdeOid": "1.2.246.562.20.22971087097",
+      "tarjoajaOid": "1.2.246.562.10.72590401013",
+      "tarjoajaNimi": {
+        "fi": "Ankkalinnan yliopisto"
+      },
+      "hakukohdeNimi": {
+        "fi": "Agrologi (AMK), monimuotototeutus, lisähaku"
+      },
+      "hakukohdeTila": "JULKAISTU",
+      "hakuVuosi": 0,
+      "koulutusVuosi": 0,
+      "organisaatioOids": [
+        "1.2.246.562.10.72590401013"
+      ],
+      "opetuskielet": [
+        "kieli_fi"
+      ],
+      "koulutusOids": [
+        "1.2.246.562.17.447540392110"
+      ]
+    }
+  ]
+}
