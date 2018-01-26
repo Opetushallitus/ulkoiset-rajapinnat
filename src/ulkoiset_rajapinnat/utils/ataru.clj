@@ -13,7 +13,7 @@
 (def ataru-cas-api "%s/lomake-editori/auth/cas?ticket=%s")
 (def ataru-api "%s/lomake-editori/api/external/tilastokeskus?hakuOid=%s")
 
-(defn fetch-hakemukset-from-ataru [config haku-oid batch-size]
+(defn fetch-hakemukset-from-ataru [config haku-oid batch-size result-mapper]
   (let [channel (chan 1)]
     (go
       (let [host (-> config :ataru-host-virkailija)
@@ -27,7 +27,7 @@
                                                                          :as      :stream})
                 body-stream (hakemukset :body)]
             (try
-              (read-json-stream-to-channel body-stream channel batch-size)
+              (read-json-stream-to-channel body-stream channel batch-size result-mapper)
               (catch Exception e
                 (do
                   (log/error "Failed to read hakemus json from 'haku-app'!" (.getMessage e))

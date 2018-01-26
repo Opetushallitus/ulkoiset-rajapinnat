@@ -21,28 +21,24 @@
                                                                       })
 
 (defn fetch-hakemukset-from-haku-app-as-streaming-channel
-  ([config haku-oid hakukohde-oids]
-   (fetch-hakemukset-from-haku-app-as-streaming-channel config haku-oid hakukohde-oids 500))
-  ([config haku-oid hakukohde-oids batch-size]
-   (let [host (config :host-virkailija)
-         service "/haku-app"
-         username (config :ulkoiset-rajapinnat-cas-username)
-         password (config :ulkoiset-rajapinnat-cas-password)
-         query (hakemukset-for-hakukohde-oids-query haku-oid hakukohde-oids)
-         service-ticket-channel (service-ticket-channel host service username password)
-         channel (chan 1)]
-     (go
-       (let [st (<? service-ticket-channel)
-             response (client/post (str host haku-streaming-api) {:headers {"CasSecurityTicket" st
-                                                                            "Content-Type"      "application/json"}
-                                                                  :as      :stream
-                                                                  :body    (to-json query)})
-             body-stream (response :body)]
-         (try
-           (read-json-stream-to-channel body-stream channel batch-size)
-           (catch Exception e
-             (do
-               (log/error "Failed to read hakemus json from 'haku-app'!" (.getMessage e))
-               (>! channel e)
-               (throw e))))))
-     channel)))
+  [config haku-oid hakukohde-oids batch-size result-mapper]
+  (let [host (config :host-virkailija)
+        service "/haku-app"
+        username (config :ulkoiset-rajapinnat-cas-username)
+        password (config :ulkoiset-rajapinnat-cas-password)
+        query (hakemukset-for-hakukohde-oids-query haku-oid hakukohde-oids)
+        service-ticket-channel (service-ticket-channel host service username password)
+        channel (chan 1)]
+    (go
+      (try
+        (let [st (<? service-ticket-channel)
+              response (client/post (str host haku-streaming-api) {:headers {"CasSecurityTicket" st
+                                                                             "Content-Type"      "application/json"}
+                                                                   :as      :stream
+                                                                   :body    (to-json query)})
+              body-stream (response :body)]
+          (read-json-stream-to-channel body-stream channel batch-size result-mapper))
+        (finally
+          (log/info "Done reading 'haku-app'!")
+          (close! channel))))
+    channel))

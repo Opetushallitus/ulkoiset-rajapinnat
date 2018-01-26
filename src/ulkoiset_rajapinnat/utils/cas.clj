@@ -2,7 +2,7 @@
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
-            [clojure.core.async :refer [put! go promise-chan]]
+            [clojure.core.async :refer [>! put! go promise-chan]]
             [full.async :refer :all]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel post-form-as-channel get-as-promise post-form-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [org.httpkit.server :refer :all]
@@ -61,7 +61,7 @@
                                 (str host service "/j_spring_cas_security_check"))
              tgt (<? (tgt-request-channel host username password))
              st (<? (st-request-channel absolute-service tgt))]
-         (put! p-chan st)))
+         (>! p-chan st)))
      p-chan))
   ([host service username password]
    (service-ticket-channel host service username password false)))

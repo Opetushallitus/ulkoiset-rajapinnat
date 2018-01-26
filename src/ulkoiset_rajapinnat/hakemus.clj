@@ -1,12 +1,13 @@
 (ns ulkoiset-rajapinnat.hakemus
   (:require [clojure.string :as str]
-            [clojure.core.async :refer :all]
+            [clojure.core.async :refer [<!! <! close! go go-loop chan timeout >! alt! alts! promise-chan]]
             [clojure.tools.logging :as log]
             [full.async :refer :all]
             [schema.core :as s]
             [ulkoiset-rajapinnat.onr :refer :all]
             [ulkoiset-rajapinnat.utils.tarjonta :refer :all]
             [ulkoiset-rajapinnat.utils.haku_app :refer :all]
+            [ulkoiset-rajapinnat.oppija :refer :all]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-for-oids]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-promise status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel fetch-koodisto strip-version-from-tarjonta-koodisto-uri]]
@@ -21,32 +22,33 @@
 (def size-of-henkilo-batch-from-onr-at-once 500)
 
 (s/defschema Hakemus
-  {:haku_oid s/Str
-   :hakemus_oid s/Str
-   :henkilo_oid s/Str
-   (s/optional-key :yksiloity) s/Str
-   (s/optional-key :henkilotunnus) s/Str
-   (s/optional-key :syntyma_aika) s/Str
-   (s/optional-key :etunimet) s/Str
-   (s/optional-key :sukunimi) s/Str
-   (s/optional-key :sukupuoli_koodi) s/Str
-   (s/optional-key :aidinkieli) s/Str
+  {:haku_oid                                                                   s/Str
+   :hakemus_oid                                                                s/Str
+   :henkilo_oid                                                                s/Str
+   (s/optional-key :ensikertalaisuus)                                          s/Bool
+   (s/optional-key :yksiloity)                                                 s/Str
+   (s/optional-key :henkilotunnus)                                             s/Str
+   (s/optional-key :syntyma_aika)                                              s/Str
+   (s/optional-key :etunimet)                                                  s/Str
+   (s/optional-key :sukunimi)                                                  s/Str
+   (s/optional-key :sukupuoli_koodi)                                           s/Str
+   (s/optional-key :aidinkieli)                                                s/Str
 
-   (s/optional-key :hakijan_asuinmaa) s/Str
-   (s/optional-key :hakijan_kotikunta) s/Str
-   (s/optional-key :hakijan_kansalaisuus) s/Str
+   (s/optional-key :hakijan_asuinmaa)                                          s/Str
+   (s/optional-key :hakijan_kotikunta)                                         s/Str
+   (s/optional-key :hakijan_kansalaisuus)                                      s/Str
 
-   (s/optional-key :hakijan_koulusivistyskieli) s/Str
-   (s/optional-key :pohjakoulutus_2aste) s/Str
-   (s/optional-key :pohjakoulutus_kk) s/Str
-   (s/optional-key :lahtokoulun_organisaatio_oid) s/Str
+   (s/optional-key :hakijan_koulusivistyskieli)                                s/Str
+   (s/optional-key :pohjakoulutus_2aste)                                       s/Str
+   (s/optional-key :pohjakoulutus_kk)                                          s/Str
+   (s/optional-key :lahtokoulun_organisaatio_oid)                              s/Str
    (s/optional-key :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa) s/Str
 
-   :hakutoiveet {
-                 (s/optional-key :hakukohde_oid) s/Str
-                 (s/optional-key :harkinnanvarainen_valinta) s/Str
-                 (s/optional-key :sija) s/Str
-                 }})
+   :hakutoiveet                                                                {
+                                                                                (s/optional-key :hakukohde_oid)             s/Str
+                                                                                (s/optional-key :harkinnanvarainen_valinta) s/Str
+                                                                                (s/optional-key :sija)                      s/Str
+                                                                                }})
 
 (defn collect-preference-keys-by-sija [document]
   (let [ht (get-in document ["answers" "hakutoiveet"])
@@ -99,27 +101,29 @@
      :lahtokoulun_organisaatio_oid                              lahtokoulun_organisaatio_oid
      :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa}))
 
-(defn convert-ataru-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo hakemus]
+(defn convert-ataru-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo oppija hakemus]
   (let [data (core-merge
                (oppija-data-from-henkilo henkilo)
-               {:hakemus_oid  (get hakemus "hakemus_oid")
-                :henkilo_oid  (get hakemus "henkilo_oid")
-                :haku_oid     (get hakemus "haku_oid")
-                :hakutoiveet  (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))})]
+               {:hakemus_oid      (get hakemus "hakemus_oid")
+                :henkilo_oid      (get hakemus "henkilo_oid")
+                :haku_oid         (get hakemus "haku_oid")
+                :ensikertalaisuus (if-let [o (first oppija)] (get o "ensikertalainen") nil)
+                :hakutoiveet      (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))})]
     (if palauta-null-arvot?
       data
       (remove-nils data))))
 
-(defn convert-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo document]
+(defn convert-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo oppija document]
   (let [data (core-merge
                (hakutoiveet-from-hakemus document)
                (oppija-data-from-henkilo henkilo)
                (henkilotiedot-from-hakemus document)
                (koulutustausta-from-hakemus pohjakoulutuskkodw document)
-               {:hakemus_oid  (get document "oid")
-                :henkilo_oid  (get document "personOid")
-                :haku_oid     (get document "applicationSystemId")
-                :hakemus_tila (get document "state")})]
+               {:hakemus_oid      (get document "oid")
+                :henkilo_oid      (get document "personOid")
+                :haku_oid         (get document "applicationSystemId")
+                :ensikertalaisuus (if-let [o (first oppija)] (get o "ensikertalainen") nil)
+                :hakemus_tila     (get document "state")})]
     (if palauta-null-arvot?
       data
       (remove-nils data))))
@@ -146,26 +150,27 @@
 
 
 (defn haku-app-adapter [pohjakoulutuskkodw palauta-null-arvot?]
-  (fn [batch] {:henkilo_oids (map #(get % "personOid") batch)
-               :batch batch
-               :mapper (fn [henkilo-by-oid hakemus]
-                         (convert-hakemus
-                           (first pohjakoulutuskkodw)
-                           palauta-null-arvot?
-                           (get henkilo-by-oid (get hakemus "personOid")) hakemus))}))
+  (fn [batch] [(map #(get % "personOid") batch)
+               batch
+               (fn [henkilo-by-oid oppijat-by-oid hakemus]
+                 (convert-hakemus
+                   pohjakoulutuskkodw
+                   palauta-null-arvot?
+                   (get henkilo-by-oid (get hakemus "personOid"))
+                   (get oppijat-by-oid (get hakemus "personOid")) hakemus))]))
 
 (defn ataru-adapter [pohjakoulutuskkodw palauta-null-arvot?]
-  (fn [part-batch] (let [batch (flatten part-batch)]
-                     {:henkilo_oids (document-batch-to-henkilo-oid-list batch)
-                      :batch batch
-                      :mapper (fn [henkilo-by-oid hakemus]
-                                (convert-ataru-hakemus
-                                  (first pohjakoulutuskkodw)
-                                  palauta-null-arvot?
-                                  (get henkilo-by-oid (get hakemus "henkilo_oid")) hakemus))})))
+  (fn [batch] [(document-batch-to-henkilo-oid-list batch)
+               batch
+               (fn [henkilo-by-oid oppijat-by-oid hakemus]
+                 (convert-ataru-hakemus
+                   pohjakoulutuskkodw
+                   palauta-null-arvot?
+                   (get henkilo-by-oid (get hakemus "henkilo_oid"))
+                   (get oppijat-by-oid (get hakemus "henkilo_oid")) hakemus))]))
 
-(defn hakukohde-oids-for-hakukausi [config haku-oid vuosi kausi]
-  (if (is-jatkuva-haku (<?? (haku-for-haku-oid-channel config haku-oid)))
+(defn hakukohde-oids-for-hakukausi [config haku-oid vuosi kausi haku]
+  (if (is-jatkuva-haku haku)
     (let [oids (<?? (hakukohde-oids-for-kausi-and-vuosi-channel config haku-oid kausi vuosi))]
       (if (not-empty oids)
         oids
@@ -176,7 +181,7 @@
 (defn- close-and-drain! [channel]
   (go
     (close! channel)
-    (while (<! channel))))
+    (engulf channel)))
 
 (defn fetch-hakemukset-for-haku
   [config haku-oid vuosi kausi palauta-null-arvot? channel]
@@ -184,10 +189,16 @@
         counter (atom 0)
         host-virkailija (config :host-virkailija)
         is-first-written (atom false)
-        ataru-channel (fetch-hakemukset-from-ataru config haku-oid size-of-henkilo-batch-from-onr-at-once)
-        hakukohde-oids-for-hakukausi (hakukohde-oids-for-hakukausi config haku-oid vuosi kausi)
+        jsessionid (<?? (onr-sessionid-channel config))
+        pohjakoulutuskkodw (<?? (koodisto-as-channel config "pohjakoulutuskkodw"))
+        haku (<?? (haku-for-haku-oid-channel config haku-oid))
+        is-haku-with-ensikertalaisuus? (is-haku-with-ensikertalaisuus haku)
+        ataru-channel (fetch-hakemukset-from-ataru config haku-oid size-of-henkilo-batch-from-onr-at-once
+                                                   (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?))
+        hakukohde-oids-for-hakukausi (hakukohde-oids-for-hakukausi config haku-oid vuosi kausi haku)
         haku-app-channel (fetch-hakemukset-from-haku-app-as-streaming-channel
-                           config haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once)
+                           config haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
+                           (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?))
         close-channel (fn []
                         (do
                           (close-and-drain! haku-app-channel)
@@ -197,27 +208,31 @@
                                 (body channel "[]")
                                 (close channel))
                             (do (body channel "]")
-                                (close channel)))))]
+                                (close channel)))))
+        oppija-service-ticket-channel (fetch-hakurekisteri-service-ticket-channel config)]
     (go
       (try
-        (let [jsessionid (<<?? (onr-sessionid-channel config))
-              pohjakoulutuskkodw (<<?? (koodisto-as-channel config "pohjakoulutuskkodw"))
-              haku-app-batch-mapper (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)
-              ataru-batch-mapper (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?)
-              ataru-hakemukset (map ataru-batch-mapper (<<?? ataru-channel))
-              haku-app-hakemukset (map haku-app-batch-mapper (<<?? haku-app-channel))]
-          (doseq [{henkilo-oids :henkilo_oids
-                   mapper :mapper
-                   batch :batch} (concat haku-app-hakemukset ataru-hakemukset)]
-            (let [henkilot (<? (fetch-henkilot-channel config (first jsessionid) henkilo-oids))
-                  henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
-              (doseq [hakemus batch]
-                (write-object-to-channel
-                  is-first-written
-                  (mapper henkilo-by-oid hakemus)
-                  channel)))
-            (let [bs (int (count batch))]
-              (swap! counter (partial + bs)))))
+        (core-loop [channels [ataru-channel haku-app-channel]]
+          (let [[v ch] (alts? channels)]
+            (if (not (vector? v))
+              (let [new-channels (remove #{ch} channels)]
+                (if (not (empty? new-channels))
+                  (recur new-channels)))
+              (let [[henkilo-oids batch mapper] v
+                    oppijat-with-ensikertalaisuus (if is-haku-with-ensikertalaisuus?
+                                                    (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel config haku-oid henkilo-oids oppija-service-ticket-channel)
+                                                    nil)
+                    henkilot (<? (fetch-henkilot-channel config jsessionid henkilo-oids))
+                    oppijat-by-oid (if (some? oppijat-with-ensikertalaisuus) (group-by #(get % "oppijanumero") (<? oppijat-with-ensikertalaisuus)) {})
+                    henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
+                (doseq [hakemus batch]
+                  (write-object-to-channel
+                    is-first-written
+                    (mapper henkilo-by-oid oppijat-by-oid hakemus)
+                    channel))
+                (let [bs (int (count batch))]
+                  (swap! counter (partial + bs)))
+                (recur channels)))))
         (log/info "Returned successfully" @counter "'hakemusta' from Haku-App and Ataru! Took" (- (System/currentTimeMillis) start-time) "ms!")
         (catch Throwable e
           (do

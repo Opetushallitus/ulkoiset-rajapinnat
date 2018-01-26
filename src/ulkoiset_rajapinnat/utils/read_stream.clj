@@ -8,7 +8,7 @@
   (:import (com.fasterxml.jackson.databind ObjectMapper)
            (com.fasterxml.jackson.core JsonFactory JsonToken)))
 
-(defn read-json-stream-to-channel [input-stream channel batch-size]
+(defn read-json-stream-to-channel [input-stream channel batch-size result-mapper]
   (try
     (let [mapper (ObjectMapper.)
           parser (-> (doto (JsonFactory.)
@@ -21,7 +21,7 @@
                               (let [v (vec (.toArray batch))]
                                 (.clear batch)
                                 (if (not-empty v)
-                                  v
+                                  (result-mapper v)
                                   nil)))]
         (while (= (.nextToken parser) (JsonToken/START_OBJECT))
           (let [obj (-> mapper
@@ -32,6 +32,8 @@
                 (throw (RuntimeException. "Channel was closed before reading stream completed!"))))))
         (when-let [last-batch (drain-to-vector)]
           (>!! channel last-batch))))
+    (catch Exception e (do (>!! channel e)
+                           (throw e)))
     (finally
       (if (instance? java.io.InputStream input-stream)
         (.close input-stream))

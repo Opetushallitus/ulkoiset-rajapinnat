@@ -31,6 +31,15 @@
                                             some-haku
                                             (throw (RuntimeException. (format "Haku %s not found!" haku-oid))))))))
 
+(defn is-haku-with-ensikertalaisuus [haku]
+  (if-let [some-haku haku]
+    (let [korkeakoulu? (if-let [kuri (haku "kohdejoukkoUri")] (str/starts-with? kuri "haunkohdejoukko_12#") false)
+          kohdejoukontarkenne? (some? (haku "kohdejoukonTarkenne"))
+          yhteis-tai-erillishaku? (if-let [hakutapa (haku "hakutapaUri")] (or (str/starts-with? hakutapa "hakutapa_01#") (str/starts-with? hakutapa "hakutapa_02#")) false)
+          jatkuva-haku? (if-let [hakutapa (haku "hakutapaUri")] (str/starts-with? hakutapa "hakutapa_03#") false)]
+      (and korkeakoulu? yhteis-tai-erillishaku? (not kohdejoukontarkenne?)))
+    (throw (RuntimeException. "Can't check nil haku if it's jatkuva haku!"))))
+
 (defn is-jatkuva-haku [haku]
   (if-let [some-haku haku]
     (if-let [hakutapa (haku "hakutapaUri")]
