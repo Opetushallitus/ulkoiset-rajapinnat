@@ -2,6 +2,7 @@
   (:require [manifold.deferred :refer [let-flow catch chain]]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
+            [clojure.core.async :refer [put! go promise-chan]]
             [full.async :refer :all]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel post-form-as-channel get-as-promise post-form-as-promise status body body-and-close exception-response parse-json-body to-json]]
             [org.httpkit.server :refer :all]
@@ -53,13 +54,15 @@
 
 (defn service-ticket-channel
   ([host service username password as-absolute-service?]
-   (go-try
-     (let [absolute-service (if as-absolute-service?
-                              (str host service)
-                              (str host service "/j_spring_cas_security_check"))
-           tgt (<? (tgt-request-channel host username password))
-           st (<? (st-request-channel absolute-service tgt))]
-       st)))
+   (let [p-chan (promise-chan)]
+     (go
+       (let [absolute-service (if as-absolute-service?
+                                (str host service)
+                                (str host service "/j_spring_cas_security_check"))
+             tgt (<? (tgt-request-channel host username password))
+             st (<? (st-request-channel absolute-service tgt))]
+         (put! p-chan st)))
+     p-chan))
   ([host service username password]
    (service-ticket-channel host service username password false)))
 
@@ -80,9 +83,8 @@
 (defn fetch-jsessionid-channel
   [host service username password]
   (go-try
-    (let [st (<? (service-ticket-channel host service username password))
-          jid (<? (jsessionid-channel host service st))]
-      jid)))
+    (let [st (<? (service-ticket-channel host service username password))]
+      (<? (jsessionid-channel host service st)))))
 
 (defn jsessionid-fetcher-channel [host username password]
   (fn [service]
