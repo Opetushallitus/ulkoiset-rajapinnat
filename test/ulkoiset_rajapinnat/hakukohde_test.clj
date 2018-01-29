@@ -16,6 +16,7 @@
 
 (use-fixtures :once fixture)
 
+(def koulutustyyppi-json (slurp "test/resources/hakukohde/koulutustyyppi.json"))
 (def hakukohde-json (slurp "test/resources/hakukohde/hakukohde.json"))
 (def hakukohde-tulos-json (slurp "test/resources/hakukohde/hakukohde-tulos.json"))
 (def koulutus-json (slurp "test/resources/hakukohde/koulutus.json"))
@@ -30,6 +31,7 @@
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.29.25191045126" (response 200 koulutus-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.29.25191045126&tila=JULKAISTU" (response 200 hakukohde-json)
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1" (response 200 kieli-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/koulutustyyppi/1" (response 200 koulutustyyppi-json)
     "http://fake.virkailija.opintopolku.fi/organisaatio-service/rest/organisaatio/v3/findbyoids" (response 200 organisaatio-json)
     (response 404 "[]")))
 
@@ -63,3 +65,4 @@
 
 
 
+(run-tests)
