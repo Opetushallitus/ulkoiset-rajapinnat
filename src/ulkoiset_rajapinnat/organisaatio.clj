@@ -17,14 +17,16 @@
 
 (defn fetch-organisations-in-batch-channel
   ([config organisation-oids]
-   (go-try
-     (let [host (config :organisaatio-host-virkailija)
-           url (format organisaatio-api host)
-           partitions (partition-all organisaatio-batch-size organisation-oids)
-           post (fn [x] (let [start-time (System/currentTimeMillis)
-                              mapper (comp parse-json-body-stream (partial log-fetch (count organisation-oids) start-time))]
-                          (if (> (count x) 1000)
-                            (throw (new RuntimeException "Can only fetch 1000 orgs at once!")))
-                          (post-json-as-channel url x mapper)))
-           organisaatiot (<? (async/map vector (map #(post %) partitions)))]
-       (apply merge organisaatiot)))))
+   (if (empty? organisation-oids)
+     (async/go [])
+     (go-try
+       (let [host (config :organisaatio-host-virkailija)
+             url (format organisaatio-api host)
+             partitions (partition-all organisaatio-batch-size organisation-oids)
+             post (fn [x] (let [start-time (System/currentTimeMillis)
+                                mapper (comp parse-json-body-stream (partial log-fetch (count organisation-oids) start-time))]
+                            (if (> (count x) 1000)
+                              (throw (new RuntimeException "Can only fetch 1000 orgs at once!")))
+                            (post-json-as-channel url x mapper)))
+             organisaatiot (<? (async/map vector (map #(post %) partitions)))]
+         (apply merge organisaatiot))))))

@@ -29,7 +29,7 @@
 (defn parse-json-body-stream [response]
   (if (= (response :status) 200)
     (try
-      (parse-stream (new java.io.InputStreamReader (response :body)))
+      (doall (parse-stream (new java.io.InputStreamReader (response :body))))
       (catch Exception e
         (log/error "Failed to read JSON! Url = " (get-in response [:opts :url]) e)
         (throw e)))
@@ -52,10 +52,8 @@
 
 (defn- call-as-channel [method url options mapper]
   (let [p (promise-chan)]
-    (try
-      (method url options #(>!! p (transform-response mapper %)))
-      (catch Exception e (>!! p e))
-      (finally (close! p)))
+      (method url options #(do (>!! p (transform-response mapper %))
+                               (close! p)))
     p))
 
 (defn get-as-channel
