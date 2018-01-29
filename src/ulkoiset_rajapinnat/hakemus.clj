@@ -218,9 +218,7 @@
               (let [new-channels (remove #{ch} channels)]
                 (if (not (empty? new-channels))
                   (recur new-channels)))
-              (let [henkilo-oids (first v)
-                    batch (second v)
-                    mapper (nth v 2)
+              (let [[henkilo-oids batch mapper] v
                     oppijat-with-ensikertalaisuus (if is-haku-with-ensikertalaisuus?
                                                     (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel config haku-oid henkilo-oids oppija-service-ticket-channel)
                                                     nil)
