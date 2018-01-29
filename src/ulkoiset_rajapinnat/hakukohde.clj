@@ -29,6 +29,7 @@
                                                (s/optional-key :organisaation_nimi) s/Str }
               (s/optional-key :hakukohteen_nimi) {:fi s/Str :en s/Str :sv s/Str}
               (s/optional-key :koulutuksen_opetuskieli) [s/Str]
+              (s/optional-key :koulutuksen_koulutustyyppi) [s/Str]
               (s/optional-key :hakukohteen_koulutuskoodit) [s/Str]
               (s/optional-key :hakukohteen_koodi) s/Str
               (s/optional-key :pohjakoulutusvaatimus) s/Str
