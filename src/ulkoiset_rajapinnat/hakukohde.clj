@@ -51,6 +51,7 @@
   (strip-type-and-version-from-tarjonta-koodisto-uri (koulutus "koulutuskoodi")))
 
 (defn transform-hakukohde-tulos [kieli
+                                 koulutustyyppi
                                  hakukohde-tulos
                                  organisaatiot
                                  koulutukset
@@ -61,6 +62,7 @@
        "hakukohteen_nimi" (hakukohde-tulos "hakukohdeNimi")
        "hakukohteen_koodi" (strip-type-and-version-from-tarjonta-koodisto-uri (hakukohde "koodistoNimi"))
        "hakukohteen_oid"                    (hakukohde-tulos "hakukohdeOid")
+       "koulutuksen_koulutustyyppi" (if-let [k (first koulutukset)] (if-let [t ((first (second k)) "koulutustyyppiUri")] (koulutustyyppi t)))
        "koulutuksen_opetuskieli"            (map #(kieli %) (hakukohde-tulos "opetuskielet"))
        "hakukohteen_koulutuskoodit" (map #(koulutus-to-koulutuskoodi (first (.getValue %))) koulutukset)
        "pohjakoulutusvaatimus"              (get-in hakukohde ["pohjakoulutusvaatimus" "fi"])
@@ -98,6 +100,7 @@
     (async/go
       (try
         (let [kieli (<? (koodisto-as-channel config "kieli"))
+              koulutustyyppi (<? (koodisto-as-channel config "koulutustyyppi"))
               hakukohde (<? (fetch-hakukohde-channel host-virkailija haku-oid))
               hakukohde-tulos (<? (fetch-hakukohde-tulos-channel host-virkailija haku-oid))
               koulutukset (<? (fetch-koulutukset-channel host-virkailija haku-oid))
@@ -106,7 +109,8 @@
                 hakukohde-by-oid (group-by #(% "oid") hakukohde)
                 koulutus-by-oid (group-by #(% "oid") koulutukset)
                 hakukohde-converter (partial transform-hakukohde-tulos
-                                             kieli)
+                                             kieli
+                                             koulutustyyppi)
                 converted-hakukohdes (map #(let [hk-koulutukset (select-keys koulutus-by-oid (set (% "koulutusOids")))
                                                  hk-organisaatiot (select-keys organisaatiot-by-oid (% "organisaatioOids"))
                                                  hk (first (get hakukohde-by-oid (% "hakukohdeOid")))]
