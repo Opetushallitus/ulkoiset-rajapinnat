@@ -33,7 +33,7 @@
           (is (= status 200)))))
 
     (testing "Fetch hakemukset for haku with 'ataru' hakemuksia!"
-      (with-redefs [fetch-hakemukset-from-ataru (mock-channel [{"henkilo_oid" "1.2.3.4" "oid" "1.2.3.4"}])
+      (with-redefs [fetch-hakemukset-from-ataru (mock-channel [{"oid" "1.2.3.4"}])
                     fetch-hakemukset-from-haku-app-as-streaming-channel (mock-channel [])
                     fetch-henkilot-channel (mock-channel [])]
         (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231")
