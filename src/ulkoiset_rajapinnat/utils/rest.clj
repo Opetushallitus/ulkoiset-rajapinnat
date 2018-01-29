@@ -3,7 +3,7 @@
   (:require [org.httpkit.client :as http]
             [cheshire.core :refer :all]
             [full.async :refer :all]
-            [clojure.core.async :refer [promise-chan >! go put! close!]]
+            [clojure.core.async :refer [>!! promise-chan >! go put! close!]]
             [clojure.tools.logging :as log]
             [org.httpkit.server :refer :all]))
 
@@ -52,9 +52,11 @@
 
 (defn- call-as-channel [method url options mapper]
   (let [p (promise-chan)]
+    (try
     (method url options #(do
-                           (put! p (transform-response mapper %))
+                           (>!! p (transform-response mapper %))
                            (close! p)))
+    (catch Exception e (>!! p e)))
     p))
 
 (defn get-as-channel

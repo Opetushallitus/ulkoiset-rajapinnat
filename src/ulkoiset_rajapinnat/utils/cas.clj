@@ -35,12 +35,14 @@
   ([host service username password as-absolute-service?]
    (let [p-chan (promise-chan)]
      (go
+       (try
        (let [absolute-service (if as-absolute-service?
                                 (str host service)
                                 (str host service "/j_spring_cas_security_check"))
              tgt (<? (tgt-request-channel host username password))
              st (<? (st-request-channel absolute-service tgt))]
-         (>! p-chan st)))
+         (>! p-chan st))
+       (catch Exception e (>! p-chan e))))
      p-chan))
   ([host service username password]
    (service-ticket-channel host service username password false)))
