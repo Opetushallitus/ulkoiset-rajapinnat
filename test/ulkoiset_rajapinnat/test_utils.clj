@@ -9,12 +9,13 @@
   ([transform url status data input-stream]
    (transform {:opts {:url url} :status status :body (if (true? input-stream) (to-input-stream data) data)}))
   ([transform url status data]
-    (channel-response transform url status data true)))
+   (channel-response transform url status data true)))
 
 (defn mock-channel [result]
   (let [p (promise-chan)]
     (try
-    (>!! p result)
-    (close! p)
-      (catch Exception e (>!! p e)))
+      (>!! p result)
+      (catch Exception e (>!! p e))
+      (finally
+        (close! p)))
     p))

@@ -1,7 +1,7 @@
 (ns ulkoiset-rajapinnat.utils.cas
   (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
-            [clojure.core.async :refer [>! put! go promise-chan]]
+            [clojure.core.async :refer [>! put! go promise-chan close!]]
             [full.async :refer :all]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel post-form-as-channel]]
             [jsoup.soup :refer :all]))
@@ -36,24 +36,25 @@
    (let [p-chan (promise-chan)]
      (go
        (try
-       (let [absolute-service (if as-absolute-service?
-                                (str host service)
-                                (str host service "/j_spring_cas_security_check"))
-             tgt (<? (tgt-request-channel host username password))
-             st (<? (st-request-channel absolute-service tgt))]
-         (>! p-chan st))
-       (catch Exception e (>! p-chan e))))
+         (let [absolute-service (if as-absolute-service?
+                                  (str host service)
+                                  (str host service "/j_spring_cas_security_check"))
+               tgt (<? (tgt-request-channel host username password))
+               st (<? (st-request-channel absolute-service tgt))]
+           (>! p-chan st))
+         (catch Exception e (>! p-chan e))
+         (finally (close! p-chan))))
      p-chan))
   ([host service username password]
    (service-ticket-channel host service username password false)))
 
 (defn parse-jsessionid
   ([response]
-    (parse-jsessionid response #"JSESSIONID=(\w*);"))
+   (parse-jsessionid response #"JSESSIONID=(\w*);"))
   ([response regex]
-  (if-let [sid (nth (re-find regex ((response :headers) :set-cookie)) 1)]
-    sid
-    (RuntimeException. (format "Unable to parse session ID! Uri = %s" (get-in response [:opts :url]))))))
+   (if-let [sid (nth (re-find regex ((response :headers) :set-cookie)) 1)]
+     sid
+     (RuntimeException. (format "Unable to parse session ID! Uri = %s" (get-in response [:opts :url]))))))
 
 (defn jsessionid-channel
   [host service service-ticket]

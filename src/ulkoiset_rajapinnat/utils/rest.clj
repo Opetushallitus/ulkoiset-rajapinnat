@@ -31,7 +31,7 @@
     (try
       (parse-stream (new java.io.InputStreamReader (response :body)))
       (catch Exception e
-        (log/error "Failed to read JSON! Url = " (get-in response [:opts :url])  e)
+        (log/error "Failed to read JSON! Url = " (get-in response [:opts :url]) e)
         (throw e)))
     (handle-unexpected-response response)))
 
@@ -53,10 +53,9 @@
 (defn- call-as-channel [method url options mapper]
   (let [p (promise-chan)]
     (try
-    (method url options #(do
-                           (>!! p (transform-response mapper %))
-                           (close! p)))
-    (catch Exception e (>!! p e)))
+      (method url options #(>!! p (transform-response mapper %)))
+      (catch Exception e (>!! p e))
+      (finally (close! p)))
     p))
 
 (defn get-as-channel
@@ -91,7 +90,7 @@
    (post-as-channel url (to-json data) (post-json-options j-session-id) mapper)))
 
 (defn status [channel status]
-  (send! channel {:status status
+  (send! channel {:status  status
                   :headers {"Content-Type" mime-application-json}} false)
   channel)
 
