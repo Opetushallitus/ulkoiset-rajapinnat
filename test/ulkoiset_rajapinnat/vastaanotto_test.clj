@@ -38,11 +38,9 @@
     "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
     (response 404 "[]")))
 
-(def fake-user {:personOid "1.2.246.562.24.1234567890"})
-
 (deftest vastaanotto-api-test
   (testing "No vastaanotot found"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [c t] (go {}))
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [c t] (go fake-user))
                   oppijat-batch-size 2
                   valintapisteet-batch-size 2
                   http/get (fn [url options transform] (channel-response transform url 404 ""))

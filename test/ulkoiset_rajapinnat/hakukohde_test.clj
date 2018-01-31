@@ -8,6 +8,8 @@
             [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string]]
             [ulkoiset-rajapinnat.test_utils :refer :all]
+            [clojure.core.async :refer [go]]
+            [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles]]
             [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json to-json]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.fixture :refer :all]
@@ -38,7 +40,8 @@
 
 (deftest hakukohde-api-test
   (testing "hakukohde not found"
-    (with-redefs [http/get (fn [url options transform] (channel-response transform url 404 ""))
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [c t] (go fake-user))
+                  http/get (fn [url options transform] (channel-response transform url 404 ""))
                   http/post (fn [url options transform] (channel-response transform url 404 ""))
                   fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
       (try
@@ -47,7 +50,8 @@
         (catch Exception e
           (is (= 404 ((ex-data e) :status)))))))
   (testing "Fetch hakukohde"
-    (with-redefs [oppijat-batch-size 2
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [c t] (go fake-user))
+                  oppijat-batch-size 2
                   valintapisteet-batch-size 2
                   http/get (fn [url options transform] (mock-http url options transform))
                   http/post (fn [url options transform] (mock-http url options transform))

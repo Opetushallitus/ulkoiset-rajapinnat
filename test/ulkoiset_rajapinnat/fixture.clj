@@ -8,6 +8,8 @@
             [ulkoiset-rajapinnat.core :refer :all]
             ))
 
+(def fake-user {:personOid "1.2.246.562.24.1234567890"})
+
 (defn resource [name]
   (let [n (if (.exists (java.io.File. name)) name (str "../../" name))]
     (slurp n)))
