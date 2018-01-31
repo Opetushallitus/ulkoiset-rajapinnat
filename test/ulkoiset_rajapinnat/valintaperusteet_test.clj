@@ -36,7 +36,7 @@
 (deftest valintaperusteet-api-test
   (testing "valintaperusteet -> hakukohde not found"
     (with-redefs [post-json-as-channel (fn [url data mapper j-session-id] (throw (RuntimeException. (str "GOT 404 FROM URL " url))) )
-                  fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
+                  fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
       (try
         (let [response (client/post (api-call "/api/valintaperusteet/hakukohde") {:body "[\"1.2.3.444\"]" :content-type :json})]
             (is (= false true)))
@@ -44,7 +44,7 @@
           (is (= 500 ((ex-data e) :status)))))))
   (testing "valintaperusteet -> hakukohteet found"
     (with-redefs [http/post (fn [url options transform] (mock-http url options transform))
-                  fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
+                  fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
       (let [response (client/post (api-call "/api/valintaperusteet/hakukohde") {:body "[\"1.2.246.562.20.16152550832\", \"1.2.246.562.20.96011436637\", \"1.2.246.562.20.76494006901\", \"1.2.246.562.20.18496942519\"]" :content-type :json})
             status (-> response :status)
             body (-> (parse-json-body response))]

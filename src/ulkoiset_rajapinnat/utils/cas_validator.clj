@@ -2,11 +2,9 @@
   (:require [clojure.string :as str]
             [clojure.data.xml :refer :all]
             [full.async :refer :all]
-            [clojure.core.async :refer [promise-chan >! go put! close!]]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.ldap :refer :all]
-            [ulkoiset-rajapinnat.utils.cas :refer [service-ticket-channel]]
             [ulkoiset-rajapinnat.utils.rest :refer :all]))
 
 (defn parse-cas-response

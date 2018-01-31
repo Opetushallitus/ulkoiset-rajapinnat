@@ -3,7 +3,6 @@
             [full.async :refer :all]
             [clojure.core.async :refer [<! promise-chan >! go put! close!]]
             [clojure.tools.logging :as log]
-            [ulkoiset-rajapinnat.utils.config :refer [config]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.rest :refer :all]))
 

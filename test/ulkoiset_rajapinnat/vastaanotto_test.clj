@@ -42,7 +42,7 @@
                   valintapisteet-batch-size 2
                   http/get (fn [url options transform] (channel-response transform url 404 ""))
                   http/post (fn [url options transform] (channel-response transform url 404 ""))
-                  fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
+                  fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
       (try
         (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126"))]
           (is (= false true)))
@@ -53,7 +53,7 @@
                   valintapisteet-batch-size 2
                   http/get (fn [url options transform] (mock-http url options transform))
                   http/post (fn [url options transform] (mock-http url options transform))
-                  fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
+                  fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
       (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126"))
             status (-> response :status)
             body (-> (parse-json-body response))]

@@ -1,7 +1,6 @@
 (ns ulkoiset-rajapinnat.valintaperusteet
   (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body-stream post-json-as-channel parse-json-request status body-and-close body to-json parse-json-body exception-response]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
-            [ulkoiset-rajapinnat.utils.config :refer [config]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching merge-if-not-nil]]
             [org.httpkit.server :refer :all]
@@ -118,28 +117,25 @@
     (valintaperusteet-resource nil request channel))
   ([hakukohde-oid request channel]
     (def requested-oids (if (nil? hakukohde-oid) (parse-json-request request) (list hakukohde-oid)))
-    (let [host-virkailija (resolve-url :cas-client.host)
-          username (@config :ulkoiset-rajapinnat-cas-username)
-          password (@config :ulkoiset-rajapinnat-cas-password)]
-      (async/go
-        (try (let [session-id (fetch-jsessionid-channel host-virkailija "/valintaperusteet-service" username password)
-                   post-with-session-id (fn [url data] (post-json-as-channel url data parse-json-body-stream session-id))
-                   post-if-not-empty (fn [api data] (if (not (empty? data)) (post-with-session-id api data)))
-                   hakukohteet (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-hakukohteet) requested-oids))
-                   hakukohde-oidit (map #(get % "oid") hakukohteet)
-                   valinnanvaiheet (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-valinnanvaiheet) hakukohde-oidit))
-                   valinnanvaihe-oidit (map #(get % "oid") (flatten (map #(get % "valinnanvaiheet") valinnanvaiheet)))
-                   valintatapajonot (<? (post-if-not-empty (resolve-url :valintaperusteet-service.valinnanvaihe-valintatapajonot) valinnanvaihe-oidit))
-                   hakijaryhmat (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-hakijaryhmat) hakukohde-oidit))
-                   valintaryhmat (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-valintaryhmat) hakukohde-oidit))
-                   syotettavat-arvot (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-avaimet) hakukohde-oidit))]
-               (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat valintaryhmat syotettavat-arvot))]
-                 (log/info (type hakukohteet))
-                 (-> channel
-                     (status 200)
-                     (body-and-close json))))
-             (catch Exception e
-               (do
-                 (log/error (format "Virhe haettaessa valintaperusteita %d hakukohteelle!" (count requested-oids)), e)
-                 ((exception-response channel) e)))))
-      (schedule-task (* 1000 60 60) (close channel)))))
+   (async/go
+     (try (let [session-id (<? (fetch-jsessionid-channel "/valintaperusteet-service"))
+                post-with-session-id (fn [url data] (post-json-as-channel url data parse-json-body-stream session-id))
+                post-if-not-empty (fn [api data] (if (not (empty? data)) (post-with-session-id api data)))
+                hakukohteet (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-hakukohteet) requested-oids))
+                hakukohde-oidit (map #(get % "oid") hakukohteet)
+                valinnanvaiheet (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-valinnanvaiheet) hakukohde-oidit))
+                valinnanvaihe-oidit (map #(get % "oid") (flatten (map #(get % "valinnanvaiheet") valinnanvaiheet)))
+                valintatapajonot (<? (post-if-not-empty (resolve-url :valintaperusteet-service.valinnanvaihe-valintatapajonot) valinnanvaihe-oidit))
+                hakijaryhmat (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-hakijaryhmat) hakukohde-oidit))
+                valintaryhmat (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-valintaryhmat) hakukohde-oidit))
+                syotettavat-arvot (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-avaimet) hakukohde-oidit))]
+            (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat valintaryhmat syotettavat-arvot))]
+              (log/info (type hakukohteet))
+              (-> channel
+                  (status 200)
+                  (body-and-close json))))
+          (catch Exception e
+            (do
+              (log/error (format "Virhe haettaessa valintaperusteita %d hakukohteelle!" (count requested-oids)), e)
+              ((exception-response channel) e)))))
+   (schedule-task (* 1000 60 60) (close channel))))

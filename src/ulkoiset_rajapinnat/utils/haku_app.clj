@@ -6,11 +6,10 @@
             [clojure.core.async :refer [chan promise-chan >! go put! close! alts! timeout <!]]
             [clojure.tools.logging :as log]
             [clojure.core.async :as async]
-            [ulkoiset-rajapinnat.utils.config :refer [config]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.read_stream :refer [read-json-stream-to-channel]]
             [ulkoiset-rajapinnat.utils.rest :refer [to-json]]
-            [ulkoiset-rajapinnat.utils.cas :refer [service-ticket-channel]]
+            [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             )
   (:import (com.fasterxml.jackson.core JsonFactory JsonToken)
            (com.fasterxml.jackson.databind ObjectMapper)))
@@ -23,12 +22,8 @@
 
 (defn fetch-hakemukset-from-haku-app-as-streaming-channel
   [haku-oid hakukohde-oids batch-size result-mapper]
-  (let [host (resolve-url :cas-client.host)
-        service "/haku-app"
-        username (@config :ulkoiset-rajapinnat-cas-username)
-        password (@config :ulkoiset-rajapinnat-cas-password)
-        query (hakemukset-for-hakukohde-oids-query haku-oid hakukohde-oids)
-        service-ticket-channel (service-ticket-channel host service username password)
+  (let [query (hakemukset-for-hakukohde-oids-query haku-oid hakukohde-oids)
+        service-ticket-channel (fetch-service-ticket-channel "/haku-app")
         channel (chan 1)]
     (go
       (try
