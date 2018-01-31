@@ -8,6 +8,7 @@
             [clojure.tools.logging.impl :as impl]
             [ring.util.http-response :refer [unauthorized bad-request internal-server-error]]
             [ulkoiset-rajapinnat.utils.ldap :refer :all]
+            [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.cas_validator :refer :all]
             [org.httpkit.server :refer :all]))
 
@@ -68,15 +69,15 @@
      (do-logging start-time (response :status) request)
      response)))
 
-(defn check-ticket-is-valid-and-user-has-required-roles [config ticket]
+(defn check-ticket-is-valid-and-user-has-required-roles [ticket]
   (go
     (log/error "TICKET VALIDATION IS DISABLED! REAL VALIDATION CODE IN COMMENT BLOCK!"))
   (comment
     (go-try
-      (let [host-virkailija (-> config :host-virkailija)
+      (let [host-virkailija (resolve-url :cas-client.host)
             service (str host-virkailija "/ulkoiset-rajapinnat")
-            username (<? (validate-service-ticket config service ticket))
-            ldap-user (fetch-user-from-ldap config username)
+            username (<? (validate-service-ticket service ticket))
+            ldap-user (fetch-user-from-ldap username)
             roles (ldap-user :roles)]
         (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
           ldap-user
@@ -102,7 +103,7 @@
       (body (to-json {:error message}))
       (close))))
 
-(defn access-log-with-ticket-check-with-channel [config ticket operation]
+(defn access-log-with-ticket-check-with-channel [ticket operation]
   (fn [request]
     (if-let [some-ticket ticket]
       (let [start-time (System/currentTimeMillis)
@@ -111,7 +112,7 @@
         (with-channel request channel
                       (go
                         (try
-                          (let [user (<? (check-ticket-is-valid-and-user-has-required-roles config ticket))]
+                          (let [user (<? (check-ticket-is-valid-and-user-has-required-roles ticket))]
                             (on-close channel on-close-handler)
                             (try
                               (operation request channel)

@@ -3,10 +3,9 @@
             [clojure.core.async :as async]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel parse-json-body-stream]]
+            [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
-
-(def koodisto-api "%s/koodisto-service/rest/codeelement/codes/%s/1")
 
 (defn strip-version-from-tarjonta-koodisto-uri [tarjonta-koodisto-uri]
   (if-let [uri tarjonta-koodisto-uri]
@@ -22,9 +21,8 @@
 (defn transform-uri-to-arvo-format [koodisto]
   [(koodisto "koodiUri") (koodisto "koodiArvo")])
 
-(defn koodisto-as-channel [config koodisto]
-  (let [host-virkailija (config :host-virkailija)
-        url (format koodisto-api host-virkailija koodisto)
+(defn koodisto-as-channel [koodisto]
+  (let [url (resolve-url :koodisto-service.codeelement-codes koodisto)
         options {:as :stream}
         response-mapper (comp #(into (sorted-map) %)
                               #(map transform-uri-to-arvo-format %)

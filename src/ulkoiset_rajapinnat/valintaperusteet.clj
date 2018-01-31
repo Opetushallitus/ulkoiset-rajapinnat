@@ -1,6 +1,8 @@
 (ns ulkoiset-rajapinnat.valintaperusteet
   (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body-stream post-json-as-channel parse-json-request status body-and-close body to-json parse-json-body exception-response]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
+            [ulkoiset-rajapinnat.utils.config :refer [config]]
+            [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching merge-if-not-nil]]
             [org.httpkit.server :refer :all]
             [schema.core :as s]
@@ -90,13 +92,6 @@
                                       }]
    })
 
-(def hakukohteet-api "%s/valintaperusteet-service/resources/hakukohde/hakukohteet")
-(def valinnanvaiheet-api "%s/valintaperusteet-service/resources/hakukohde/valinnanvaiheet")
-(def valintatapajonot-api "%s/valintaperusteet-service/resources/valinnanvaihe/valintatapajonot")
-(def hakijaryhmat-api "%s/valintaperusteet-service/resources/hakukohde/hakijaryhmat")
-(def valintaryhmat-api "%s/valintaperusteet-service/resources/hakukohde/valintaryhmat")
-(def syotettavat-arvot-api "%s/valintaperusteet-service/resources/hakukohde/avaimet")
-
 (defn result [all-hakukohteet all-valinnanvaiheet all-valintatapajonot all-hakijaryhmat all-valintaryhmat all-syotettavat-arvot]
   (defn collect-hakukohteen-valinnanvaiheet [hakukohde-oid]
     (def hakukohteen-valinnanvaiheet (get (find-first-matching "hakukohdeOid" hakukohde-oid all-valinnanvaiheet) "valinnanvaiheet"))
@@ -119,25 +114,25 @@
   ) (filter #(not (nil? %)) all-hakukohteet)))
 
 (defn valintaperusteet-resource
-  ([config request channel]
-    (valintaperusteet-resource config nil request channel))
-  ([config hakukohde-oid request channel]
+  ([request channel]
+    (valintaperusteet-resource nil request channel))
+  ([hakukohde-oid request channel]
     (def requested-oids (if (nil? hakukohde-oid) (parse-json-request request) (list hakukohde-oid)))
-    (let [host (config :host-virkailija)
-          username (config :ulkoiset-rajapinnat-cas-username)
-          password (config :ulkoiset-rajapinnat-cas-password)]
+    (let [host-virkailija (resolve-url :cas-client.host)
+          username (@config :ulkoiset-rajapinnat-cas-username)
+          password (@config :ulkoiset-rajapinnat-cas-password)]
       (async/go
-        (try (let [session-id (fetch-jsessionid-channel host "/valintaperusteet-service" username password)
-                   post-with-session-id (fn [api data] (post-json-as-channel (format api host) data parse-json-body-stream session-id))
+        (try (let [session-id (fetch-jsessionid-channel host-virkailija "/valintaperusteet-service" username password)
+                   post-with-session-id (fn [url data] (post-json-as-channel url data parse-json-body-stream session-id))
                    post-if-not-empty (fn [api data] (if (not (empty? data)) (post-with-session-id api data)))
-                   hakukohteet (<? (post-if-not-empty hakukohteet-api requested-oids))
+                   hakukohteet (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-hakukohteet) requested-oids))
                    hakukohde-oidit (map #(get % "oid") hakukohteet)
-                   valinnanvaiheet (<? (post-if-not-empty valinnanvaiheet-api hakukohde-oidit))
+                   valinnanvaiheet (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-valinnanvaiheet) hakukohde-oidit))
                    valinnanvaihe-oidit (map #(get % "oid") (flatten (map #(get % "valinnanvaiheet") valinnanvaiheet)))
-                   valintatapajonot (<? (post-if-not-empty valintatapajonot-api valinnanvaihe-oidit))
-                   hakijaryhmat (<? (post-if-not-empty hakijaryhmat-api hakukohde-oidit))
-                   valintaryhmat (<? (post-if-not-empty valintaryhmat-api hakukohde-oidit))
-                   syotettavat-arvot (<? (post-if-not-empty syotettavat-arvot-api hakukohde-oidit))]
+                   valintatapajonot (<? (post-if-not-empty (resolve-url :valintaperusteet-service.valinnanvaihe-valintatapajonot) valinnanvaihe-oidit))
+                   hakijaryhmat (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-hakijaryhmat) hakukohde-oidit))
+                   valintaryhmat (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-valintaryhmat) hakukohde-oidit))
+                   syotettavat-arvot (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-avaimet) hakukohde-oidit))]
                (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat valintaryhmat syotettavat-arvot))]
                  (log/info (type hakukohteet))
                  (-> channel

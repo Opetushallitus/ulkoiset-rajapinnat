@@ -1,13 +1,10 @@
-{:host-virkailija "https://{{host_virkailija}}"
- :ulkoiset-rajapinnat-cas-username "{{valintalaskentakoostepalvelu_app_username_to_haku}}"
+{:ulkoiset-rajapinnat-cas-username "{{valintalaskentakoostepalvelu_app_username_to_haku}}"
  :ulkoiset-rajapinnat-cas-password "{{valintalaskentakoostepalvelu_app_password_to_haku}}"
- :suoritusrekisteri-host-virkailija "{{host_alb}}"
- :ataru-host-virkailija "https://{{host_virkailija}}"
- :organisaatio-host-virkailija "https://{{host_virkailija}}"
- :oppijanumerorekisteri-host-virkailija "https://{{host_virkailija}}"
- :vastaanotto-host-virkailija "{{host_alb}}"
- :valintapiste-host-virkailija "{{host_alb}}"
  :hakuapp-mongo {:uri "mongodb://{{mongodb_hakemus_auth}}@{{mongodb_hakemus_host}}/hakulomake"}
+ :urls {
+        :host-virkailija "https://{{host_virkailija}}"
+        :host-virkailija-internal "{{host_alb}}"
+ }
  :ldap {:host "{{host_ldap}}"
         :port 389
         :password "{{ldap_manager_password}}"

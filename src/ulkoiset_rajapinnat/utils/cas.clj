@@ -3,10 +3,9 @@
             [clojure.tools.logging :as log]
             [clojure.core.async :refer [>! put! go promise-chan close!]]
             [full.async :refer :all]
+            [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel post-form-as-channel]]
             [jsoup.soup :refer :all]))
-
-(def tgt-api "%s/cas/v1/tickets")
 
 (defn read-action-attribute-from-cas-response [response]
   (let [html (response :body)
@@ -15,7 +14,7 @@
 
 (defn tgt-request-channel
   [host username password]
-  (post-form-as-channel (format tgt-api host)
+  (post-form-as-channel (resolve-url :cas-client.tgt)
                         {:username username
                          :password password}
                         read-action-attribute-from-cas-response))

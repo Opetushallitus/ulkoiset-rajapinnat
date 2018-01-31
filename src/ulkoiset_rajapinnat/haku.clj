@@ -4,6 +4,7 @@
             [clojure.core.async :refer [go]]
             [clojure.tools.logging :as log]
             [schema.core :as s]
+            [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
@@ -23,8 +24,6 @@
               (s/optional-key :haun_kohdejoukko) s/Str
               (s/optional-key :haun_kohdejoukon_tarkenne) s/Str
               })
-
-(def haku-api "%s/tarjonta-service/rest/v1/haku/find?TILA=JULKAISTU&HAKUVUOSI=%s")
 
 (defn haku-to-names [kieli haku]
   (let [nimet (filter #((comp not str/blank?) (last %)) (haku "nimi"))
@@ -51,22 +50,21 @@
   (log/debug "Fetching '{}' ready with status {}! Took {}ms!" resource-name (response :status) (- (System/currentTimeMillis) start-time))
   response)
 
-(defn fetch-haku [host-virkailija vuosi]
+(defn fetch-haku [vuosi]
   (let [start-time (System/currentTimeMillis)
         mapper (comp #(% "result") parse-json-body (partial log-fetch "haku" start-time))]
-    (get-as-channel (format haku-api host-virkailija vuosi) {} mapper)))
+    (get-as-channel (resolve-url :tarjonta-service.haku-find-by-hakuvuosi vuosi) {} mapper)))
 
-(defn haku-resource [config vuosi request channel]
+(defn haku-resource [vuosi request channel]
   (go
     (try
-    (let [host-virkailija (config :host-virkailija)
-          kieli (<<?? (koodisto-as-channel config "kieli"))
-          kausi (<<?? (koodisto-as-channel config "kausi"))
-          hakutyyppi (<<?? (koodisto-as-channel config "hakutyyppi"))
-          hakutapa (<<?? (koodisto-as-channel config "hakutapa"))
-          haunkohdejoukko (<<?? (koodisto-as-channel config "haunkohdejoukko"))
-          haunkohdejoukontarkenne (<<?? (koodisto-as-channel config "haunkohdejoukontarkenne"))
-          haku (<<?? (fetch-haku host-virkailija vuosi))
+    (let [kieli (<<?? (koodisto-as-channel "kieli"))
+          kausi (<<?? (koodisto-as-channel "kausi"))
+          hakutyyppi (<<?? (koodisto-as-channel "hakutyyppi"))
+          hakutapa (<<?? (koodisto-as-channel "hakutapa"))
+          haunkohdejoukko (<<?? (koodisto-as-channel "haunkohdejoukko"))
+          haunkohdejoukontarkenne (<<?? (koodisto-as-channel "haunkohdejoukontarkenne"))
+          haku (<<?? (fetch-haku vuosi))
           ]
       (let [haku-converter (apply partial
                                   (into [transform-haku]

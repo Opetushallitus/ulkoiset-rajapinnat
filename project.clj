@@ -30,6 +30,8 @@
                  [org.apache.logging.log4j/log4j-core "2.9.0"]
                  [org.apache.logging.log4j/log4j-slf4j-impl "2.9.0"]
                  [clj-log4j2 "0.2.0"]
+                 ; Configuration
+                 [fi.vm.sade.java-utils/java-properties "0.1.0-SNAPSHOT"]
                  ]
   :prep-tasks ["compile"]
   :jvm-opts ["-Dlog4j.configurationFile=test/log4j2.properties"
@@ -37,6 +39,7 @@
   :uberjar-name "ulkoiset-rajapinnat-0.1.0-SNAPSHOT-standalone.jar"
   :main ulkoiset-rajapinnat.core
   :aot [ulkoiset-rajapinnat.core]
+  :resource-paths ["resources"]
 
   :plugins [[lein-resource "14.10.2"]
             [lein-autoreload "0.1.1"]

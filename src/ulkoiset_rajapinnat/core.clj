@@ -12,21 +12,21 @@
         [ulkoiset-rajapinnat.hakemus :refer [Hakemus hakemus-resource]]
         [ulkoiset-rajapinnat.vastaanotto :refer [Vastaanotto vastaanotto-resource]]
         [ulkoiset-rajapinnat.valintaperusteet :refer [Valintaperusteet valintaperusteet-resource]]
-        [ulkoiset-rajapinnat.utils.config :refer :all]
+        [ulkoiset-rajapinnat.utils.config :refer [config init-config]]
         [org.httpkit.server :refer :all]
             [clojure.tools.logging :as log])
   (:gen-class))
 
-(defn api-opintopolku-routes [config]
+(defn api-opintopolku-routes []
   (api
     {:coercion no-response-coercion
      :swagger
-     {:ui   (-> config :server :base-url)
-      :spec (str (-> config :server :base-url) "/swagger.json")
+     {:ui   (-> @config :server :base-url)
+      :spec (str (-> @config :server :base-url) "/swagger.json")
       :data {:info {:title       "Ulkoiset-rajapinnat"
                     :description "Ulkoiset-rajapinnat"}
              }}}
-    (context (str (-> config :server :base-url) "/api") []
+    (context (str (-> @config :server :base-url) "/api") []
       :tags ["api"]
       (GET "/healthcheck" []
         :summary "Health check API"
@@ -36,22 +36,22 @@
         :query-params [ticket :- String]
         :responses {200 {:schema [Haku]}}
         (access-log-with-ticket-check-with-channel
-          config ticket
-          (partial haku-resource config vuosi)))
+          ticket
+          (partial haku-resource vuosi)))
       (GET "/hakukohde-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot ticket]
         :summary "Hakukohteet haku OID:lla"
         :query-params [ticket :- String]
         :responses {200 {:schema [Hakukohde]}}
         (access-log-with-ticket-check-with-channel
-          config ticket
-          (partial hakukohde-resource config haku-oid palauta-null-arvot)))
+          ticket
+          (partial hakukohde-resource haku-oid palauta-null-arvot)))
       (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi ticket] ; hakuoid + kaudet
         :summary "Vastaanotot haku OID:lla"
         :query-params [ticket :- String]
         :responses {200 {:schema [Vastaanotto]}}
         (access-log-with-ticket-check-with-channel
-          config ticket
-          (partial vastaanotto-resource config haku-oid)))
+          ticket
+          (partial vastaanotto-resource haku-oid)))
       (GET "/hakemus-for-haku/:haku-oid" [haku-oid vuosi kausi palauta-null-arvot ticket] ; hakuoid + kaudet
         :summary "Hakemukset haku OID:lla"
         :query-params [ticket :- String
@@ -59,32 +59,32 @@
                        kausi :- String]
         :responses {200 {:schema [Hakemus]}}
         (access-log-with-ticket-check-with-channel
-          config ticket
-          (partial hakemus-resource config haku-oid vuosi kausi palauta-null-arvot)))
+          ticket
+          (partial hakemus-resource haku-oid vuosi kausi palauta-null-arvot)))
       (GET "/valintaperusteet/hakukohde/:hakukohde-oid" [hakukohde-oid ticket]
         :summary "Hakukohde valintaperusteista"
         :query-params [ticket :- String]
         :responses {200 {:schema [Valintaperusteet]}}
         (access-log-with-ticket-check-with-channel
-          config ticket
-          (partial valintaperusteet-resource config hakukohde-oid)))
+          ticket
+          (partial valintaperusteet-resource hakukohde-oid)))
       (POST "/valintaperusteet/hakukohde" [ticket]
         :summary "Hakukohteet valintaperusteista"
         :query-params [ticket :- String]
         :responses {200 {:schema [Valintaperusteet]}}
         (access-log-with-ticket-check-with-channel
-          config ticket
-          (partial valintaperusteet-resource config))))
+          ticket
+          (partial valintaperusteet-resource))))
     (ANY "/*" []
       :summary "Not found page"
       (access-log (not-found "Page not found")))))
 
 (defn start-server [args]
-  (let [config (read-configuration-file-first-from-varargs-then-from-env-vars args)
-        port (-> config :server :port)]
+  (init-config args)
+  (let [port (-> @config :server :port)]
 
     (log/info "Starting server in port {}" port)
-    (let [server (run-server (api-opintopolku-routes config) {:port port})
+    (let [server (run-server (api-opintopolku-routes) {:port port})
           close-handle (fn [] (-> (meta server)
                                     :server
                                     (.stop 100)))]

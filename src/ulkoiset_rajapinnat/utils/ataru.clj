@@ -4,26 +4,22 @@
             [clj-http.client :as client]
             [clojure.tools.logging :as log]
             [clojure.core.async :refer [chan promise-chan >! go put! close! alts! timeout <!]]
-            [ulkoiset-rajapinnat.utils.config :refer :all]
+            [ulkoiset-rajapinnat.utils.config :refer [config]]
+            [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.read_stream :refer [read-json-stream-to-channel]]
             [ulkoiset-rajapinnat.utils.cas :refer [service-ticket-channel]]
             [ulkoiset-rajapinnat.utils.rest :refer :all]))
 
-(def ataru-cas-logout "%s/lomake-editori/auth/logout")
-(def ataru-cas-api "%s/lomake-editori/auth/cas?ticket=%s")
-(def ataru-api "%s/lomake-editori/api/external/tilastokeskus?hakuOid=%s")
-
-(defn fetch-hakemukset-from-ataru [config haku-oid batch-size result-mapper]
+(defn fetch-hakemukset-from-ataru [haku-oid batch-size result-mapper]
   (let [channel (chan 1)]
     (go
-      (let [host (-> config :ataru-host-virkailija)
-            url (format ataru-api host haku-oid)
-            username (-> config :ulkoiset-rajapinnat-cas-username)
-            password (-> config :ulkoiset-rajapinnat-cas-password)
+      (let [host (resolve-url :cas-client.host)
+            username (-> @config :ulkoiset-rajapinnat-cas-username)
+            password (-> @config :ulkoiset-rajapinnat-cas-password)
             ticket (<? (service-ticket-channel host "/lomake-editori/auth/cas" username password true))
-            response (<? (get-as-channel (format ataru-cas-api host ticket) {:follow-redirects false}))]
+            response (<? (get-as-channel (resolve-url :lomake-editori.cas-by-ticket ticket) {:follow-redirects false}))]
         (try
-          (let [hakemukset (client/get (format ataru-api host haku-oid) {:headers {"Cookie" (-> response :headers :set-cookie)}
+          (let [hakemukset (client/get (resolve-url :lomake-editori.tilastokeskus-by-haku-oid haku-oid) {:headers {"Cookie" (-> response :headers :set-cookie)}
                                                                          :as      :stream})
                 body-stream (hakemukset :body)]
             (try
@@ -35,5 +31,5 @@
                   (throw e))))
             )
           (finally
-            (<! (get-as-channel (format ataru-cas-logout host) {:headers {"Cookie" (-> response :headers :set-cookie)}}))))))
+            (<! (get-as-channel (resolve-url :lomake-editori.cas-logout) {:headers {"Cookie" (-> response :headers :set-cookie)}}))))))
     channel))

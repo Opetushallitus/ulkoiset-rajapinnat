@@ -169,9 +169,9 @@
                    (get henkilo-by-oid (get hakemus "henkilo_oid"))
                    (get oppijat-by-oid (get hakemus "henkilo_oid")) hakemus))]))
 
-(defn hakukohde-oids-for-hakukausi [config haku-oid vuosi kausi haku]
+(defn hakukohde-oids-for-hakukausi [haku-oid vuosi kausi haku]
   (if (is-jatkuva-haku haku)
-    (let [oids (<?? (hakukohde-oids-for-kausi-and-vuosi-channel config haku-oid kausi vuosi))]
+    (let [oids (<?? (hakukohde-oids-for-kausi-and-vuosi-channel haku-oid kausi vuosi))]
       (if (not-empty oids)
         oids
         (throw (RuntimeException. (format "No hakukohde-oids found for 'jatkuva haku' %s with vuosi %s and kausi %s!"
@@ -184,20 +184,19 @@
     (engulf channel)))
 
 (defn fetch-hakemukset-for-haku
-  [config haku-oid vuosi kausi palauta-null-arvot? channel]
+  [haku-oid vuosi kausi palauta-null-arvot? channel]
   (let [start-time (System/currentTimeMillis)
         counter (atom 0)
-        host-virkailija (config :host-virkailija)
         is-first-written (atom false)
-        jsessionid (<?? (onr-sessionid-channel config))
-        pohjakoulutuskkodw (<?? (koodisto-as-channel config "pohjakoulutuskkodw"))
-        haku (<?? (haku-for-haku-oid-channel config haku-oid))
+        jsessionid (<?? (onr-sessionid-channel))
+        pohjakoulutuskkodw (<?? (koodisto-as-channel "pohjakoulutuskkodw"))
+        haku (<?? (haku-for-haku-oid-channel haku-oid))
         is-haku-with-ensikertalaisuus? (is-haku-with-ensikertalaisuus haku)
-        ataru-channel (fetch-hakemukset-from-ataru config haku-oid size-of-henkilo-batch-from-onr-at-once
+        ataru-channel (fetch-hakemukset-from-ataru haku-oid size-of-henkilo-batch-from-onr-at-once
                                                    (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?))
-        hakukohde-oids-for-hakukausi (hakukohde-oids-for-hakukausi config haku-oid vuosi kausi haku)
+        hakukohde-oids-for-hakukausi (hakukohde-oids-for-hakukausi haku-oid vuosi kausi haku)
         haku-app-channel (fetch-hakemukset-from-haku-app-as-streaming-channel
-                           config haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
+                           haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
                            (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?))
         close-channel (fn []
                         (do
@@ -209,7 +208,7 @@
                                 (close channel))
                             (do (body channel "]")
                                 (close channel)))))
-        oppija-service-ticket-channel (fetch-hakurekisteri-service-ticket-channel config)]
+        oppija-service-ticket-channel (fetch-hakurekisteri-service-ticket-channel)]
     (go
       (try
         (core-loop [channels [ataru-channel haku-app-channel]]
@@ -220,9 +219,9 @@
                   (recur new-channels)))
               (let [[henkilo-oids batch mapper] v
                     oppijat-with-ensikertalaisuus (if is-haku-with-ensikertalaisuus?
-                                                    (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel config haku-oid henkilo-oids oppija-service-ticket-channel)
+                                                    (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel haku-oid henkilo-oids oppija-service-ticket-channel)
                                                     nil)
-                    henkilot (<? (fetch-henkilot-channel config jsessionid henkilo-oids))
+                    henkilot (<? (fetch-henkilot-channel jsessionid henkilo-oids))
                     oppijat-by-oid (if (some? oppijat-with-ensikertalaisuus) (group-by #(get % "oppijanumero") (<? oppijat-with-ensikertalaisuus)) {})
                     henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
                 (doseq [hakemus batch]
@@ -243,6 +242,6 @@
         (finally
           (close-channel))))))
 
-(defn hakemus-resource [config haku-oid vuosi kausi palauta-null-arvot? request channel]
-  (fetch-hakemukset-for-haku config haku-oid vuosi kausi palauta-null-arvot? channel)
+(defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request channel]
+  (fetch-hakemukset-for-haku haku-oid vuosi kausi palauta-null-arvot? channel)
   (schedule-task (* 1000 60 60 12) (close channel)))

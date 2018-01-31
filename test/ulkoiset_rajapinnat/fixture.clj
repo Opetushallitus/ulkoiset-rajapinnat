@@ -12,10 +12,8 @@
   (let [n (if (.exists (java.io.File. name)) name (str "../../" name))]
     (slurp n)))
 
-(def test-configs {:host-virkailija "http://fake.virkailija.opintopolku.fi"
-                   :valintapiste-host-virkailija "http://fake.internal.aws.opintopolku.fi"
-                   :vastaanotto-host-virkailija "http://fake.virkailija.opintopolku.fi"
-                   :organisaatio-host-virkailija "http://fake.virkailija.opintopolku.fi"
+(def test-configs {:urls {:host-virkailija "http://fake.virkailija.opintopolku.fi"
+                          :host-virkailija-internal "http://fake.internal.virkailija.opintopolku.fi"}
                    :server {:port (get-free-port)
                             :base-url "/ulkoiset-rajapinnat"}})
 (defn api-call [path] (str "http://localhost:" (-> test-configs :server :port) (-> test-configs :server :base-url) path

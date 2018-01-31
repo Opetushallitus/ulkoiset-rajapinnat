@@ -5,16 +5,12 @@
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch-channel]]
             [ulkoiset-rajapinnat.utils.rest :refer [post-as-channel get-as-channel status body body-and-close exception-response parse-json-body-stream to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-type-and-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
             [full.async :refer :all]
             [clojure.core.async :as async]
             [ulkoiset-rajapinnat.utils.snippets :refer [remove-when remove-nils]]))
-
-(def hakukohde-api "%s/tarjonta-service/rest/v1/hakukohde/search?hakuOid=%s&tila=JULKAISTU")
-(def haku-api-hakukohde-tulos "%s/tarjonta-service/rest/v1/haku/%s/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1")
-(def haku-api-koulutus "%s/tarjonta-service/rest/v1/koulutus/search?hakuOid=%s")
-(def haku-api-full-koulutus "%s/tarjonta-service/rest/v1/koulutus/oids")
 
 (defn log-fetch [resource-name start-time response]
   (log/debug "Fetching '{}' ready with status {}! Took {}ms!" resource-name (response :status) (- (System/currentTimeMillis) start-time))
@@ -83,31 +79,31 @@
 
 (defn remove-tarjonta-data-quirks [result] (remove-when #(or (= % "null") (= % "")) result))
 
-(defn fetch-hakukohde-channel [host-virkailija haku-oid]
-  (let [start-time (System/currentTimeMillis)
-        log (partial log-fetch "hakukohde-tulos" start-time)
-        mapper (comp remove-tarjonta-data-quirks result-to-hakukohdes parse-json-body-stream log)]
-    (get-as-channel (format hakukohde-api host-virkailija haku-oid) {:as :stream} mapper)))
+(defn fetch-hakukohde-channel [haku-oid]
+   (let [start-time (System/currentTimeMillis)
+         log (partial log-fetch "hakukohde-tulos" start-time)
+         mapper (comp remove-tarjonta-data-quirks result-to-hakukohdes parse-json-body-stream log)]
+     (get-as-channel (resolve-url :tarjonta-service.hakukohde-search-by-haku-oid haku-oid) {:as :stream} mapper)))
 
-(defn fetch-hakukohde-tulos-channel [host-virkailija haku-oid]
-  (let [start-time (System/currentTimeMillis)
-        log (partial log-fetch "hakukohde-tulos" start-time)
-        mapper (comp remove-tarjonta-data-quirks #(% "tulokset") parse-json-body-stream log)]
-    (get-as-channel (format haku-api-hakukohde-tulos host-virkailija haku-oid) {:as :stream} mapper)))
+(defn fetch-hakukohde-tulos-channel [haku-oid]
+   (let [start-time (System/currentTimeMillis)
+         log (partial log-fetch "hakukohde-tulos" start-time)
+         mapper (comp remove-tarjonta-data-quirks #(% "tulokset") parse-json-body-stream log)]
+     (get-as-channel (resolve-url :tarjonta-service.haku-hakukohde-tulos haku-oid) {:as :stream} mapper)))
 
 (defn- handle-koulutus-result [koulutus-result]
   (mapcat #(get % "tulokset") (get-in koulutus-result ["result" "tulokset"])))
 
-(defn fetch-koulutukset-channel [host-virkailija haku-oid]
+(defn fetch-koulutukset-channel [haku-oid]
   (let [start-time (System/currentTimeMillis)
         mapper (comp handle-koulutus-result parse-json-body-stream (partial log-fetch "koulutukset" start-time))]
-    (get-as-channel (format haku-api-koulutus host-virkailija haku-oid) {:as :stream} mapper)))
+    (get-as-channel (resolve-url :tarjonta-service.koulutus-search-by-haku-oid haku-oid) {:as :stream} mapper)))
 
-(defn fetch-full-koulutukset-in-batch-channel [host-virkailija koulutus-oids]
+(defn fetch-full-koulutukset-in-batch-channel [koulutus-oids]
   (let [c (async/chan 4)]
     (async/go
       (try
-        (let [uri (format haku-api-full-koulutus host-virkailija)
+        (let [uri (resolve-url :tarjonta-service.koulutus-by-oids)
               mapper (fn [j] (let [b (j "result")] b))
               oid-batches (partition-all 100 koulutus-oids)
               fetch-batch (fn [batch]
@@ -118,21 +114,20 @@
         (catch Exception e (do (async/>! c e) (async/close! c)))))
     c))
 
-(defn hakukohde-resource [config haku-oid palauta-null-arvot? request channel]
-  (let [host-virkailija (config :host-virkailija)
-        hakukohde-tulos-promise (fetch-hakukohde-tulos-channel host-virkailija haku-oid)
-        kieli-promise (koodisto-as-channel config "kieli")
-        koulutustyyppi-promise (koodisto-as-channel config "koulutustyyppi")
-        hakukohde-promise (fetch-hakukohde-channel host-virkailija haku-oid)
-        koulutukset-promise (fetch-koulutukset-channel host-virkailija haku-oid)
+(defn hakukohde-resource [haku-oid palauta-null-arvot? request channel]
+  (let [hakukohde-tulos-promise (fetch-hakukohde-tulos-channel haku-oid)
+        kieli-promise (koodisto-as-channel "kieli")
+        koulutustyyppi-promise (koodisto-as-channel "koulutustyyppi")
+        hakukohde-promise (fetch-hakukohde-channel haku-oid)
+        koulutukset-promise (fetch-koulutukset-channel haku-oid)
         ]
     (async/go
       (try
         (let [hakukohde-tulos (<? hakukohde-tulos-promise)
               all-koulutus-oids (set (mapcat #(get % "koulutusOids") hakukohde-tulos))
               all-organisaatio-oids (set (mapcat #(get % "organisaatioOids") hakukohde-tulos))
-              full-koulutukset-promise (fetch-full-koulutukset-in-batch-channel host-virkailija all-koulutus-oids)
-              organisaatiot-promise (fetch-organisations-in-batch-channel config all-organisaatio-oids)
+              full-koulutukset-promise (fetch-full-koulutukset-in-batch-channel all-koulutus-oids)
+              organisaatiot-promise (fetch-organisations-in-batch-channel all-organisaatio-oids)
               kieli (<? kieli-promise)
               koulutustyyppi (<? koulutustyyppi-promise)
               hakukohde (<? hakukohde-promise)
