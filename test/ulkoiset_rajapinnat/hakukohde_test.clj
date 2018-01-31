@@ -16,12 +16,12 @@
 
 (use-fixtures :once fixture)
 
-(def koulutustyyppi-json (slurp "test/resources/hakukohde/koulutustyyppi.json"))
-(def hakukohde-json (slurp "test/resources/hakukohde/hakukohde.json"))
-(def hakukohde-tulos-json (slurp "test/resources/hakukohde/hakukohde-tulos.json"))
-(def koulutus-json (slurp "test/resources/hakukohde/koulutus.json"))
-(def kieli-json (slurp "test/resources/hakukohde/kieli.json"))
-(def organisaatio-json (slurp "test/resources/hakukohde/organisaatio.json"))
+(def koulutustyyppi-json (resource "test/resources/hakukohde/koulutustyyppi.json"))
+(def hakukohde-json (resource "test/resources/hakukohde/hakukohde.json"))
+(def hakukohde-tulos-json (resource "test/resources/hakukohde/hakukohde-tulos.json"))
+(def koulutus-json (resource "test/resources/hakukohde/koulutus.json"))
+(def kieli-json (resource "test/resources/hakukohde/kieli.json"))
+(def organisaatio-json (resource "test/resources/hakukohde/organisaatio.json"))
 
 (defn mock-http [url options transform]
   (log/info (str "Mocking url " url))
@@ -57,7 +57,7 @@
             body (-> (parse-json-body response))]
         (is (= status 200))
         (log/info (to-json body true))
-        (def expected (parse-string (slurp "test/resources/hakukohde/result.json")))
+        (def expected (parse-string (resource "test/resources/hakukohde/result.json")))
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference)))))
 

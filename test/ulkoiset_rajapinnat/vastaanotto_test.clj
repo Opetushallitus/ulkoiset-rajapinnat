@@ -16,10 +16,10 @@
 
 (use-fixtures :once fixture)
 
-(def vastaanotot-json (slurp "test/resources/vastaanotto/streaming.json"))
-(def pistetiedot-json (slurp "test/resources/vastaanotto/pistetiedot.json"))
-(def avaimet-json (slurp "test/resources/vastaanotto/avaimet.json"))
-(def oppijat-json (slurp "test/resources/vastaanotto/oppijat.json"))
+(def vastaanotot-json (resource "test/resources/vastaanotto/streaming.json"))
+(def pistetiedot-json (resource "test/resources/vastaanotto/pistetiedot.json"))
+(def avaimet-json (resource "test/resources/vastaanotto/avaimet.json"))
+(def oppijat-json (resource "test/resources/vastaanotto/oppijat.json"))
 
 (defn oppijat-chunk [oppijanumerot]
   (to-json (filter (fn [x] (some #(= (get x "oppijanumero") %) (parse-string oppijanumerot))) (parse-string oppijat-json))))
@@ -59,13 +59,13 @@
             body (-> (parse-json-body response))]
         (is (= status 200))
         (log/info (to-json body true))
-        (def expected (parse-string (slurp "test/resources/vastaanotto/result.json")))
+        (def expected (parse-string (resource "test/resources/vastaanotto/result.json")))
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference))))
   (testing "Trim streaming response"
     (let [parsed (trim-streaming-response (parse-string vastaanotot-json))]
       ;(log/info (to-json parsed true))
-      (def expected (parse-string (slurp "test/resources/vastaanotto/parsed.json")))
+      (def expected (parse-string (resource "test/resources/vastaanotto/parsed.json")))
       (def difference (diff expected parsed))
       (is (= [nil nil expected] difference) difference))))
 

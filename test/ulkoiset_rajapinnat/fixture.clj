@@ -8,6 +8,10 @@
             [ulkoiset-rajapinnat.core :refer :all]
             ))
 
+(defn resource [name]
+  (let [n (if (.exists (java.io.File. name)) name (str "../../" name))]
+    (slurp n)))
+
 (def test-configs {:host-virkailija "http://fake.virkailija.opintopolku.fi"
                    :valintapiste-host-virkailija "http://fake.internal.aws.opintopolku.fi"
                    :vastaanotto-host-virkailija "http://fake.virkailija.opintopolku.fi"
