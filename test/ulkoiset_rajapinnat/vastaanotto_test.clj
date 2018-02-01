@@ -40,7 +40,7 @@
 
 (deftest vastaanotto-api-test
   (testing "No vastaanotot found"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [c t] (go fake-user))
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   oppijat-batch-size 2
                   valintapisteet-batch-size 2
                   http/get (fn [url options transform] (channel-response transform url 404 ""))
@@ -52,7 +52,7 @@
         (catch Exception e
           (is (= 500 ((ex-data e) :status)))))))
   (testing "Fetch vastaanotot"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [c t] (go fake-user))
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   oppijat-batch-size 2
                   valintapisteet-batch-size 2
                   http/get (fn [url options transform] (mock-http url options transform))
@@ -68,8 +68,8 @@
         (is (= [nil nil expected] difference) difference))))
   (testing "Trim streaming response"
     (let [parsed (trim-streaming-response (parse-string vastaanotot-json))]
-      ;(log/info (to-json parsed true))
       (def expected (parse-string (resource "test/resources/vastaanotto/parsed.json")))
       (def difference (diff expected parsed))
       (is (= [nil nil expected] difference) difference))))
 
+(run-tests)

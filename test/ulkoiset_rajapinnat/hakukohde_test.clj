@@ -40,7 +40,7 @@
 
 (deftest hakukohde-api-test
   (testing "hakukohde not found"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [c t] (go fake-user))
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   http/get (fn [url options transform] (channel-response transform url 404 ""))
                   http/post (fn [url options transform] (channel-response transform url 404 ""))
                   fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
@@ -50,7 +50,7 @@
         (catch Exception e
           (is (= 404 ((ex-data e) :status)))))))
   (testing "Fetch hakukohde"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [c t] (go fake-user))
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   oppijat-batch-size 2
                   valintapisteet-batch-size 2
                   http/get (fn [url options transform] (mock-http url options transform))

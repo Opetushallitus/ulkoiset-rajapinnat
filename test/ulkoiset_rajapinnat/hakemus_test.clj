@@ -26,7 +26,6 @@
 (deftest hakemus-test
   (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                 haku-for-haku-oid-channel (mock-channel {})
-                service-ticket-channel (mock-channel "FAKE-SERVICE-TICKET")
                 fetch-jsessionid-channel (mock-channel "FAKE-SESSIONID")
                 koodisto-as-channel (mock-channel {})]
     (testing "Fetch hakemukset for haku with no hakemuksia!"
