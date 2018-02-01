@@ -12,4 +12,3 @@
           status (-> response :status)]
       (is (= status 200)))))
 
-(run-tests)

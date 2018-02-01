@@ -1,11 +1,12 @@
 (ns ulkoiset-rajapinnat.utils.ldap
   (:require [clojure.string :as str]
+            [ulkoiset-rajapinnat.utils.config :refer [config]]
             [cheshire.core :refer [parse-string]])
   (:import (com.unboundid.ldap.sdk LDAPConnection SearchRequest SearchScope Filter)))
 
-(defn fetch-user-from-ldap [config username]
+(defn fetch-user-from-ldap [username]
   (let [uid-filter (Filter/createEqualityFilter "uid" username)
-        search-request (SearchRequest. (-> config :ldap :basedn)
+        search-request (SearchRequest. (-> @config :ldap :basedn)
                                        (SearchScope/SUB)
                                        uid-filter
                                        (into-array String
@@ -16,8 +17,8 @@
                                                     "employeeNumber"]))
         connection (LDAPConnection.)]
     (try
-      (.connect connection (-> config :ldap :host) (-> config :ldap :port))
-      (.bind connection (-> config :ldap :binddn) (-> config :ldap :password))
+      (.connect connection (-> @config :ldap :host) (-> @config :ldap :port))
+      (.bind connection (-> @config :ldap :binddn) (-> @config :ldap :password))
       (let [result (.search connection search-request)
             entry (-> result
                       (.getSearchEntries)

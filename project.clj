@@ -11,6 +11,7 @@
   :dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/core.async "0.3.443"]
+                 [fi.vm.sade/auditlogger "8.0.0-SNAPSHOT"]
                  [environ "1.1.0"]
                  [compojure "1.6.0"]
                  [clj-time "0.14.0"]

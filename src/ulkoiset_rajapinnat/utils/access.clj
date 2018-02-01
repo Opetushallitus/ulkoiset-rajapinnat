@@ -6,6 +6,7 @@
             [ulkoiset-rajapinnat.utils.rest :refer [status body to-json]]
             [clojure.core.async :refer [promise-chan >! go put! close!]]
             [clojure.tools.logging.impl :as impl]
+            [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request parse-request-headers]]
             [ring.util.http-response :refer [unauthorized bad-request internal-server-error]]
             [ulkoiset-rajapinnat.utils.ldap :refer :all]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
@@ -27,38 +28,9 @@
    }
   )
 
-(defn- get-user-agent [request]
-  (if-let [user-agent (first (filter #(= (.getKey %) "user-agent") (request :headers)))]
-    (.getValue user-agent)
-    "-"))
-
-(defn- get-method-from-request [request]
-  (let [conversion-table {:get "GET"
-                          :options "OPTIONS"
-                          :post "POST"
-                          :put "PUT"
-                          :delete "DELETE"
-                          :head "HEAD"
-                          :connect "CONNECT"
-                          :trace "TRACE"}
-        kit-method (request :request-method)]
-    (get conversion-table kit-method)))
-
 (defn- do-logging [start-time response-code request]
-  (let [duration (- (System/currentTimeMillis) start-time)
-        method (get-method-from-request request)
-        path-info (request :uri)
-        user-agent (get-user-agent request)]
-    (.info logger
-           (to-json {:timestamp (t/now)
-                     :customer "OPH"
-                     :service "ulkoiset-rajapinnat"
-                     :responseCode response-code
-                     :request (str method " " path-info)
-                     :requestMethod method
-                     :responseTime (str duration)
-                     :user-agent user-agent
-          }))))
+  (.info logger
+         (to-json (parse-request-headers request response-code start-time))))
 
 (defn access-log
   ([response]
@@ -70,17 +42,16 @@
      response)))
 
 (defn check-ticket-is-valid-and-user-has-required-roles [ticket]
-  (go
-    (log/error "TICKET VALIDATION IS DISABLED! REAL VALIDATION CODE IN COMMENT BLOCK!"))
-  (comment
-    (go-try
-      (let [host-virkailija (resolve-url :cas-client.host)
-            service (str host-virkailija "/ulkoiset-rajapinnat")
-            username (<? (validate-service-ticket service ticket))
-            ldap-user (fetch-user-from-ldap username)
-            roles (ldap-user :roles)]
-        (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
-          ldap-user
+  (go-try
+    (let [host-virkailija (resolve-url :cas-client.host)
+          service (str host-virkailija "/ulkoiset-rajapinnat")
+          username (<? (validate-service-ticket service ticket))
+          ldap-user (fetch-user-from-ldap username)
+          roles (ldap-user :roles)]
+      (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
+        ldap-user
+        (do
+          (log/error "User" username "is missing role APP_ULKOISETRAJAPINNAT_READ!")
           (RuntimeException. "Required roles missing!"))))))
 
 (defn handle-exception [channel start-time exception]
@@ -93,17 +64,17 @@
         (body (to-json {:error message}))
         (close))))
 
-(defn handle-unauthorized [channel start-time]
+(defn handle-unauthorized [channel start-time request]
   (let [message "Ticket was not valid or user doesn't have required roles!"]
-  (access-log
+  ((access-log
     (unauthorized message)
-    start-time)
+    start-time) request)
   (-> channel
       (status 401)
       (body (to-json {:error message}))
       (close))))
 
-(defn access-log-with-ticket-check-with-channel [ticket operation]
+(defn access-log-with-ticket-check-with-channel [ticket audit-log operation]
   (fn [request]
     (if-let [some-ticket ticket]
       (let [start-time (System/currentTimeMillis)
@@ -119,6 +90,11 @@
                               (catch Exception e (do
                                                    (log/error "Uncaught exception in request handler!")
                                                    (log/error e)
-                                                   (handle-exception channel start-time e)))))
-                          (catch Exception e (handle-unauthorized channel start-time))))))
+                                                   (handle-exception channel start-time e)))
+                              (finally
+                                (audit-log "-"
+                                           (user :personOid)
+                                           (remote-addr-from-request request)
+                                           (user-agent-from-request request)))))
+                          (catch Exception e (handle-unauthorized channel start-time request))))))
       (access-log (bad-request "Ticket parameter required!")))))
