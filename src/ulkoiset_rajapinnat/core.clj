@@ -48,14 +48,16 @@
           ticket
           (partial audit audit-logger (str "Hakukohteet haku OID:lla" haku-oid))
           (partial hakukohde-resource haku-oid palauta-null-arvot)))
-      (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid kausi ticket] ; hakuoid + kaudet
+      (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid vuosi kausi ticket] ; hakuoid + kaudet
         :summary "Vastaanotot haku OID:lla"
-        :query-params [ticket :- String]
+        :query-params [ticket :- String
+                       vuosi :- String
+                       kausi :- String]
         :responses {200 {:schema [Vastaanotto]}}
         (access-log-with-ticket-check-with-channel
            ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
-          (partial vastaanotto-resource haku-oid)))
+          (partial vastaanotto-resource haku-oid vuosi kausi)))
       (GET "/hakemus-for-haku/:haku-oid" [haku-oid vuosi kausi palauta-null-arvot ticket] ; hakuoid + kaudet
         :summary "Hakemukset haku OID:lla"
         :query-params [ticket :- String

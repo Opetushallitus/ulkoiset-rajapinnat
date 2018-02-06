@@ -1,0 +1,81 @@
+{
+  "accessRights": {
+    "update": false,
+    "create": false,
+    "delete": false
+  },
+  "result": {
+    "modified": 1516605510808,
+    "modifiedBy": "1.2.246.562.24.20686677507",
+    "oid": "1.2.246.562.29.25191045126",
+    "hakukausiUri": "kausi_s#1",
+    "hakukausiVuosi": 2017,
+    "hakutapaUri": "hakutapa_01#1",
+    "hakutyyppiUri": "hakutyyppi_01#1",
+    "kohdejoukkoUri": "haunkohdejoukko_12#1",
+    "koulutuksenAlkamisVuosi": 2018,
+    "koulutuksenAlkamiskausiUri": "kausi_k#1",
+    "tila": "JULKAISTU",
+    "ylioppilastutkintoAntaaHakukelpoisuuden": true,
+    "hakukohdeOidsYlioppilastutkintoAntaaHakukelpoisuuden": [
+      "1.2.246.562.20.72385087522",
+      "1.2.246.562.20.16902536479",
+      "1.2.246.562.20.760269451710",
+      "1.2.246.562.20.72385087522",
+      "1.2.246.562.20.16902536479"
+    ],
+    "sijoittelu": true,
+    "jarjestelmanHakulomake": true,
+    "hakuaikas": [
+      {
+        "hakuaikaId": "13862784",
+        "alkuPvm": 1504674031839,
+        "loppuPvm": 1507118400000,
+        "nimet": {
+          "kieli_sv": "",
+          "kieli_fi": "",
+          "kieli_en": ""
+        }
+      }
+    ],
+    "hakukohdeOids": [
+      "1.2.246.562.20.72385087522",
+      "1.2.246.562.20.16902536479",
+      "1.2.246.562.20.760269451710",
+      "1.2.246.562.20.72385087522",
+      "1.2.246.562.20.16902536479"
+    ],
+    "nimi": {
+      "kieli_fi": "Korkeakoulujen yhteishaku syksy 2017",
+      "kieli_sv": "Högskolornas gemensamma ansökan hösten 2017",
+      "kieli_en": "Joint application to higher education autumn 2017"
+    },
+    "maxHakukohdes": 6,
+    "canSubmitMultipleApplications": false,
+    "organisaatioOids": [
+      "1.2.246.562.10.00000000001"
+    ],
+    "tarjoajaOids": [
+      "1.2.246.562.10.00000000001"
+    ],
+    "usePriority": true,
+    "sisaltyvatHaut": [
+      "1.2.246.562.29.26634743319",
+      "1.2.246.562.29.18780377844"
+    ],
+    "organisaatioryhmat": [
+      "1.2.246.562.28.10626754683",
+      "1.2.246.562.28.10993207619"
+    ],
+    "koulutusmoduuliTyyppi": "TUTKINTO",
+    "maksumuuriKaytossa": false,
+    "tunnistusKaytossa": false,
+    "yhdenPaikanSaanto": {
+      "voimassa": true,
+      "syy": "Korkeakouluhaku ilman kohdejoukon tarkennetta"
+    },
+    "autosyncTarjonta": false,
+    "korkeakouluHaku": true
+  },
+  "status": "OK"
+}

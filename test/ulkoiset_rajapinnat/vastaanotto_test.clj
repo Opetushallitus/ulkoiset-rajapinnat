@@ -22,6 +22,7 @@
 (def pistetiedot-json (resource "test/resources/vastaanotto/pistetiedot.json"))
 (def avaimet-json (resource "test/resources/vastaanotto/avaimet.json"))
 (def oppijat-json (resource "test/resources/vastaanotto/oppijat.json"))
+(def haku-json (resource "test/resources/vastaanotto/haku.json"))
 
 (defn oppijat-chunk [oppijanumerot]
   (to-json (filter (fn [x] (some #(= (get x "oppijanumero") %) (parse-string oppijanumerot))) (parse-string oppijat-json))))
@@ -36,6 +37,7 @@
     "http://fake.internal.virkailija.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent" (response 200 (valintapisteet-chunk (options :body)))
     "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (response 200 avaimet-json)
     "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 haku-json)
     (response 404 "[]")))
 
 (deftest vastaanotto-api-test
@@ -47,7 +49,7 @@
                   http/post (fn [url options transform] (channel-response transform url 404 ""))
                   fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
       (try
-        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126"))]
+        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))]
           (is (= false true)))
         (catch Exception e
           (is (= 500 ((ex-data e) :status)))))))
@@ -58,7 +60,7 @@
                   http/get (fn [url options transform] (mock-http url options transform))
                   http/post (fn [url options transform] (mock-http url options transform))
                   fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
-      (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126"))
+      (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))
             status (-> response :status)
             body (-> (parse-json-body response))]
         (is (= status 200))
@@ -67,9 +69,18 @@
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference))))
   (testing "Trim streaming response"
-    (let [parsed (trim-streaming-response (parse-string vastaanotot-json))]
+    (let [parsed (trim-streaming-response [] (parse-string vastaanotot-json))]
       (def expected (parse-string (resource "test/resources/vastaanotto/parsed.json")))
       (def difference (diff expected parsed))
-      (is (= [nil nil expected] difference) difference))))
+      (is (= [nil nil expected] difference) difference)))
+  (testing "Trim streaming response - remove hakukohteet"
+    (let [parsed (trim-streaming-response ["1.2.246.562.20.72385087522", "1.2.246.562.20.16902536479"] (parse-string vastaanotot-json))]
+      (def expected (parse-string (resource "test/resources/vastaanotto/parsed2.json")))
+      (def difference (diff expected parsed))
+      (log/info "MOIKKA")
+      (log/info (to-json parsed true))
+      (is (= [nil nil expected] difference) difference)))
+
+  )
 
 (run-tests)

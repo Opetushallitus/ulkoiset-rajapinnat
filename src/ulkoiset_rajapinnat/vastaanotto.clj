@@ -4,6 +4,7 @@
             [clojure.tools.logging :as log]
             [schema.core :as s]
             [clojure.core.async :as async]
+            [ulkoiset-rajapinnat.utils.tarjonta :refer [jatkuvan-haun-hakukohde-oids-for-hakukausi]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel get-as-channel status body-and-close exception-response to-json parse-json-body-stream]]
@@ -126,22 +127,23 @@
                                   "varasijaTayttoPaivat" "varasijanNumero" "varasijat" "varasijojaKaytetaanAlkaen"
                                   "varasijojaTaytetaanAsti"])
 
-(defn trim-streaming-response [vastaanotot]
-  (defn trim-hakutoive [h]
+(defn trim-streaming-response [hakukohde-oidit vastaanotot]
+  (defn- trim-hakutoive [h]
     (let [hakutoive (dissoc h "pistetiedot" "tarjoajaOid" "ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet" "kaikkiJonotSijoiteltu" "hakutoive")
           valintatapajonot (map #(apply dissoc % valintatapajono-trim-keys) (h "hakutoiveenValintatapajonot"))
           hakijaryhmat (map #(dissoc % "kiintio" "nimi" "oid" "valintatapajonoOid") (h "hakijaryhmat"))]
       (assoc hakutoive "hakijaryhmat" hakijaryhmat "hakutoiveenValintatapajonot" valintatapajonot)))
 
-  (defn trim-vastaanotto [v]
-    (let [hakutoiveet (map trim-hakutoive (v "hakutoiveet"))
+  (defn- trim-vastaanotto [v]
+    (let [hakutoive-filter (fn [h] (or (empty? hakukohde-oidit) (some #(= % (h "hakukohdeOid")) hakukohde-oidit)))
+          hakutoiveet (map trim-hakutoive (filter hakutoive-filter (v "hakutoiveet")))
           vastaanotto (dissoc v "etunimi" "sukunimi")]
         (assoc vastaanotto "hakutoiveet" hakutoiveet)))
-  (map trim-vastaanotto vastaanotot))
+  (filter #(not-empty (% "hakutoiveet")) (map trim-vastaanotto vastaanotot)))
 
-(defn vastaanotot-channel [haku-oid]
+(defn vastaanotot-channel [haku-oid hakukohde-oidit]
   (log/info (format "Haku %s haetaan vastaanotot..." haku-oid))
-  (let [mapper (comp trim-streaming-response parse-json-body-stream)]
+  (let [mapper (comp (partial trim-streaming-response hakukohde-oidit) parse-json-body-stream)]
     (get-as-channel (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid) {:as :stream} mapper)))
 
 (defn fetch-kokeet-channel [haku-oid hakukohde-oidit]
@@ -174,10 +176,11 @@
           valintaperusteet (<? (async/map vector (map #(post %) partitions)))]
       (apply merge valintaperusteet))))
 
-(defn vastaanotot-for-haku [haku-oid request channel]
+(defn vastaanotot-for-haku [haku-oid vuosi kausi request channel]
   (async/go
     (try
-      (let [vastaanotot (<? (vastaanotot-channel haku-oid))
+      (let [haun-hakukohteet (<? (jatkuvan-haun-hakukohde-oids-for-hakukausi haku-oid vuosi kausi))
+            vastaanotot (<? (vastaanotot-channel haku-oid haun-hakukohteet))
             hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
             hakemus-oidit (map #(% "hakemusOid") vastaanotot)
             valintakokeet (<? (fetch-kokeet-channel haku-oid hakukohde-oidit))
@@ -200,6 +203,6 @@
           (log/error (format "Virhe haettaessa vastaanottoja haulle %s!" haku-oid), e)
           ((exception-response channel) e))))))
 
-(defn vastaanotto-resource [haku-oid request channel]
-  (vastaanotot-for-haku haku-oid request channel)
+(defn vastaanotto-resource [haku-oid vuosi kausi request channel]
+  (vastaanotot-for-haku haku-oid vuosi kausi request channel)
   (schedule-task (* 1000 60 60 12) (close channel)))
