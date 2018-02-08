@@ -13,7 +13,8 @@
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.fixture :refer :all]
             [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size valintapisteet-batch-size trim-streaming-response]]
-            [ulkoiset-rajapinnat.test_utils :refer :all])
+            [ulkoiset-rajapinnat.test_utils :refer :all]
+            [clojure.string :as str])
   (:import (java.io ByteArrayInputStream)))
 
 (use-fixtures :once fixture)
@@ -32,13 +33,14 @@
 (defn mock-http [url options transform]
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
-  (case url
-    "http://fake.internal.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (response 200 vastaanotot-json)
-    "http://fake.internal.virkailija.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent" (response 200 (valintapisteet-chunk (options :body)))
-    "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (response 200 avaimet-json)
-    "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
-    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 haku-json)
-    (response 404 "[]")))
+  (if (str/starts-with? url "http://fake.internal.virkailija.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=-&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
+    (response 200 (valintapisteet-chunk (options :body)))
+    (case url
+      "http://fake.internal.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (response 200 vastaanotot-json)
+      "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (response 200 avaimet-json)
+      "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
+      "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 haku-json)
+      (response 404 "[]"))))
 
 (deftest vastaanotto-api-test
   (testing "No vastaanotot found"

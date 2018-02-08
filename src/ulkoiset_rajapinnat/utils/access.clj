@@ -86,7 +86,7 @@
                           (let [user (<? (check-ticket-is-valid-and-user-has-required-roles ticket))]
                             (on-close channel on-close-handler)
                             (try
-                              (operation request channel)
+                              (operation request user channel)
                               (catch Exception e (do
                                                    (log/error "Uncaught exception in request handler!")
                                                    (log/error e)

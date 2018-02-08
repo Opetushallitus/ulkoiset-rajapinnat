@@ -242,6 +242,6 @@
         (finally
           (close-channel))))))
 
-(defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request channel]
+(defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request user channel]
   (fetch-hakemukset-for-haku haku-oid vuosi kausi palauta-null-arvot? channel)
   (schedule-task (* 1000 60 60 12) (close channel)))

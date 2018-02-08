@@ -4,6 +4,7 @@
             [clojure.tools.logging :as log]
             [schema.core :as s]
             [clojure.core.async :as async]
+            [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request]]
             [ulkoiset-rajapinnat.utils.tarjonta :refer [jatkuvan-haun-hakukohde-oids-for-hakukausi]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
@@ -154,10 +155,10 @@
           valintaperusteet (<? (post-json-as-channel (resolve-url :valintaperusteet-service.hakukohde-avaimet) hakukohde-oidit mapper jsession-id))]
       valintaperusteet)))
 
-(defn fetch-valintapisteet-channel [haku-oid kaikki-hakemus-oidit]
+(defn fetch-valintapisteet-channel [haku-oid kaikki-hakemus-oidit request user]
   (log/info (format "Haku %s haetaan valintapisteet %d hakemukselle..." haku-oid (count kaikki-hakemus-oidit)))
-  (go-try ;TODO korjaa audit-parametrit, kun CAS-autentikointi päällä ?sessionId=sID&uid=1.2.246.1.1.1&inetAddress=127.0.0.1&userAgent=uAgent"
-    (let [url (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids "sID" "1.2.246.1.1.1" "127.0.0.1" "uAgent")
+  (go-try
+    (let [url (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids "-" (user :personOid) (remote-addr-from-request request) (user-agent-from-request request))
           group-valintapisteet (fn [x] (apply merge (map (fn [p] {(p "hakemusOID") (p "pisteet")}) x)))
           mapper (comp group-valintapisteet parse-json-body-stream)
           post (fn [x] (post-json-as-channel url x mapper))
@@ -176,7 +177,7 @@
           valintaperusteet (<? (async/map vector (map #(post %) partitions)))]
       (apply merge valintaperusteet))))
 
-(defn vastaanotot-for-haku [haku-oid vuosi kausi request channel]
+(defn vastaanotot-for-haku [haku-oid vuosi kausi request user channel]
   (async/go
     (try
       (let [haun-hakukohteet (<? (jatkuvan-haun-hakukohde-oids-for-hakukausi haku-oid vuosi kausi))
@@ -184,7 +185,7 @@
             hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
             hakemus-oidit (map #(% "hakemusOid") vastaanotot)
             valintakokeet (<? (fetch-kokeet-channel haku-oid hakukohde-oidit))
-            valintapisteet (<? (fetch-valintapisteet-channel haku-oid hakemus-oidit))
+            valintapisteet (<? (fetch-valintapisteet-channel haku-oid hakemus-oidit request user))
             oppijanumerot (map #(% "hakijaOid") vastaanotot)
             kielikokeet (<? (fetch-ammatilliset-kielikokeet-channel haku-oid oppijanumerot))]
         (log/info (format "Haku %s hakijoita %d kpl" haku-oid (count hakemus-oidit)))
@@ -203,6 +204,6 @@
           (log/error (format "Virhe haettaessa vastaanottoja haulle %s!" haku-oid), e)
           ((exception-response channel) e))))))
 
-(defn vastaanotto-resource [haku-oid vuosi kausi request channel]
-  (vastaanotot-for-haku haku-oid vuosi kausi request channel)
+(defn vastaanotto-resource [haku-oid vuosi kausi request user channel]
+  (vastaanotot-for-haku haku-oid vuosi kausi request user channel)
   (schedule-task (* 1000 60 60 12) (close channel)))

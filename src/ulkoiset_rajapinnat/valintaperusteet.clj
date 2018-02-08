@@ -113,9 +113,9 @@
   ) (filter #(not (nil? %)) all-hakukohteet)))
 
 (defn valintaperusteet-resource
-  ([request channel]
-    (valintaperusteet-resource nil request channel))
-  ([hakukohde-oid request channel]
+  ([request user channel]
+    (valintaperusteet-resource nil request user channel))
+  ([hakukohde-oid request user channel]
     (def requested-oids (if (nil? hakukohde-oid) (parse-json-request request) (list hakukohde-oid)))
    (async/go
      (try (let [session-id (<? (fetch-jsessionid-channel "/valintaperusteet-service"))

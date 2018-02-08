@@ -114,7 +114,7 @@
         (catch Exception e (do (async/>! c e) (async/close! c)))))
     c))
 
-(defn hakukohde-resource [haku-oid palauta-null-arvot? request channel]
+(defn hakukohde-resource [haku-oid palauta-null-arvot? request user channel]
   (let [hakukohde-tulos-promise (fetch-hakukohde-tulos-channel haku-oid)
         kieli-promise (koodisto-as-channel "kieli")
         koulutustyyppi-promise (koodisto-as-channel "koulutustyyppi")

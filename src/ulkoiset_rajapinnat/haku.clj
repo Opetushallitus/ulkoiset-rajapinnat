@@ -55,7 +55,7 @@
         mapper (comp #(% "result") parse-json-body (partial log-fetch "haku" start-time))]
     (get-as-channel (resolve-url :tarjonta-service.haku-find-by-hakuvuosi vuosi) {} mapper)))
 
-(defn haku-resource [vuosi request channel]
+(defn haku-resource [vuosi request user channel]
   (go
     (try
     (let [kieli (<<?? (koodisto-as-channel "kieli"))
