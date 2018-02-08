@@ -55,11 +55,37 @@ appender.access.strategy.delete.ifLastModified.type = IfLastModified
 # Delete files older than 30 days
 appender.access.strategy.delete.ifLastModified.age = 30d
 
+# RollingFileAppender will print logs in file which can be rotated based on time or size
+appender.audit.type = RollingFile
+appender.audit.name = auditLogger
+appender.audit.fileName=${basePath}/auditlog_ulkoiset-rajapinnat.log
+appender.audit.filePattern=${basePath}/auditlog_ulkoiset-rajapinnat_%d{yyyy-MM-dd}.log
+appender.audit.layout.type = PatternLayout
+appender.audit.layout.pattern = %m%n
+appender.audit.policies.type = Policies
+
+# Rotate log file each day
+appender.audit.policies.time.type = TimeBasedTriggeringPolicy
+appender.audit.policies.time.interval = 1
+appender.audit.policies.time.modulate = true
+appender.audit.strategy.type = DefaultRolloverStrategy
+appender.audit.strategy.delete.type = Delete
+appender.audit.strategy.delete.basePath = ${basePath}
+appender.audit.strategy.delete.maxDepth = 1
+appender.audit.strategy.delete.ifLastModified.type = IfLastModified
+# Delete files older than 30 days
+appender.audit.strategy.delete.ifLastModified.age = 30d
+
 # Mention package name here in place of example. Classes in this package or subpackages will use ConsoleAppender and RollingFileAppender for logging
 logger.access.name = ACCESS
 logger.access.level = debug
 logger.access.additivity = false
 logger.access.appenderRef.rolling.ref = accessLogger
+
+logger.audit.name = AUDIT
+logger.audit.level = debug
+logger.audit.additivity = false
+logger.audit.appenderRef.rolling.ref = auditLogger
 
 # Configure root logger for logging error logs in classes which are in package other than above specified package
 rootLogger.level = info
