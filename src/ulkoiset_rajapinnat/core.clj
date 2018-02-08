@@ -36,6 +36,7 @@
         :summary "Haut vuodella"
         :query-params [ticket :- String]
         :responses {200 {:schema [Haku]}}
+        (log/info (str "Got incoming request to /haku-for-year/" vuosi))
         (access-log-with-ticket-check-with-channel
           ticket
           (partial audit audit-logger (str "Haut vuodella " vuosi))
@@ -44,6 +45,7 @@
         :summary "Hakukohteet haku OID:lla"
         :query-params [ticket :- String]
         :responses {200 {:schema [Hakukohde]}}
+        (log/info (str "Got incoming request to /hakukohde-for-haku/" haku-oid))
         (access-log-with-ticket-check-with-channel
           ticket
           (partial audit audit-logger (str "Hakukohteet haku OID:lla" haku-oid))
@@ -54,6 +56,7 @@
                        vuosi :- String
                        kausi :- String]
         :responses {200 {:schema [Vastaanotto]}}
+        (log/info (str "Got incoming request to /vastaanotto-for-haku/" haku-oid))
         (access-log-with-ticket-check-with-channel
            ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
@@ -64,6 +67,7 @@
                        vuosi :- String
                        kausi :- String]
         :responses {200 {:schema [Hakemus]}}
+        (log/info (str "Got incoming request to /hakemus-for-haku/" haku-oid))
         (access-log-with-ticket-check-with-channel
            ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
@@ -72,6 +76,7 @@
         :summary "Hakukohde valintaperusteista"
         :query-params [ticket :- String]
         :responses {200 {:schema [Valintaperusteet]}}
+        (log/info (str "Got incoming request to /valintaperusteet/hakukohde/" hakukohde-oid))
         (access-log-with-ticket-check-with-channel
            ticket
           (partial audit audit-logger (str "Vastaanotot hakukohde OID:lla" hakukohde-oid))
@@ -80,6 +85,7 @@
         :summary "Hakukohteet valintaperusteista"
         :query-params [ticket :- String]
         :responses {200 {:schema [Valintaperusteet]}}
+        (log/info (str "Got incoming request to /valintaperusteet/hakukohde"))
         (access-log-with-ticket-check-with-channel
            ticket
           (partial audit audit-logger (str "Hakukohteet valintaperusteista"))
