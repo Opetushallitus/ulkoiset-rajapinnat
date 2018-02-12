@@ -92,40 +92,31 @@
     (get-as-channel (resolve-url :tarjonta-service.koulutus-search-by-haku-oid haku-oid) {:as :stream} mapper)))
 
 (defn hakukohde-resource [haku-oid palauta-null-arvot? request user channel]
-  (let [hakukohde-tulos-promise (fetch-hakukohde-tulos-channel haku-oid)
-        kieli-promise (koodisto-as-channel "kieli")
-        koulutustyyppi-promise (koodisto-as-channel "koulutustyyppi")
-        hakukohde-promise (fetch-hakukohde-channel haku-oid)
-        koulutukset-promise (fetch-koulutukset-channel haku-oid)
-        ]
-    (async/go
-      (try
-        (let [hakukohde-tulos (<? hakukohde-tulos-promise)
-              all-hakukohde-oids (map #(get % "hakukohdeOid") hakukohde-tulos)
-              all-organisaatio-oids (set (mapcat #(get % "organisaatioOids") hakukohde-tulos))
-              sisaltyvat-koulutukset-promise (fetch-tilastoskeskus-hakukohde-channel all-hakukohde-oids)
-              organisaatiot-promise (fetch-organisations-in-batch-channel all-organisaatio-oids)
-              kieli (<? kieli-promise)
-              koulutustyyppi (<? koulutustyyppi-promise)
-              hakukohde (<? hakukohde-promise)
-              koulutukset (<? koulutukset-promise)
-              sisaltyvat-koulutukset (<? sisaltyvat-koulutukset-promise)
-              organisaatiot (<? organisaatiot-promise)]
-          (let [organisaatiot-by-oid (group-by #(% "oid") (flatten organisaatiot))
-                hakukohde-by-oid (group-by #(% "oid") hakukohde)
-                koulutus-by-oid (group-by #(% "oid") koulutukset)
-                sisaltyvat-koulutukset-by-oid (apply merge (map (fn [k] {(get k "hakukohdeOid") (map #(get % "koulutuskoodi") (get k "koulutusLaajuusarvos"))}) sisaltyvat-koulutukset))
-                hakukohde-converter (partial transform-hakukohde-tulos
-                                             kieli
-                                             koulutustyyppi)
-                converted-hakukohdes (map #(let [hk-koulutukset (select-keys koulutus-by-oid (set (% "koulutusOids")))
-                                                 hk-organisaatiot (select-keys organisaatiot-by-oid (% "organisaatioOids"))
-                                                 hk (first (get hakukohde-by-oid (% "hakukohdeOid")))
-                                                 sisaltyvat-koulutuskoodit (set (get sisaltyvat-koulutukset-by-oid (% "hakukohdeOid")))]
-                                             (hakukohde-converter % sisaltyvat-koulutuskoodit hk-organisaatiot hk-koulutukset hk)) hakukohde-tulos)
-                json (to-json (if palauta-null-arvot? converted-hakukohdes (remove-nils converted-hakukohdes)))]
-            (-> channel
-                (status 200)
-                (body-and-close json))))
-        (catch Exception e ((exception-response channel) e)))))
+  (async/go
+    (try
+      (let [hakukohde-tulos (<? (fetch-hakukohde-tulos-channel haku-oid))
+            all-hakukohde-oids (map #(get % "hakukohdeOid") hakukohde-tulos)
+            all-organisaatio-oids (set (mapcat #(get % "organisaatioOids") hakukohde-tulos))
+            kieli (<? (koodisto-as-channel "kieli"))
+            koulutustyyppi (<? (koodisto-as-channel "koulutustyyppi"))
+            hakukohde (<? (fetch-hakukohde-channel haku-oid))
+            hakukohde-by-oid (group-by #(% "oid") hakukohde)
+            koulutukset (<? (fetch-koulutukset-channel haku-oid))
+            koulutus-by-oid (group-by #(% "oid") koulutukset)
+            sisaltyvat-koulutukset (<? (fetch-tilastoskeskus-hakukohde-channel all-hakukohde-oids))
+            koulutuskoodi-mapper (fn [k] {(get k "hakukohdeOid") (map #(get % "koulutuskoodi") (get k "koulutusLaajuusarvos"))})
+            sisaltyvat-koulutukset-by-oid (apply merge (map koulutuskoodi-mapper sisaltyvat-koulutukset))
+            organisaatiot (<? (fetch-organisations-in-batch-channel all-organisaatio-oids))
+            organisaatiot-by-oid (group-by #(% "oid") (flatten organisaatiot))]
+        (let [hakukohde-converter (partial transform-hakukohde-tulos kieli koulutustyyppi)
+              converted-hakukohdes (map #(let [hk-koulutukset (select-keys koulutus-by-oid (set (% "koulutusOids")))
+                                               hk-organisaatiot (select-keys organisaatiot-by-oid (% "organisaatioOids"))
+                                               hk (first (get hakukohde-by-oid (% "hakukohdeOid")))
+                                               sisaltyvat-koulutuskoodit (set (get sisaltyvat-koulutukset-by-oid (% "hakukohdeOid")))]
+                                           (hakukohde-converter % sisaltyvat-koulutuskoodit hk-organisaatiot hk-koulutukset hk)) hakukohde-tulos)
+              json (to-json (if palauta-null-arvot? converted-hakukohdes (remove-nils converted-hakukohdes)))]
+          (-> channel
+              (status 200)
+              (body-and-close json))))
+      (catch Exception e ((exception-response channel) e))))
   (schedule-task (* 1000 60 60) (close channel)))
