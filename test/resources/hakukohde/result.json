@@ -12,10 +12,9 @@
   } ],
   "koulutuksen_opetuskieli" : [ "FI" ],
   "hakukohteen_oid" : "1.2.246.562.20.573444383210",
-  "hakukohteen_koulutuskoodit" : [ "721301" ],
   "hakijalle_ilmoitetut_aloituspaikat" : 3,
   "valintojen_aloituspaikat" : 0,
-  "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": []
+  "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": ["371101"]
 }, {
   "hakukohteen_nimi" : {
     "fi" : "Agrologi (AMK), monimuotototeutus, lisähaku"
@@ -30,8 +29,7 @@
   "koulutuksen_opetuskieli" : [ "FI" ],
   "hakukohteen_oid" : "1.2.246.562.20.22971087097",
   "ensikertalaisten_aloituspaikat" : 0,
-  "hakukohteen_koulutuskoodit" : [ "661101" ],
   "hakijalle_ilmoitetut_aloituspaikat" : 10,
   "valintojen_aloituspaikat" : 0,
-  "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": []
+  "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": ["751501", "655501"]
 } ]

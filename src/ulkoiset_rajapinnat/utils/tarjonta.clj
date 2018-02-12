@@ -1,7 +1,7 @@
 (ns ulkoiset-rajapinnat.utils.tarjonta
   (:require [clojure.string :as str]
             [full.async :refer :all]
-            [clojure.core.async :refer [<! promise-chan >! go put! close!]]
+            [clojure.core.async :refer [<! promise-chan >! go put! close! map] :rename {map async-map}]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.rest :refer :all]))
@@ -23,6 +23,15 @@
     (get-as-channel url { :as :stream } (fn [response] (if-let [some-haku ((parse-json-body-stream response) "result")]
                                             some-haku
                                             (throw (RuntimeException. (format "Haku %s not found!" haku-oid))))))))
+
+(def tilastokeskus-batch-size 5000)
+
+(defn fetch-tilastoskeskus-hakukohde-channel [hakukohde-oids]
+  (go-try (let [url (resolve-url :tarjonta-service.tilastokeskus)
+                partitions (partition tilastokeskus-batch-size tilastokeskus-batch-size nil hakukohde-oids)
+                post (fn [x] (post-json-as-channel url x parse-json-body-stream))
+                hakukohteet (<? (async-map vector (map #(post %) partitions)))]
+    (apply merge hakukohteet))))
 
 (defn is-haku-with-ensikertalaisuus [haku]
   (if-let [some-haku haku]

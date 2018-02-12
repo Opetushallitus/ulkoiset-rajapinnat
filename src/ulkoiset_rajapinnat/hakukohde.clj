@@ -2,6 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
             [schema.core :as s]
+            [ulkoiset-rajapinnat.utils.tarjonta :refer [fetch-tilastoskeskus-hakukohde-channel]]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch-channel]]
             [ulkoiset-rajapinnat.utils.rest :refer [post-as-channel get-as-channel status body body-and-close exception-response parse-json-body-stream to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-type-and-version-from-tarjonta-koodisto-uri]]
@@ -45,34 +46,25 @@
      "organisaation_kuntakoodi" (str/replace (organisaatio "kotipaikkaUri") "kunta_" "")
      "organisaation_nimi"       (organisaatio "nimi")}))
 
-(defn koulutus-to-koulutuskoodi
-  [koulutus]
-  (strip-type-and-version-from-tarjonta-koodisto-uri (koulutus "koulutuskoodi")))
-
 (defn transform-hakukohde-tulos [kieli
                                  koulutustyyppi
                                  hakukohde-tulos
-                                 full-koulutuses
+                                 sisaltyvat-koulutuskoodit
                                  organisaatiot
                                  koulutukset
                                  hakukohde]
-  (let [org-oids (koulutukset "tarjoajaOids")
-        koulutus-vec (flatten (vals koulutukset))
-        full-koulutuses-vec (flatten (vals full-koulutuses))
-        sisaltyvatkoulutuskoodit (mapcat #(keys (get-in % ["sisaltyvatKoulutuskoodit" "meta"])) full-koulutuses-vec)]
-    (merge
-      {"organisaatiot"                                      (map transform-organisaatio organisaatiot)
-       "hakukohteen_nimi"                                   (hakukohde-tulos "hakukohdeNimi")
-       "hakukohteen_koodi"                                  (strip-type-and-version-from-tarjonta-koodisto-uri (hakukohde "koodistoNimi"))
-       "hakukohteen_oid"                                    (hakukohde-tulos "hakukohdeOid")
-       "koulutuksen_koulutustyyppi"                         (if-let [k (first koulutukset)] (if-let [t ((first (second k)) "koulutustyyppiUri")] (koulutustyyppi t)))
-       "koulutuksen_opetuskieli"                            (map #(kieli %) (hakukohde-tulos "opetuskielet"))
-       "hakukohteen_koulutuskoodit"                         (map #(koulutus-to-koulutuskoodi (first (.getValue %))) koulutukset)
-       "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit" (map #(str/replace % "koulutus_" "") sisaltyvatkoulutuskoodit)
-       "pohjakoulutusvaatimus"                              (get-in hakukohde ["pohjakoulutusvaatimus" "fi"])
-       "hakijalle_ilmoitetut_aloituspaikat"                 (hakukohde "aloituspaikat")
-       "valintojen_aloituspaikat"                           (hakukohde "valintojenAloituspaikat")
-       "ensikertalaisten_aloituspaikat"                     (hakukohde "ensikertalaistenAloituspaikat")})))
+  (merge
+    {"organisaatiot"                                      (map transform-organisaatio organisaatiot)
+     "hakukohteen_nimi"                                   (hakukohde-tulos "hakukohdeNimi")
+     "hakukohteen_koodi"                                  (strip-type-and-version-from-tarjonta-koodisto-uri (hakukohde "koodistoNimi"))
+     "hakukohteen_oid"                                    (hakukohde-tulos "hakukohdeOid")
+     "koulutuksen_koulutustyyppi"                         (if-let [k (first koulutukset)] (if-let [t ((first (second k)) "koulutustyyppiUri")] (koulutustyyppi t)))
+     "koulutuksen_opetuskieli"                            (map #(kieli %) (hakukohde-tulos "opetuskielet"))
+     "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit" (seq sisaltyvat-koulutuskoodit)
+     "pohjakoulutusvaatimus"                              (get-in hakukohde ["pohjakoulutusvaatimus" "fi"])
+     "hakijalle_ilmoitetut_aloituspaikat"                 (hakukohde "aloituspaikat")
+     "valintojen_aloituspaikat"                           (hakukohde "valintojenAloituspaikat")
+     "ensikertalaisten_aloituspaikat"                     (hakukohde "ensikertalaistenAloituspaikat")}))
 
 (defn result-to-hakukohdes [result]
   (mapcat #(% "tulokset") ((result "result") "tulokset")))
@@ -99,21 +91,6 @@
         mapper (comp handle-koulutus-result parse-json-body-stream (partial log-fetch "koulutukset" start-time))]
     (get-as-channel (resolve-url :tarjonta-service.koulutus-search-by-haku-oid haku-oid) {:as :stream} mapper)))
 
-(defn fetch-full-koulutukset-in-batch-channel [koulutus-oids]
-  (let [c (async/chan 4)]
-    (async/go
-      (try
-        (let [uri (resolve-url :tarjonta-service.koulutus-by-oids)
-              mapper (fn [j] (let [b (j "result")] b))
-              oid-batches (partition-all 100 koulutus-oids)
-              fetch-batch (fn [batch]
-                            (async/<!! (post-as-channel uri (to-json batch) {:headers {"Content-Type" "application/json"}
-                                                                             :as      :stream} (comp mapper parse-json-body-stream))))]
-          (async/onto-chan c (mapcat fetch-batch oid-batches))
-          )
-        (catch Exception e (do (async/>! c e) (async/close! c)))))
-    c))
-
 (defn hakukohde-resource [haku-oid palauta-null-arvot? request user channel]
   (let [hakukohde-tulos-promise (fetch-hakukohde-tulos-channel haku-oid)
         kieli-promise (koodisto-as-channel "kieli")
@@ -124,28 +101,28 @@
     (async/go
       (try
         (let [hakukohde-tulos (<? hakukohde-tulos-promise)
-              all-koulutus-oids (set (mapcat #(get % "koulutusOids") hakukohde-tulos))
+              all-hakukohde-oids (map #(get % "hakukohdeOid") hakukohde-tulos)
               all-organisaatio-oids (set (mapcat #(get % "organisaatioOids") hakukohde-tulos))
-              full-koulutukset-promise (fetch-full-koulutukset-in-batch-channel all-koulutus-oids)
+              sisaltyvat-koulutukset-promise (fetch-tilastoskeskus-hakukohde-channel all-hakukohde-oids)
               organisaatiot-promise (fetch-organisations-in-batch-channel all-organisaatio-oids)
               kieli (<? kieli-promise)
               koulutustyyppi (<? koulutustyyppi-promise)
               hakukohde (<? hakukohde-promise)
               koulutukset (<? koulutukset-promise)
-              full-koulutukset (doall (<<?? full-koulutukset-promise))
+              sisaltyvat-koulutukset (<? sisaltyvat-koulutukset-promise)
               organisaatiot (<? organisaatiot-promise)]
           (let [organisaatiot-by-oid (group-by #(% "oid") (flatten organisaatiot))
                 hakukohde-by-oid (group-by #(% "oid") hakukohde)
                 koulutus-by-oid (group-by #(% "oid") koulutukset)
-                full-koulutus-by-oid (group-by #(% "oid") full-koulutukset)
+                sisaltyvat-koulutukset-by-oid (apply merge (map (fn [k] {(get k "hakukohdeOid") (map #(get % "koulutuskoodi") (get k "koulutusLaajuusarvos"))}) sisaltyvat-koulutukset))
                 hakukohde-converter (partial transform-hakukohde-tulos
                                              kieli
                                              koulutustyyppi)
                 converted-hakukohdes (map #(let [hk-koulutukset (select-keys koulutus-by-oid (set (% "koulutusOids")))
                                                  hk-organisaatiot (select-keys organisaatiot-by-oid (% "organisaatioOids"))
                                                  hk (first (get hakukohde-by-oid (% "hakukohdeOid")))
-                                                 full-koulutuses (select-keys full-koulutus-by-oid (set (% "koulutusOids")))]
-                                             (hakukohde-converter % full-koulutuses hk-organisaatiot hk-koulutukset hk)) hakukohde-tulos)
+                                                 sisaltyvat-koulutuskoodit (set (get sisaltyvat-koulutukset-by-oid (% "hakukohdeOid")))]
+                                             (hakukohde-converter % sisaltyvat-koulutuskoodit hk-organisaatiot hk-koulutukset hk)) hakukohde-tulos)
                 json (to-json (if palauta-null-arvot? converted-hakukohdes (remove-nils converted-hakukohdes)))]
             (-> channel
                 (status 200)

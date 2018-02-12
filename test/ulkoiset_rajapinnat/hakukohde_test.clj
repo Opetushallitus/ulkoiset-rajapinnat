@@ -24,6 +24,7 @@
 (def koulutus-json (resource "test/resources/hakukohde/koulutus.json"))
 (def kieli-json (resource "test/resources/hakukohde/kieli.json"))
 (def organisaatio-json (resource "test/resources/hakukohde/organisaatio.json"))
+(def tilastokeskus-json (resource "test/resources/hakukohde/tilastokeskus.json"))
 
 (defn mock-http [url options transform]
   (log/info (str "Mocking url " url))
@@ -31,7 +32,8 @@
   (case url
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1" (response 200 hakukohde-tulos-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.29.25191045126" (response 200 koulutus-json)
-    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/oids" (response 200 (to-json {"result" []}))
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
+    ;"http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/oids" (response 200 (to-json {"result" []}))
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.29.25191045126&tila=JULKAISTU" (response 200 hakukohde-json)
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1" (response 200 kieli-json)
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/koulutustyyppi/1" (response 200 koulutustyyppi-json)
