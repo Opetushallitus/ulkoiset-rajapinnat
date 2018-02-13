@@ -180,7 +180,8 @@
 (defn vastaanotot-for-haku [haku-oid vuosi kausi request user channel]
   (async/go
     (try
-      (let [haun-hakukohteet (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi))
+      (let [haun-hakukohteet (if-let [r (not-empty (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi)))] r
+                               (throw (RuntimeException. (format "No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi))))
             vastaanotot (<? (vastaanotot-channel haku-oid haun-hakukohteet))
             hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
             hakemus-oidit (map #(% "hakemusOid") vastaanotot)
