@@ -16,12 +16,12 @@
 
 (use-fixtures :once fixture)
 
-(def hakukohteet-json (resource "test/resources/hakukohteet.json"))
-(def valinnanvaiheet-json (resource "test/resources/valinnanvaiheet.json"))
-(def valintatapajonot-json (resource "test/resources/valintatapajonot.json"))
-(def hakijaryhmat-json (resource "test/resources/hakijaryhmat.json"))
-(def valintaryhmat-json (resource "test/resources/valintaryhmat.json"))
-(def avaimet-json (resource "test/resources/avaimet.json"))
+(def hakukohteet-json (resource "test/resources/valintaperusteet/hakukohteet.json"))
+(def valinnanvaiheet-json (resource "test/resources/valintaperusteet/valinnanvaiheet.json"))
+(def valintatapajonot-json (resource "test/resources/valintaperusteet/valintatapajonot.json"))
+(def hakijaryhmat-json (resource "test/resources/valintaperusteet/hakijaryhmat.json"))
+(def valintaryhmat-json (resource "test/resources/valintaperusteet/valintaryhmat.json"))
+(def avaimet-json (resource "test/resources/valintaperusteet/avaimet.json"))
 
 (defn mock-http [url options transform]
   (log/info (str "Mocking url " url))
@@ -53,7 +53,7 @@
             status (-> response :status)
             body (-> (parse-json-body response))]
         (is (= status 200))
-        (def expected (parse-string (resource "test/resources/valintaperusteet-result.json")))
+        (def expected (parse-string (resource "test/resources/valintaperusteet/result.json")))
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference)))))
 
