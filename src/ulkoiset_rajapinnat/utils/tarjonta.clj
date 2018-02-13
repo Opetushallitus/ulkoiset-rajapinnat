@@ -49,11 +49,29 @@
       false)
     (throw (RuntimeException. "Can't check nil haku if it's jatkuva haku!"))))
 
-(defn jatkuvan-haun-hakukohde-oids-for-hakukausi [haku-oid vuosi kausi]
-  (go-try (let [haku (<? (haku-for-haku-oid-channel haku-oid))
-                jatkuva (is-jatkuva-haku haku)
-                hakukohde-oids (if jatkuva (<? (hakukohde-oids-for-kausi-and-vuosi-channel haku-oid kausi vuosi)) [])]
-            (if (and jatkuva (empty? hakukohde-oids))
-              (throw (RuntimeException. (format "No hakukohde-oids found for 'jatkuva haku' %s with vuosi %s and kausi %s!"
-                                                haku-oid vuosi kausi)))
-              hakukohde-oids))))
+(def kausi-uri-prefix-kevat "kausi_k")
+(def kausi-uri-prefix-syksy "kausi_s")
+
+(defn kevat? [kausi] (let [kausi-l (str/lower-case kausi)] (or (str/starts-with? kausi-l kausi-uri-prefix-kevat) (= kausi-l "k"))))
+(defn syksy? [kausi] (let [kausi-l (str/lower-case kausi)] (or (str/starts-with? kausi-l kausi-uri-prefix-syksy) (= kausi-l "s"))))
+
+(defn to-kausi-uri-prefix [kausi]
+  (if (kevat? kausi)
+    kausi-uri-prefix-kevat
+    (if (syksy? kausi)
+      kausi-uri-prefix-syksy
+      (throw (RuntimeException. (str "Unknown kausi param: " kausi))))))
+
+(defn hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan
+  ([haku-oid vuosi kausi] (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi nil))
+  ([haku-oid vuosi kausi valmis-haku]
+   (go-try (let [haku (if (nil? valmis-haku) (<? (haku-for-haku-oid-channel haku-oid)) valmis-haku)
+                 hakukohde-oids (get haku "hakukohdeOids")
+                 hakukohteiden-koulutusten-alkamiskaudet (<? (fetch-tilastoskeskus-hakukohde-channel hakukohde-oids))
+                 kausi-uri-prefix (to-kausi-uri-prefix kausi)
+                 koulutuksen-alkamiskausi? (fn [x] (if-let [alkamiskausiUri (get x "koulutuksenAlkamiskausiUri")]
+                                                     (if-let [alkamisVuosi (get x "koulutuksenAlkamisVuosi")]
+                                                       (and (= (str alkamisVuosi) vuosi) (str/starts-with? alkamiskausiUri kausi-uri-prefix))
+                                                       false)
+                                                     false))]
+             (map #(get % "hakukohdeOid") (filter koulutuksen-alkamiskausi? hakukohteiden-koulutusten-alkamiskaudet))))))

@@ -41,7 +41,7 @@
           ticket
           (partial audit audit-logger (str "Haut vuodella " vuosi))
           (partial haku-resource vuosi)))
-      (GET "/hakukohde-for-haku/:haku-oid" [haku-oid kausi palauta-null-arvot ticket]
+      (GET "/hakukohde-for-haku/:haku-oid" [haku-oid palauta-null-arvot ticket]
         :summary "Hakukohteet haku OID:lla"
         :query-params [ticket :- String]
         :responses {200 {:schema [Hakukohde]}}

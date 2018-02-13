@@ -26,6 +26,7 @@
 (deftest hakemus-test
   (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                 haku-for-haku-oid-channel (mock-channel {})
+                hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel ["1.2.3.4"])
                 fetch-jsessionid-channel (mock-channel "FAKE-SESSIONID")
                 koodisto-as-channel (mock-channel {})]
     (testing "Fetch hakemukset for haku with no hakemuksia!"

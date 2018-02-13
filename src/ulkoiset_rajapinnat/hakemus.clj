@@ -8,7 +8,6 @@
             [ulkoiset-rajapinnat.utils.tarjonta :refer :all]
             [ulkoiset-rajapinnat.utils.haku_app :refer :all]
             [ulkoiset-rajapinnat.oppija :refer :all]
-    ;[ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch-channel]]
             [ulkoiset-rajapinnat.utils.rest :refer [status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
@@ -169,15 +168,6 @@
                    (get henkilo-by-oid (get hakemus "henkilo_oid"))
                    (get oppijat-by-oid (get hakemus "henkilo_oid")) hakemus))]))
 
-(defn hakukohde-oids-for-hakukausi [haku-oid vuosi kausi haku]
-  (if (is-jatkuva-haku haku)
-    (let [oids (<?? (hakukohde-oids-for-kausi-and-vuosi-channel haku-oid kausi vuosi))]
-      (if (not-empty oids)
-        oids
-        (throw (RuntimeException. (format "No hakukohde-oids found for 'jatkuva haku' %s with vuosi %s and kausi %s!"
-                                          haku-oid vuosi kausi)))))
-    []))
-
 (defn- close-and-drain! [channel]
   (go
     (close! channel)
@@ -194,10 +184,12 @@
         is-haku-with-ensikertalaisuus? (is-haku-with-ensikertalaisuus haku)
         ataru-channel (fetch-hakemukset-from-ataru haku-oid size-of-henkilo-batch-from-onr-at-once
                                                    (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?))
-        hakukohde-oids-for-hakukausi (hakukohde-oids-for-hakukausi haku-oid vuosi kausi haku)
-        haku-app-channel (fetch-hakemukset-from-haku-app-as-streaming-channel
-                           haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
-                           (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?))
+        hakukohde-oids-for-hakukausi (<?? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi haku))
+        haku-app-channel (if (empty? hakukohde-oids-for-hakukausi)
+                           (throw (RuntimeException. (format "No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi)))
+                           (fetch-hakemukset-from-haku-app-as-streaming-channel
+                             haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
+                             (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)))
         close-channel (fn []
                         (do
                           (close-and-drain! haku-app-channel)

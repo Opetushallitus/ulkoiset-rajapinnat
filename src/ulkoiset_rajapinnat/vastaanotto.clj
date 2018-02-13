@@ -5,7 +5,7 @@
             [schema.core :as s]
             [clojure.core.async :as async]
             [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request]]
-            [ulkoiset-rajapinnat.utils.tarjonta :refer [jatkuvan-haun-hakukohde-oids-for-hakukausi]]
+            [ulkoiset-rajapinnat.utils.tarjonta :refer [hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel get-as-channel status body-and-close exception-response to-json parse-json-body-stream]]
@@ -136,11 +136,11 @@
       (assoc hakutoive "hakijaryhmat" hakijaryhmat "hakutoiveenValintatapajonot" valintatapajonot)))
 
   (defn- trim-vastaanotto [v]
-    (let [hakutoive-filter (fn [h] (or (empty? hakukohde-oidit) (some #(= % (h "hakukohdeOid")) hakukohde-oidit)))
+    (let [hakutoive-filter (fn [h] (some #(= % (h "hakukohdeOid")) hakukohde-oidit))
           hakutoiveet (map trim-hakutoive (filter hakutoive-filter (v "hakutoiveet")))
           vastaanotto (dissoc v "etunimi" "sukunimi")]
         (assoc vastaanotto "hakutoiveet" hakutoiveet)))
-  (filter #(not-empty (% "hakutoiveet")) (map trim-vastaanotto vastaanotot)))
+  (if (empty? hakukohde-oidit) [] (filter #(not-empty (% "hakutoiveet")) (map trim-vastaanotto vastaanotot))))
 
 (defn vastaanotot-channel [haku-oid hakukohde-oidit]
   (log/info (format "Haku %s haetaan vastaanotot..." haku-oid))
@@ -180,7 +180,7 @@
 (defn vastaanotot-for-haku [haku-oid vuosi kausi request user channel]
   (async/go
     (try
-      (let [haun-hakukohteet (<? (jatkuvan-haun-hakukohde-oids-for-hakukausi haku-oid vuosi kausi))
+      (let [haun-hakukohteet (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi))
             vastaanotot (<? (vastaanotot-channel haku-oid haun-hakukohteet))
             hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
             hakemus-oidit (map #(% "hakemusOid") vastaanotot)

@@ -24,6 +24,7 @@
 (def avaimet-json (resource "test/resources/vastaanotto/avaimet.json"))
 (def oppijat-json (resource "test/resources/vastaanotto/oppijat.json"))
 (def haku-json (resource "test/resources/vastaanotto/haku.json"))
+(def tilastokeskus-json (resource "test/resources/vastaanotto/tilastokeskus.json"))
 
 (defn oppijat-chunk [oppijanumerot]
   (to-json (filter (fn [x] (some #(= (get x "oppijanumero") %) (parse-string oppijanumerot))) (parse-string oppijat-json))))
@@ -40,6 +41,7 @@
       "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (response 200 avaimet-json)
       "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
       "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 haku-json)
+      "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
       (response 404 "[]"))))
 
 (deftest vastaanotto-api-test
@@ -71,7 +73,7 @@
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference))))
   (testing "Trim streaming response"
-    (let [parsed (trim-streaming-response [] (parse-string vastaanotot-json))]
+    (let [parsed (trim-streaming-response ["1.2.246.562.20.72385087522", "1.2.246.562.20.16902536479", "1.2.246.562.20.760269451710", "1.2.246.562.20.16902536479"] (parse-string vastaanotot-json))]
       (def expected (parse-string (resource "test/resources/vastaanotto/parsed.json")))
       (def difference (diff expected parsed))
       (is (= [nil nil expected] difference) difference)))
@@ -79,8 +81,12 @@
     (let [parsed (trim-streaming-response ["1.2.246.562.20.72385087522", "1.2.246.562.20.16902536479"] (parse-string vastaanotot-json))]
       (def expected (parse-string (resource "test/resources/vastaanotto/parsed2.json")))
       (def difference (diff expected parsed))
-      (log/info "MOIKKA")
       (log/info (to-json parsed true))
+      (is (= [nil nil expected] difference) difference)))
+  (testing "Trim streaming response - no hakukohteet"
+    (let [parsed (trim-streaming-response [] (parse-string vastaanotot-json))]
+      (def expected [])
+      (def difference (diff expected parsed))
       (is (= [nil nil expected] difference) difference)))
 
   )
