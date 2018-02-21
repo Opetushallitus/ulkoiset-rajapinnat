@@ -1,0 +1,124 @@
+[
+  {
+    "_id": {
+      "timeSecond": 1515584702,
+      "machine": 217212030,
+      "inc": 1297438328,
+      "time": 1515584702000,
+      "timestamp": 1515584702,
+      "date": 1515584702000,
+      "new": false
+    },
+    "applicationSystemId": "1.2.246.562.29.999999",
+    "answers": {
+      "osaaminen": {},
+      "hakutoiveet": {
+        "preference1-Koulutus-id-attachments": "true",
+        "preference2-Koulutus-id-vocational": "true",
+        "preference1-Opetuspiste": "Helsingin Konservatorio",
+        "preference2-Koulutus-id-attachmentgroups": "",
+        "preference2-Koulutus": "Maatalousalan perustutkinto, yo",
+        "preference2-Opetuspiste": "Ahlmanin ammatti- ja aikuisopisto",
+        "preference2-Koulutus-id-athlete": "false",
+        "preference2-Koulutus-id-kaksoistutkinto": "false",
+        "preference1-Koulutus-requiredBaseEducations": "hakukelpoisuusvaatimusta_3,pohjakoulutusvaatimustoinenaste_yo,0,7,9",
+        "preference2-Koulutus-id-discretionary": "true",
+        "preference1-Koulutus-id-lang": "FI",
+        "preference2-discretionary-follow-up": "todistustenpuuttuminen",
+        "preference2-Koulutus-id-educationcode": "koulutus_361101",
+        "preference2-Koulutus-educationDegree": "koulutusasteoph2002_32",
+        "preference1-Koulutus-id-sora": "false",
+        "preference1-Koulutus-id-kaksoistutkinto": "false",
+        "preference1-Koulutus-id-attachmentgroups": "",
+        "preference2-Koulutus-id-sora": "false",
+        "preference2-Koulutus-requiredBaseEducations": "hakukelpoisuusvaatimusta_3,pohjakoulutusvaatimustoinenaste_yo,0,7,9",
+        "preference1-discretionary-follow-up": "todistustenpuuttuminen",
+        "preference2-Koulutus-id": "1.2.246.562.20.87120912966",
+        "preference2-Koulutus-id-ao-groups": "",
+        "preference1-Koulutus-educationDegree": "koulutusasteoph2002_32",
+        "preference1-Koulutus-id": "1.2.246.562.20.12866324648",
+        "preference1-Koulutus-id-educationcode": "koulutus_321204",
+        "preference2-Koulutus-id-attachments": "false",
+        "preference1-Koulutus": "Musiikin osaamisala, yo (Musiikkialan perustutkinto)",
+        "preference2-discretionary": "true",
+        "preference2-Koulutus-id-lang": "FI",
+        "preference1-Koulutus-id-vocational": "true",
+        "preference1-Koulutus-id-ao-groups": "",
+        "preferencesVisible": "2",
+        "preference1-Koulutus-id-discretionary": "false",
+        "preference2-Opetuspiste-id": "1.2.246.562.10.60222091211",
+        "preference1-discretionary": "true",
+        "preference1-Koulutus-id-aoIdentifier": "462",
+        "preference1-Koulutus-id-athlete": "false",
+        "preference2-Koulutus-id-aoIdentifier": "202",
+        "preference1-Opetuspiste-id": "1.2.246.562.10.70273540891",
+        "preference1-Opetuspiste-id-parents": "1.2.246.562.10.27727212352,1.2.246.562.10.41477668614,1.2.246.562.10.00000000001,1.2.246.562.10.70273540891",
+        "preference2-Opetuspiste-id-parents": "1.2.246.562.10.00000000001,1.2.246.562.10.47941294986,1.2.246.562.10.98873174761,1.2.246.562.10.60222091211"
+      },
+      "koulutustausta": {
+        "POHJAKOULUTUS": "2",
+        "KOULUTUSPAIKKA_AMMATILLISEEN_TUTKINTOON": "false",
+        "perusopetuksen_kieli": "FI",
+        "PK_PAATTOTODISTUSVUOSI": "2017"
+      },
+      "henkilotiedot": {
+        "lahiosoite": "Kurppatie 1",
+        "huoltajansahkoposti": "",
+        "turvakielto": "false",
+        "kansalaisuus": "CHE",
+        "asuinmaa": "FIN",
+        "syntymaaika": "10.01.1995",
+        "Kutsumanimi": "Mt-Testi",
+        "kansallinenIdTunnus": "",
+        "passinnumero": "",
+        "kotikunta": "091",
+        "aidinkieli": "FI",
+        "Etunimet": "Mt-Testi",
+        "onkosinullakaksoiskansallisuus": "false",
+        "sukupuoli": "2",
+        "syntymapaikka": "Hanko",
+        "matkapuhelinnumero1": "011000111000001",
+        "SähköpostiUudelleen": "mt.test412@test.zz",
+        "onkoSinullaSuomalainenHetu": "false",
+        "Sukunimi": "Chrome-Enkku Testi",
+        "huoltajannimi": "",
+        "huoltajanpuhelinnumero": "",
+        "Postinumero": "00100",
+        "Sähköposti": "mt.test412@test.zz"
+      },
+      "lisatiedot": {
+        "lupaSms": "true",
+        "lupaMarkkinointi": "true",
+        "kiinnostunutoppisopimuksesta": "true",
+        "lupaSahkoisesti": "true",
+        "lupaJulkaisu": "true",
+        "asiointikieli": "suomi"
+      }
+    },
+    "oid": "1.2.3.4.999",
+    "state": "ACTIVE",
+    "personOid": "1.2.1.2.1.2",
+    "received": 1515584702068,
+    "preferenceEligibilities": [
+      {
+        "aoId": "1.2.246.562.20.12866324648",
+        "status": "NOT_CHECKED",
+        "source": "UNKNOWN",
+        "maksuvelvollisuus": "NOT_CHECKED"
+      },
+      {
+        "aoId": "1.2.246.562.20.87120912966",
+        "status": "NOT_CHECKED",
+        "source": "UNKNOWN",
+        "maksuvelvollisuus": "NOT_CHECKED"
+      },
+      {
+        "aoId": "1.2.246.562.20.26438805546",
+        "status": "NOT_CHECKED",
+        "source": "UNKNOWN",
+        "maksuvelvollisuus": "NOT_CHECKED"
+      }
+    ],
+    "attachmentRequests": []
+  }
+]

@@ -42,6 +42,13 @@
       (and korkeakoulu? yhteis-tai-erillishaku? (not kohdejoukontarkenne?)))
     (throw (RuntimeException. "Can't check nil haku if it's jatkuva haku!"))))
 
+(defn is-toinen-aste [haku]
+  (if-let [some-haku haku]
+    (if-let [kuri (haku "kohdejoukkoUri")]
+      (or (str/starts-with? kuri "haunkohdejoukko_11#") (str/starts-with? kuri "haunkohdejoukko_17#") (str/starts-with? kuri "haunkohdejoukko_20#"))
+      false)
+    (throw (RuntimeException. "Can't check nil haku if it's toisen asteen haku!"))))
+
 (defn is-jatkuva-haku [haku]
   (if-let [some-haku haku]
     (if-let [hakutapa (haku "hakutapaUri")]

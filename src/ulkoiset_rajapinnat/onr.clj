@@ -4,7 +4,7 @@
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
-            [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json post-as-channel status body body-and-close exception-response parse-json-body to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json post-as-channel status body body-and-close exception-response parse-json-body-stream to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
@@ -24,6 +24,7 @@
         (post-as-channel url
                          (to-json henkilo-oids)
                          {:headers {"Content-Type" mime-application-json
-                                    "Cookie"       (str "JSESSIONID=" sid)}}
-                         parse-json-body))
+                                    "Cookie"       (str "JSESSIONID=" sid)}
+                          :as :stream}
+                         parse-json-body-stream))
       (go (RuntimeException. "Trying to fetch 'henkilot' with nil JSESSIONID!")))))

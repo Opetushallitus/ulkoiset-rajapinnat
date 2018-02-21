@@ -1,0 +1,66 @@
+{
+  "accessRights": {
+    "update": false,
+    "create": false,
+    "delete": false
+  },
+  "result": {
+    "modified": 1516605510808,
+    "modifiedBy": "1.2.246.562.24.20686677507",
+    "oid": "1.2.246.562.29.25191045126",
+    "hakukausiUri": "kausi_k#1",
+    "hakukausiVuosi": 2018,
+    "hakutapaUri": "hakutapa_01#1",
+    "hakutyyppiUri": "hakutyyppi_01#1",
+    "kohdejoukkoUri": "haunkohdejoukko_11#1",
+    "koulutuksenAlkamisVuosi": 2018,
+    "koulutuksenAlkamiskausiUri": "kausi_s#1",
+    "tila": "JULKAISTU",
+    "ylioppilastutkintoAntaaHakukelpoisuuden": false,
+    "hakukohdeOidsYlioppilastutkintoAntaaHakukelpoisuuden": [ ],
+    "sijoittelu": true,
+    "jarjestelmanHakulomake": true,
+    "hakuaikas": [
+      {
+        "hakuaikaId": "13862784",
+        "alkuPvm": 1504674031839,
+        "loppuPvm": 1507118400000,
+        "nimet": {
+          "kieli_sv": "",
+          "kieli_fi": "",
+          "kieli_en": ""
+        }
+      }
+    ],
+    "hakukohdeOids": [
+      "1.2.246.562.20.99999999999",
+      "1.2.246.562.20.99999999998"
+    ],
+    "haunTunniste": "1.2.246.562.5.2013080813081926341927",
+    "nimi": {
+      "kieli_sv": "GEA till yrkes- och gymnasieutbildning våren 2018",
+      "kieli_fi": "Yhteishaku ammatilliseen ja lukioon, kevät 2018",
+      "kieli_en": "Joint application to upper secondary education, spring 2018"
+    },
+    "maxHakukohdes": 5,
+    "canSubmitMultipleApplications": false,
+    "organisaatioOids": [
+      "1.2.246.562.10.00000000001"
+    ],
+    "tarjoajaOids": [
+      "1.2.246.562.10.00000000001"
+    ],
+    "usePriority": true,
+    "sisaltyvatHaut": [ ],
+    "organisaatioryhmat": [ ],
+    "maksumuuriKaytossa": false,
+    "tunnistusKaytossa": false,
+    "yhdenPaikanSaanto": {
+      "voimassa": false,
+      "syy": "Ei korkeakouluhaku"
+    },
+    "autosyncTarjonta": false,
+    "korkeakouluHaku": false
+  },
+  "status": "OK"
+}

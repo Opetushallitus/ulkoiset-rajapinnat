@@ -28,10 +28,12 @@
     (go
       (try
         (let [st (<? service-ticket-channel)
-              response (client/post (resolve-url :haku-app.streaming-listfull) {:headers {"CasSecurityTicket" st
-                                                                             "Content-Type"      "application/json"}
-                                                                   :as      :stream
-                                                                   :body    (to-json query)})
+              response (let [url (resolve-url :haku-app.streaming-listfull)]
+                         (log/info (str "POST -> " url))
+                         (client/post url {:headers {"CasSecurityTicket" st
+                                                     "Content-Type"      "application/json"}
+                                           :as      :stream
+                                           :body    (to-json query)}))
               body-stream (response :body)]
           (read-json-stream-to-channel body-stream channel batch-size result-mapper))
         (finally

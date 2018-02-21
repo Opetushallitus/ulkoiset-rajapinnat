@@ -1,5 +1,5 @@
 (ns ulkoiset-rajapinnat.test_utils
-  (:require [clojure.core.async :refer [promise-chan put! >!! close!]])
+  (:require [clojure.core.async :refer [promise-chan put! >!! close! go]])
   (:import (java.io ByteArrayInputStream)))
 
 (defn to-input-stream [string]

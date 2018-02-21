@@ -1,0 +1,40 @@
+[
+  {
+    "koulutuksenAlkamiskausiUri": "kausi_s#1",
+    "koulutuksenAlkamisVuosi": 2017,
+    "hakukohdeOid": "1.2.246.562.20.99999999999",
+    "tarjoajaOid": "1.2.246.562.10.13905763275",
+    "oppilaitosKoodi": "10056",
+    "koulutusLaajuusarvos": [
+      {
+        "oid": "1.2.246.562.13.62969231935",
+        "koulutuskoodi": "631104",
+        "opintojenLaajuusarvo": "210"
+      },
+      {
+        "oid": "1.2.246.562.17.55755866237",
+        "koulutuskoodi": "631104",
+        "opintojenLaajuusarvo": "210"
+      }
+    ]
+  },
+  {
+    "koulutuksenAlkamiskausiUri": "kausi_s#1",
+    "koulutuksenAlkamisVuosi": 2016,
+    "hakukohdeOid": "1.2.246.562.20.99999999998",
+    "tarjoajaOid": "1.2.246.562.10.13905763275",
+    "oppilaitosKoodi": "10056",
+    "koulutusLaajuusarvos": [
+      {
+        "oid": "1.2.246.562.13.62969231935",
+        "koulutuskoodi": "631104",
+        "opintojenLaajuusarvo": "210"
+      },
+      {
+        "oid": "1.2.246.562.17.55755866237",
+        "koulutuskoodi": "631104",
+        "opintojenLaajuusarvo": "210"
+      }
+    ]
+  }
+]

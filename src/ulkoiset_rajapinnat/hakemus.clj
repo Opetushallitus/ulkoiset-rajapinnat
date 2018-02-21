@@ -4,17 +4,21 @@
             [clojure.tools.logging :as log]
             [full.async :refer :all]
             [schema.core :as s]
+            [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch-channel]]
             [ulkoiset-rajapinnat.onr :refer :all]
             [ulkoiset-rajapinnat.utils.tarjonta :refer :all]
             [ulkoiset-rajapinnat.utils.haku_app :refer :all]
             [ulkoiset-rajapinnat.oppija :refer :all]
             [ulkoiset-rajapinnat.utils.rest :refer [status body body-and-close exception-response to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [org.httpkit.server :refer :all]
             [ulkoiset-rajapinnat.utils.ataru :refer [fetch-hakemukset-from-ataru]]
             [ulkoiset-rajapinnat.utils.snippets :refer [remove-nils]]
             [org.httpkit.timer :refer :all]
-            [clojure.core.async.impl.protocols :as impl])
+            [clojure.core.async.impl.protocols :as impl]
+            [clj-time.core :as t]
+            [clj-time.format :as f])
   (:refer-clojure :rename {merge core-merge
                            loop  core-loop}))
 
@@ -100,6 +104,27 @@
      :lahtokoulun_organisaatio_oid                              lahtokoulun_organisaatio_oid
      :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa}))
 
+(defn koulutustausta-from-oppija [oppija organisaatiot]
+  (defn- parse-loppuPaiva [o] (f/parse opiskelu-date-formatter (get o "loppuPaiva")))
+  (defn- parse-valmistuminen [s] (f/parse valmistuminen-date-formatter (get s "valmistuminen")))
+  (defn- find-latest [coll parser] (last (sort #(compare (parser %1) (parser %2)) coll)))
+  (defn- find-latest-opiskelu [opiskelut] (find-latest opiskelut parse-loppuPaiva))
+  (defn- find-latest-suoritus [suoritukset] (find-latest suoritukset parse-valmistuminen))
+
+  (let [opiskelut (flatten (map #(get % "opiskelu") oppija))
+        suoritukset (map #(get % "suoritus") (flatten (map #(get % "suoritukset") oppija)))
+        latest-opiskelu (find-latest-opiskelu opiskelut)
+        luokka (get latest-opiskelu "luokka")
+        oppilaitos (get latest-opiskelu "oppilaitosOid")
+        latest-suoritus (find-latest-suoritus (filter #(= oppilaitos (get % "myontaja")) suoritukset))
+        paattovuosi (t/year (parse-valmistuminen latest-suoritus))
+        opetuskieli (get latest-suoritus "suoritusKieli")
+        oppilaitoskoodi (get-value-if-not-nil "oppilaitosKoodi" (find-first-matching "oid" oppilaitos organisaatiot))]
+    {:paattoluokka luokka
+     :perusopetuksen_paattovuosi paattovuosi
+     :perusopetuksen_opetuskieli opetuskieli
+     :lahtokoulun_oppilaitos_koodi oppilaitoskoodi}))
+
 (defn convert-ataru-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo oppija hakemus]
   (let [data (core-merge
                (oppija-data-from-henkilo henkilo)
@@ -112,12 +137,13 @@
       data
       (remove-nils data))))
 
-(defn convert-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo oppija document]
+(defn convert-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo oppija document is-toisen-asteen-haku? organisaatiot]
   (let [data (core-merge
                (hakutoiveet-from-hakemus document)
                (oppija-data-from-henkilo henkilo)
                (henkilotiedot-from-hakemus document)
                (koulutustausta-from-hakemus pohjakoulutuskkodw document)
+               (if is-toisen-asteen-haku? (koulutustausta-from-oppija oppija organisaatiot) {})
                {:hakemus_oid      (get document "oid")
                 :henkilo_oid      (get document "personOid")
                 :haku_oid         (get document "applicationSystemId")
@@ -151,12 +177,15 @@
 (defn haku-app-adapter [pohjakoulutuskkodw palauta-null-arvot?]
   (fn [batch] [(map #(get % "personOid") batch)
                batch
-               (fn [henkilo-by-oid oppijat-by-oid hakemus]
+               (fn [henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot]
                  (convert-hakemus
                    pohjakoulutuskkodw
                    palauta-null-arvot?
                    (get henkilo-by-oid (get hakemus "personOid"))
-                   (get oppijat-by-oid (get hakemus "personOid")) hakemus))]))
+                   (get oppijat-by-oid (get hakemus "personOid"))
+                   hakemus
+                   is-toisen-asteen-haku?
+                   organisaatiot))]))
 
 (defn ataru-adapter [pohjakoulutuskkodw palauta-null-arvot?]
   (fn [batch] [(document-batch-to-henkilo-oid-list batch)
@@ -182,6 +211,7 @@
         pohjakoulutuskkodw (<?? (koodisto-as-channel "pohjakoulutuskkodw"))
         haku (<?? (haku-for-haku-oid-channel haku-oid))
         is-haku-with-ensikertalaisuus? (is-haku-with-ensikertalaisuus haku)
+        is-toisen-asteen-haku? (is-toinen-aste haku)
         ataru-channel (fetch-hakemukset-from-ataru haku-oid size-of-henkilo-batch-from-onr-at-once
                                                    (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?))
         hakukohde-oids-for-hakukausi (<?? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi haku))
@@ -210,16 +240,17 @@
                 (if (not (empty? new-channels))
                   (recur new-channels)))
               (let [[henkilo-oids batch mapper] v
-                    oppijat-with-ensikertalaisuus (if is-haku-with-ensikertalaisuus?
-                                                    (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel haku-oid henkilo-oids oppija-service-ticket-channel)
-                                                    nil)
+                    oppijat (if (or is-haku-with-ensikertalaisuus? is-toisen-asteen-haku?)
+                              (<? (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel haku-oid henkilo-oids is-haku-with-ensikertalaisuus? oppija-service-ticket-channel)) nil)
                     henkilot (<? (fetch-henkilot-channel jsessionid henkilo-oids))
-                    oppijat-by-oid (if (some? oppijat-with-ensikertalaisuus) (group-by #(get % "oppijanumero") (<? oppijat-with-ensikertalaisuus)) {})
-                    henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)]
+                    oppijat-by-oid (group-by #(get % "oppijanumero") oppijat)
+                    henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)
+                    organisaatiot (if is-toisen-asteen-haku? (let [oppilaitos-oids (flatten (map #(get % "oppilaitosOid") (flatten (map #(get % "opiskelu") oppijat))))]
+                                                               (<? (fetch-organisations-in-batch-channel oppilaitos-oids))) nil)]
                 (doseq [hakemus batch]
                   (write-object-to-channel
                     is-first-written
-                    (mapper henkilo-by-oid oppijat-by-oid hakemus)
+                    (mapper henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot)
                     channel))
                 (let [bs (int (count batch))]
                   (swap! counter (partial + bs)))

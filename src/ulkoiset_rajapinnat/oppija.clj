@@ -8,18 +8,22 @@
             [ulkoiset-rajapinnat.utils.koodisto :refer [strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             [org.httpkit.server :refer :all]
-            [org.httpkit.timer :refer :all]))
+            [org.httpkit.timer :refer :all]
+            [clj-time.core :as t]
+            [clj-time.format :as f]))
 
 (defn fetch-hakurekisteri-service-ticket-channel [] (fetch-service-ticket-channel "/suoritusrekisteri"))
 
+(def opiskelu-date-formatter (f/formatter "yyyy-MM-dd'T'HH:mm:ss.SSS'Z"))
+(def valmistuminen-date-formatter (f/formatter "dd.MM.yyyy"))
 
 (defn fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel
-  ([haku-oid oppija-oids]
+  ([haku-oid oppija-oids ensikertalaisuus?]
    (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel
      haku-oid oppija-oids (fetch-hakurekisteri-service-ticket-channel)))
-  ([haku-oid oppija-oids service-ticket-channel]
+  ([haku-oid oppija-oids ensikertalaisuus? service-ticket-channel]
    (go-try
      (let [service-ticket (<? service-ticket-channel)
-           url (resolve-url :suoritusrekisteri-service.ensikertalaisuudet haku-oid service-ticket)]
+           url (resolve-url :suoritusrekisteri-service.oppijat-with-ticket ensikertalaisuus? haku-oid service-ticket)]
        (<? (post-as-channel url (to-json oppija-oids) {:headers {"CasSecurityTicket" service-ticket}}
                             parse-json-body))))))

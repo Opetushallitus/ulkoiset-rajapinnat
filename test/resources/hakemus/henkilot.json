@@ -1,0 +1,18 @@
+[
+  {
+    "oidHenkilo": "1.2.1.2.1.2",
+    "externalIds": null,
+    "identifications": null,
+    "hetu": "121212-xxxx",
+    "etunimet": "Sirpa-Liisa Testi",
+    "kutsumanimi": "Sirpa-Liisa",
+    "sukunimi": "Kosonen-Testi",
+    "syntymaaika": "1990-01-01",
+    "aidinkieli": null,
+    "asiointiKieli": null,
+    "kansalaisuus": null,
+    "henkiloTyyppi": "OPPIJA",
+    "sukupuoli": null,
+    "modified": 1506595652061
+  }
+]

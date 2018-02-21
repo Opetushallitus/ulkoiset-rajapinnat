@@ -1,0 +1,183 @@
+[
+  {
+    "oid": "1.2.246.562.10.97471750527",
+    "nimi": {
+      "fi": "Ankkalinnan koulu"
+    },
+    "metadata": {
+      "nimi": {},
+      "yhteystiedot": [],
+      "hakutoimistoEctsNimi": {},
+      "hakutoimistoEctsEmail": {},
+      "hakutoimistoEctsPuhelin": {},
+      "hakutoimistoEctsTehtavanimike": {},
+      "hakutoimistonNimi": {},
+      "luontiPvm": 1381077118964,
+      "muokkausPvm": 1381077118964,
+      "data": {
+        "YLEISKUVAUS": {},
+        "KANSAINVALISET_KOULUTUSOHJELMAT": {},
+        "KIELIOPINNOT": {},
+        "TERVEYDENHUOLTOPALVELUT": {},
+        "TEHTAVANIMIKE": {},
+        "SAHKOPOSTIOSOITE": {},
+        "RAHOITUS": {},
+        "AIEMMIN_HANKITTU_OSAAMINEN": {},
+        "sosiaalinenmedia_7#1": {},
+        "sosiaalinenmedia_5#1": {},
+        "sosiaalinenmedia_6#1": {},
+        "OPISKELIJALIIKKUVUUS": {},
+        "VAKUUTUKSET": {},
+        "OPISKELIJA_JARJESTOT": {},
+        "VALINTAMENETTELY": {},
+        "sosiaalinenmedia_3#1": {},
+        "sosiaalinenmedia_4#1": {},
+        "VASTUUHENKILOT": {},
+        "KUSTANNUKSET": {},
+        "sosiaalinenmedia_1#1": {},
+        "OPPIMISYMPARISTO": {},
+        "sosiaalinenmedia_2#1": {},
+        "PUHELINNUMERO": {},
+        "NIMI": {},
+        "OPISKELIJALIIKUNTA": {},
+        "VUOSIKELLO": {},
+        "OPISKELIJARUOKAILU": {},
+        "ESTEETOMYYS": {},
+        "VAPAA_AIKA": {},
+        "TIETOA_ASUMISESTA": {},
+        "TYOHARJOITTELU": {}
+      }
+    },
+    "oppilaitosKoodi": "08113",
+    "yhteystiedot": [
+      {
+        "kieli": "kieli_fi#1",
+        "yhteystietoOid": "1.2.246.562.5.834449235410",
+        "id": "1759484",
+        "email": "koulu@ankkalinna.fi"
+      },
+      {
+        "kieli": "kieli_fi#1",
+        "numero": "12345",
+        "tyyppi": "puhelin",
+        "yhteystietoOid": "1.2.246.562.5.56051143644",
+        "id": "1759485"
+      },
+      {
+        "osavaltio": null,
+        "lng": null,
+        "osoiteTyyppi": "posti",
+        "coordinateType": null,
+        "kieli": "kieli_fi#1",
+        "postinumeroUri": "posti_1234",
+        "yhteystietoOid": "1.2.246.562.5.329875657710",
+        "lap": null,
+        "id": "1759486",
+        "maaUri": null,
+        "postitoimipaikka": "ANKKALINNA",
+        "osoite": "Ankkatie 8",
+        "ytjPaivitysPvm": null,
+        "extraRivi": null
+      },
+      {
+        "osavaltio": null,
+        "lng": null,
+        "osoiteTyyppi": "kaynti",
+        "coordinateType": null,
+        "kieli": "kieli_fi#1",
+        "postinumeroUri": "posti_1234",
+        "yhteystietoOid": "1.2.246.562.5.24747897726",
+        "lap": null,
+        "id": "1759487",
+        "maaUri": null,
+        "postitoimipaikka": "ANKKALINNA",
+        "osoite": "Ankkatie 8",
+        "ytjPaivitysPvm": null,
+        "extraRivi": null
+      }
+    ],
+    "ryhmatyypit": [],
+    "kayttoryhmat": [],
+    "alkuPvm": "1992-01-01",
+    "parentOid": "1.2.246.562.10.94791481685",
+    "postiosoite": {
+      "osavaltio": null,
+      "lng": null,
+      "postinumeroUri": "posti_1234",
+      "osoiteTyyppi": "posti",
+      "coordinateType": null,
+      "yhteystietoOid": "1.2.246.562.5.329875657710",
+      "lap": null,
+      "maaUri": null,
+      "postitoimipaikka": "ANKKALINNA",
+      "osoite": "Ankkatie 8",
+      "ytjPaivitysPvm": null,
+      "extraRivi": null
+    },
+    "kuvaus2": {},
+    "tyypit": [
+      "Oppilaitos"
+    ],
+    "yhteystietoArvos": [
+      {
+        "YhteystietoArvo.arvoText": "koulu@ankkalinna.fi",
+        "YhteystietojenTyyppi.nimi.fi": "MOVE!-yhteyshenkilö/mittaustulosten syöttäjä",
+        "YhteystietojenTyyppi.nimi.sv": "MOVE!-kontaktperson/uppdaterare av mätningsresultat",
+        "YhteystietoElementti.tyyppi": "Email",
+        "YhteystietojenTyyppi.oid": "1.2.246.562.5.11045629125",
+        "YhteystietoElementti.oid": "1.2.246.562.5.54557943302",
+        "YhteystietoElementti.nimi": "Sähköpostiosoite",
+        "YhteystietoElementti.nimiSv": "Epostadress",
+        "YhteystietoElementti.pakollinen": "false",
+        "YhteystietojenTyyppi.nimi.en": "MOVE!-yhteyshenkilö/mittaustulosten syöttäjä",
+        "YhteystietoElementti.kaytossa": "true",
+        "YhteystietoArvo.kieli": "kieli_fi#1"
+      }
+    ],
+    "nimet": [
+      {
+        "nimi": {
+          "fi": "Ankkalinnan koulu"
+        },
+        "alkuPvm": "1992-01-01",
+        "version": 1
+      }
+    ],
+    "parentOidPath": "|1.2.246.562.10.00000000001|1.2.246.562.10.94791481685|",
+    "vuosiluokat": [
+      "vuosiluokat_6",
+      "vuosiluokat_9",
+      "vuosiluokat_1",
+      "vuosiluokat_5",
+      "vuosiluokat_4",
+      "vuosiluokat_12",
+      "vuosiluokat_7",
+      "vuosiluokat_2",
+      "vuosiluokat_3",
+      "vuosiluokat_8"
+    ],
+    "maaUri": "maatjavaltiot1_fin",
+    "oppilaitosTyyppiUri": "oppilaitostyyppi_11#1",
+    "toimipistekoodi": "08113",
+    "kieletUris": [
+      "oppilaitoksenopetuskieli_1#1"
+    ],
+    "kayntiosoite": {
+      "osavaltio": null,
+      "lng": null,
+      "postinumeroUri": "posti_04250",
+      "osoiteTyyppi": "kaynti",
+      "coordinateType": null,
+      "yhteystietoOid": "1.2.246.562.5.24747897726",
+      "lap": null,
+      "maaUri": null,
+      "postitoimipaikka": "ANKKALINNA",
+      "osoite": "Ankkatie 8",
+      "ytjPaivitysPvm": null,
+      "extraRivi": null
+    },
+    "kotipaikkaUri": "kunta_245",
+    "version": 8,
+    "status": "AKTIIVINEN"
+  }
+]
