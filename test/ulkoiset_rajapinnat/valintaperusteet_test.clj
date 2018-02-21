@@ -56,5 +56,3 @@
         (def expected (parse-string (resource "test/resources/valintaperusteet/result.json")))
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference)))))
-
-(run-tests)
