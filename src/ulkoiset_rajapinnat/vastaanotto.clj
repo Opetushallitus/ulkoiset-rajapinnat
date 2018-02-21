@@ -185,10 +185,10 @@
             vastaanotot (<? (vastaanotot-channel haku-oid haun-hakukohteet))
             hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
             hakemus-oidit (map #(% "hakemusOid") vastaanotot)
-            valintakokeet (<? (fetch-kokeet-channel haku-oid hakukohde-oidit))
-            valintapisteet (<? (fetch-valintapisteet-channel haku-oid hakemus-oidit request user))
+            valintakokeet (if (empty? hakukohde-oidit) {} (<? (fetch-kokeet-channel haku-oid hakukohde-oidit)))
+            valintapisteet (if (empty? hakemus-oidit) {} (<? (fetch-valintapisteet-channel haku-oid hakemus-oidit request user)))
             oppijanumerot (map #(% "hakijaOid") vastaanotot)
-            kielikokeet (<? (fetch-ammatilliset-kielikokeet-channel haku-oid oppijanumerot))]
+            kielikokeet (if (empty? oppijanumerot) {} (<? (fetch-ammatilliset-kielikokeet-channel haku-oid oppijanumerot)))]
         (log/info (format "Haku %s hakijoita %d kpl" haku-oid (count hakemus-oidit)))
         (log/info (format "Haku %s hakukohteita %d kpl" haku-oid (count hakukohde-oidit)))
         (log/info (format "Haku %s hakemuksia %d kpl" haku-oid (count hakemus-oidit)))
