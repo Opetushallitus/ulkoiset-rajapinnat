@@ -24,9 +24,10 @@
                                             some-haku
                                             (throw (RuntimeException. (format "Haku %s not found!" haku-oid))))))))
 
-(def tilastokeskus-batch-size 5000)
+(def tilastokeskus-batch-size 500)
 
 (defn fetch-tilastoskeskus-hakukohde-channel [hakukohde-oids]
+  (log/info "Fetching 'tilastokeskus' data from tarjonta for " (if (nil? hakukohde-oids) 0 (count hakukohde-oids)) " hakukohde!")
   (go-try (let [url (resolve-url :tarjonta-service.tilastokeskus)
                 partitions (partition tilastokeskus-batch-size tilastokeskus-batch-size nil hakukohde-oids)
                 post (fn [x] (post-json-as-channel url x parse-json-body-stream))
