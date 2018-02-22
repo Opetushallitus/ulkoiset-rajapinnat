@@ -71,24 +71,25 @@
          (log/info (to-json body true))
          (def expected (parse-string (resource "test/resources/vastaanotto/result.json")))
          (def difference (diff expected body))
-         (is (= [nil nil expected] difference) difference))))
+         (is (= [nil nil expected] difference) difference)))))
 
-   (testing "Trim streaming response"
-     (let [parsed (trim-streaming-response ["1.2.246.562.20.72385087522", "1.2.246.562.20.16902536479", "1.2.246.562.20.760269451710", "1.2.246.562.20.16902536479"] (parse-string vastaanotot-json))]
-       (def expected (parse-string (resource "test/resources/vastaanotto/parsed.json")))
-       (def difference (diff expected parsed))
-       (is (= [nil nil expected] difference) difference)))
-   (testing "Trim streaming response - remove hakukohteet"
-     (let [parsed (trim-streaming-response ["1.2.246.562.20.72385087522", "1.2.246.562.20.16902536479"] (parse-string vastaanotot-json))]
-       (def expected (parse-string (resource "test/resources/vastaanotto/parsed2.json")))
-       (def difference (diff expected parsed))
-       (log/info (to-json parsed true))
-       (is (= [nil nil expected] difference) difference)))
-   (testing "Trim streaming response - no hakukohteet"
-     (let [parsed (trim-streaming-response [] (parse-string vastaanotot-json))]
-       (def expected [])
-       (def difference (diff expected parsed))
-       (is (= [nil nil expected] difference) difference))))
+(deftest vts-response-trim-test
+  (testing "Trim streaming response"
+    (let [parsed (trim-streaming-response ["1.2.246.562.20.72385087522", "1.2.246.562.20.16902536479", "1.2.246.562.20.760269451710", "1.2.246.562.20.16902536479"] (parse-string vastaanotot-json))]
+      (def expected (parse-string (resource "test/resources/vastaanotto/parsed.json")))
+      (def difference (diff expected parsed))
+      (is (= [nil nil expected] difference) difference)))
+  (testing "Trim streaming response - remove hakukohteet"
+    (let [parsed (trim-streaming-response ["1.2.246.562.20.72385087522", "1.2.246.562.20.16902536479"] (parse-string vastaanotot-json))]
+      (def expected (parse-string (resource "test/resources/vastaanotto/parsed2.json")))
+      (def difference (diff expected parsed))
+      (log/info (to-json parsed true))
+      (is (= [nil nil expected] difference) difference)))
+  (testing "Trim streaming response - no hakukohteet"
+    (let [parsed (trim-streaming-response [] (parse-string vastaanotot-json))]
+      (def expected [])
+      (def difference (diff expected parsed))
+      (is (= [nil nil expected] difference) difference))))
 
 (defn mock-http-with-ise [url options transform]
   (if (= "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" url)
