@@ -5,7 +5,8 @@
             [full.async :refer :all]
             [clojure.core.async :refer [>!! promise-chan >! go put! close!]]
             [clojure.tools.logging :as log]
-            [org.httpkit.server :refer :all]))
+            [org.httpkit.server :refer :all])
+  (:import (clojure.lang IExceptionInfo)))
 
 (def mime-application-json "application/json; charset=utf-8")
 
@@ -13,9 +14,15 @@
   (parse-stream (new java.io.InputStreamReader (request :body))))
 
 (defn- handle-unexpected-response [response]
-  (let [message (str "Unexpected response status " (response :status) "from url:" (get-in response [:opts :url]) "!")]
-    (log/error message)
-    (throw (RuntimeException. message))))
+  (let [url (get-in response [:opts :url])
+        status (response :status)
+        error (response :error)
+        throw-msg (fn [msg] (log/error msg) (throw (RuntimeException. msg)))]
+
+    (if (not (nil? status)) (throw-msg (str "Unexpected response status " status " from url " url)))
+    (if (instance? IExceptionInfo error) (throw-msg (str "Unexpected error from url " url " -> " ((ex-data error) :message))))
+    (if (instance? Exception error) (throw-msg (str "Unexpected error from url " url " -> " (.getMessage error))))
+    (throw-msg (str "Unexpected response form url " url))))
 
 (defn parse-json-body [response]
   (if (= (response :status) 200)
