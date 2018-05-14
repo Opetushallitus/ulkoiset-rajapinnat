@@ -117,8 +117,8 @@
         luokka (get latest-opiskelu "luokka")
         oppilaitos (get latest-opiskelu "oppilaitosOid")
         latest-suoritus (find-latest-suoritus (filter #(= oppilaitos (get % "myontaja")) suoritukset))
-        paattovuosi (t/year (parse-valmistuminen latest-suoritus))
-        opetuskieli (get latest-suoritus "suoritusKieli")
+        paattovuosi (if latest-suoritus (t/year (parse-valmistuminen latest-suoritus)) nil)
+        opetuskieli (if latest-suoritus (get latest-suoritus "suoritusKieli") nil)
         oppilaitoskoodi (get-value-if-not-nil "oppilaitosKoodi" (find-first-matching "oid" oppilaitos organisaatiot))]
     {:paattoluokka luokka
      :perusopetuksen_paattovuosi paattovuosi
