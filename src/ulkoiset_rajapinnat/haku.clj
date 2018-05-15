@@ -58,23 +58,16 @@
 (defn haku-resource [vuosi request user channel]
   (go
     (try
-    (let [kieli (<<?? (koodisto-as-channel "kieli"))
-          kausi (<<?? (koodisto-as-channel "kausi"))
-          hakutyyppi (<<?? (koodisto-as-channel "hakutyyppi"))
-          hakutapa (<<?? (koodisto-as-channel "hakutapa"))
-          haunkohdejoukko (<<?? (koodisto-as-channel "haunkohdejoukko"))
-          haunkohdejoukontarkenne (<<?? (koodisto-as-channel "haunkohdejoukontarkenne"))
-          haku (<<?? (fetch-haku vuosi))
+    (let [kieli (<?? (koodisto-as-channel "kieli"))
+          kausi (<?? (koodisto-as-channel "kausi"))
+          hakutyyppi (<?? (koodisto-as-channel "hakutyyppi"))
+          hakutapa (<?? (koodisto-as-channel "hakutapa"))
+          haunkohdejoukko (<?? (koodisto-as-channel "haunkohdejoukko"))
+          haunkohdejoukontarkenne (<?? (koodisto-as-channel "haunkohdejoukontarkenne"))
+          haku (<?? (fetch-haku vuosi))
           ]
-      (let [haku-converter (apply partial
-                                  (into [transform-haku]
-                                        (map first [kieli
-                                         kausi
-                                         hakutyyppi
-                                         hakutapa
-                                         haunkohdejoukko
-                                         haunkohdejoukontarkenne])))
-            converted-hakus (map haku-converter (first haku))
+      (let [haku-converter (partial transform-haku kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
+            converted-hakus (map haku-converter haku)
             json (to-json converted-hakus)
             ]
             (-> channel
