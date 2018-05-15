@@ -1,5 +1,5 @@
 (ns ulkoiset-rajapinnat.haku
-  (:require [full.async :refer :all]
+  (:require [full.async :refer [<?]]
             [clojure.string :as str]
             [clojure.core.async :refer [go]]
             [clojure.tools.logging :as log]
@@ -57,13 +57,13 @@
 (defn haku-resource [vuosi request user channel]
   (go
     (try
-    (let [kieli (<?? (koodisto-as-channel "kieli"))
-          kausi (<?? (koodisto-as-channel "kausi"))
-          hakutyyppi (<?? (koodisto-as-channel "hakutyyppi"))
-          hakutapa (<?? (koodisto-as-channel "hakutapa"))
-          haunkohdejoukko (<?? (koodisto-as-channel "haunkohdejoukko"))
-          haunkohdejoukontarkenne (<?? (koodisto-as-channel "haunkohdejoukontarkenne"))
-          hakus (<?? (fetch-haku vuosi))
+    (let [kieli (<? (koodisto-as-channel "kieli"))
+          kausi (<? (koodisto-as-channel "kausi"))
+          hakutyyppi (<? (koodisto-as-channel "hakutyyppi"))
+          hakutapa (<? (koodisto-as-channel "hakutapa"))
+          haunkohdejoukko (<? (koodisto-as-channel "haunkohdejoukko"))
+          haunkohdejoukontarkenne (<? (koodisto-as-channel "haunkohdejoukontarkenne"))
+          hakus (<? (fetch-haku vuosi))
           ]
       (let [haku-converter (partial transform-haku kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
             converted-hakus (map haku-converter hakus)
