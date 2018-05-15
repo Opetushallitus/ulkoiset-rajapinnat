@@ -63,10 +63,10 @@
           hakutapa (<?? (koodisto-as-channel "hakutapa"))
           haunkohdejoukko (<?? (koodisto-as-channel "haunkohdejoukko"))
           haunkohdejoukontarkenne (<?? (koodisto-as-channel "haunkohdejoukontarkenne"))
-          haku (<?? (fetch-haku vuosi))
+          hakus (<?? (fetch-haku vuosi))
           ]
       (let [haku-converter (partial transform-haku kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
-            converted-hakus (map haku-converter haku)
+            converted-hakus (map haku-converter hakus)
             json (to-json converted-hakus)]
             (-> channel
                   (status 200)
