@@ -27,8 +27,7 @@
 
 (defn haku-to-names [kieli haku]
   (let [nimet (filter #((comp not str/blank?) (last %)) (haku "nimi"))
-        koodisto_kieli_nimet (map (fn [e] [(get kieli (first e)) (last e)]) nimet)
-        ]
+        koodisto_kieli_nimet (map (fn [e] [(get kieli (first e)) (last e)]) nimet)]
     (into (sorted-map) koodisto_kieli_nimet)))
 
 (defn transform-haku [kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne haku]
@@ -68,8 +67,7 @@
           ]
       (let [haku-converter (partial transform-haku kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
             converted-hakus (map haku-converter haku)
-            json (to-json converted-hakus)
-            ]
+            json (to-json converted-hakus)]
             (-> channel
                   (status 200)
                   (body-and-close json))))
