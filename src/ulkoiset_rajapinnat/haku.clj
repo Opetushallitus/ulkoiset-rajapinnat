@@ -1,5 +1,5 @@
 (ns ulkoiset-rajapinnat.haku
-  (:require [full.async :refer :all]
+  (:require [full.async :refer [<?]]
             [clojure.string :as str]
             [clojure.core.async :refer [go]]
             [clojure.tools.logging :as log]
@@ -27,8 +27,7 @@
 
 (defn haku-to-names [kieli haku]
   (let [nimet (filter #((comp not str/blank?) (last %)) (haku "nimi"))
-        koodisto_kieli_nimet (map (fn [e] [(get kieli (first e)) (last e)]) nimet)
-        ]
+        koodisto_kieli_nimet (map (fn [e] [(get kieli (first e)) (last e)]) nimet)]
     (into (sorted-map) koodisto_kieli_nimet)))
 
 (defn transform-haku [kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne haku]
@@ -58,25 +57,17 @@
 (defn haku-resource [vuosi request user channel]
   (go
     (try
-    (let [kieli (<<?? (koodisto-as-channel "kieli"))
-          kausi (<<?? (koodisto-as-channel "kausi"))
-          hakutyyppi (<<?? (koodisto-as-channel "hakutyyppi"))
-          hakutapa (<<?? (koodisto-as-channel "hakutapa"))
-          haunkohdejoukko (<<?? (koodisto-as-channel "haunkohdejoukko"))
-          haunkohdejoukontarkenne (<<?? (koodisto-as-channel "haunkohdejoukontarkenne"))
-          haku (<<?? (fetch-haku vuosi))
+    (let [kieli (<? (koodisto-as-channel "kieli"))
+          kausi (<? (koodisto-as-channel "kausi"))
+          hakutyyppi (<? (koodisto-as-channel "hakutyyppi"))
+          hakutapa (<? (koodisto-as-channel "hakutapa"))
+          haunkohdejoukko (<? (koodisto-as-channel "haunkohdejoukko"))
+          haunkohdejoukontarkenne (<? (koodisto-as-channel "haunkohdejoukontarkenne"))
+          hakus (<? (fetch-haku vuosi))
           ]
-      (let [haku-converter (apply partial
-                                  (into [transform-haku]
-                                        (map first [kieli
-                                         kausi
-                                         hakutyyppi
-                                         hakutapa
-                                         haunkohdejoukko
-                                         haunkohdejoukontarkenne])))
-            converted-hakus (map haku-converter (first haku))
-            json (to-json converted-hakus)
-            ]
+      (let [haku-converter (partial transform-haku kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
+            converted-hakus (map haku-converter hakus)
+            json (to-json converted-hakus)]
             (-> channel
                   (status 200)
                   (body-and-close json))))
