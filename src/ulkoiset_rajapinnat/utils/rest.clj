@@ -59,7 +59,7 @@
 
 (defn- call-as-channel [method url options mapper]
   (let [p (promise-chan)]
-    (method url options
+    (method url (assoc-in options [:headers "Caller-Id"] "fi.opintopolku.ulkoiset-rajapinnat")
       #(go
         (do (>! p (transform-response mapper %))
           (close! p))))
