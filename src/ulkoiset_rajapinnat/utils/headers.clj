@@ -35,6 +35,9 @@
     (find-first (request :headers) "x-real-ip" "x-forwarded-for")
     (request :remote-addr)))
 
+(defn- optional-value-or-dash [name headers]
+  (or (headers name) "-"))
+
 (defn parse-request-headers [request response-code start-time]
   (let [duration (- (System/currentTimeMillis) start-time)
         method (get-method-from-request request)
@@ -42,6 +45,8 @@
         headers (request :headers)]
     {:user-agent    (user-agent-from-request request)
      :remote-addr   (remote-addr-from-request request)
+     :x-real-ip (optional-value-or-dash "x-real-ip" headers)
+     :x-forwarded-for (optional-value-or-dash "x-forwarded-for" headers)
      :timestamp     (t/now)
      :customer      "OPH"
      :service       "ulkoiset-rajapinnat"
@@ -49,4 +54,6 @@
      :request       (str method " " path-info)
      :requestMethod method
      :responseTime  (str duration)
+     :caller-id (optional-value-or-dash "caller-id" headers)
+     :clientSubSystemCode (optional-value-or-dash "clientsubsystemcode" headers)
      }))
