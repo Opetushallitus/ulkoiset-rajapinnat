@@ -38,7 +38,7 @@
      (access-log response start-time)))
   ([response start-time]
    (fn [request]
-     (do-logging start-time (response :status) request)
+     (do-logging start-time (str (response :status)) request)
      response)))
 
 (defn check-ticket-is-valid-and-user-has-required-roles [ticket]
