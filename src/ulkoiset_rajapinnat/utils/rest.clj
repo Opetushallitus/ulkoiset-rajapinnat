@@ -58,8 +58,11 @@
     response))
 
 (defn- call-as-channel [method url options mapper]
-  (let [p (promise-chan)]
-    (method url (assoc-in options [:headers "Caller-Id"] "fi.opintopolku.ulkoiset-rajapinnat")
+  (let [p (promise-chan)
+        options-with-ids (update-in options [:headers] assoc
+                                    "Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
+                                    "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat")]
+    (method url options-with-ids
       #(go
         (do (>! p (transform-response mapper %))
           (close! p))))
