@@ -1,6 +1,5 @@
 {:ulkoiset-rajapinnat-cas-username "{{valintalaskentakoostepalvelu_app_username_to_haku}}"
  :ulkoiset-rajapinnat-cas-password "{{valintalaskentakoostepalvelu_app_password_to_haku}}"
- :hakuapp-mongo {:uri "mongodb://{{mongodb_hakemus_auth}}@{{mongodb_hakemus_host}}/hakulomake"}
  :urls {
         :host-virkailija "https://{{host_virkailija}}"
         :host-virkailija-internal "{{host_alb}}"
