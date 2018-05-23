@@ -12,4 +12,4 @@
  :server {:port {{palvelu_portti}}
           :base-url "/ulkoiset-rajapinnat"}
  :enable-dangerous-magic-ticket-access {{ ulkoiset_rajapinnat_enable_dangerous_magic_ticket_access | default('false') }}
- :dangerous-magic-ticket {{ ulkoiset_rajapinnat_dangerous_magic_ticket | default('muusikuikkanen') }}}
+ :dangerous-magic-ticket "{{ ulkoiset_rajapinnat_dangerous_magic_ticket | default('muusikuikkanen') }}}"
