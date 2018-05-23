@@ -3,6 +3,7 @@
             [clojure.tools.logging :as log]
             [clj-time.core :as t]
             [full.async :refer :all]
+            [clojure.core.async :refer [to-chan]]
             [ulkoiset-rajapinnat.utils.rest :refer [status body to-json]]
             [clojure.core.async :refer [promise-chan >! go put! close!]]
             [clojure.tools.logging.impl :as impl]
@@ -61,7 +62,9 @@
        (= ticket (str (-> @config :dangerous-magic-ticket))))
     (do
       (log/warn "Enabling dangerous access with magic ticket value, skipping CAS authentication and authorisation. This must not happen in production!")
-      {:username "Dangerous Tester", :roles '("APP_ULKOISETRAJAPINNAT_READ_1.2.246.562.10.00000000001"), :personOid "1.2.246.562.24.50534365452"})
+      (to-chan '({:username "Dangerous Tester"
+                  :roles (set "APP_ULKOISETRAJAPINNAT_READ_1.2.246.562.10.00000000001")
+                  :personOid "1.2.246.562.24.50534365452"})))
     (do-real-authentication-and-authorisation-check ticket)))
 
 
