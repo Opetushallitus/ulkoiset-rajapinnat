@@ -107,5 +107,7 @@
                                            (user :personOid)
                                            (remote-addr-from-request request)
                                            (user-agent-from-request request)))))
-                          (catch Exception e (handle-unauthorized channel start-time request))))))
+                          (catch Exception e (do
+                                               (log/error e "Exception in authorize check")
+                                               (handle-unauthorized channel start-time request)))))))
       (access-log (bad-request "Ticket parameter required!")))))
