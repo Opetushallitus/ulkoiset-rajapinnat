@@ -10,4 +10,6 @@
         :binddn "{{ldap_manager_userdn}}"
         :basedn "ou=People,dc=opintopolku,dc=fi"}
  :server {:port {{palvelu_portti}}
-          :base-url "/ulkoiset-rajapinnat"}}
+          :base-url "/ulkoiset-rajapinnat"}
+ :enable-dangerous-magic-ticket-access {{ ulkoiset_rajapinnat_enable_dangerous_magic_ticket_access | default('false') }}
+ :dangerous-magic-ticket {{ ulkoiset_rajapinnat_dangerous_magic_ticket | default('muusikuikkanen') }}}

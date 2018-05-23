@@ -11,6 +11,7 @@
             [ulkoiset-rajapinnat.utils.ldap :refer :all]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.cas_validator :refer :all]
+            [ulkoiset-rajapinnat.utils.config :refer [config]]
             [org.httpkit.server :refer :all]))
 
 (def ^{:private true} logger (impl/get-logger (impl/find-factory) "ACCESS"))
@@ -41,18 +42,28 @@
      (do-logging start-time (str (response :status)) request)
      response)))
 
+(defn- do-real-authentication-and-authorisation-check [ticket]
+  (let [host-virkailija (resolve-url :cas-client.host)
+        service (str host-virkailija "/ulkoiset-rajapinnat")
+        username (<? (validate-service-ticket service ticket))
+        ldap-user (fetch-user-from-ldap username)
+        roles (ldap-user :roles)]
+    (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
+      ldap-user
+      (do
+        (log/error "User" username "is missing role APP_ULKOISETRAJAPINNAT_READ!")
+        (RuntimeException. "Required roles missing!")))))
+
 (defn check-ticket-is-valid-and-user-has-required-roles [ticket]
   (go-try
-    (let [host-virkailija (resolve-url :cas-client.host)
-          service (str host-virkailija "/ulkoiset-rajapinnat")
-          username (<? (validate-service-ticket service ticket))
-          ldap-user (fetch-user-from-ldap username)
-          roles (ldap-user :roles)]
-      (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
-        ldap-user
-        (do
-          (log/error "User" username "is missing role APP_ULKOISETRAJAPINNAT_READ!")
-          (RuntimeException. "Required roles missing!"))))))
+    (if (and
+         (boolean (-> @config :enable-dangerous-magic-ticket-access))
+         (= ticket (str (-> @config :dangerous-magic-ticket))))
+      (do
+        (log/warn "Enabling dangerous access with magic ticket value, skipping CAS authentication and authorisation. This must not happen in production!")
+        {:username "Dangerous Tester", :roles '("APP_ULKOISETRAJAPINNAT_READ_1.2.246.562.10.00000000001"), :personOid "1.2.246.562.24.50534365452"})
+      (do-real-authentication-and-authorisation-check ticket))))
+
 
 (defn handle-exception [channel start-time exception]
   (let [message (.getMessage exception)]
