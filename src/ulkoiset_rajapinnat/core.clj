@@ -84,6 +84,7 @@
       (POST "/valintaperusteet/hakukohde" [ticket]
         :summary "Hakukohteet valintaperusteista"
         :query-params [ticket :- String]
+        :body [body (describe [s/Str] "hakukohteiden oidit JSON-taulukossa")]
         :responses {200 {:schema [Valintaperusteet]}}
         (log/info (str "Got incoming request to /valintaperusteet/hakukohde"))
         (access-log-with-ticket-check-with-channel
