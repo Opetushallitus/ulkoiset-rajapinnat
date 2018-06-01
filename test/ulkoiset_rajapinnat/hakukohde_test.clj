@@ -61,7 +61,7 @@
 (deftest hakukohde-api-test
    ; Might be that this test case is not correct. Those API calls are not returning status 404 but empty object
    ; To see the example empty objects, see those "*-empty.json" files. They are generated from the real output
-   ; (in test environment) of the APIs when given a non-existent hakuOid. All those also APIs returned status 200 when
+   ; (in test environment) of the APIs when given a non-existent hakuOid. All those APIs returned status 200 when
    ; given the wrong hakuOid.
   (testing "hakukohde not found"
     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
@@ -73,7 +73,7 @@
           (is (= false true)))
         (catch Exception e
           (is (= 404 ((ex-data e) :status)))))))
-  (testing "return status 404 if hakukohde is not found, and do not invoke hakukohde/tilastokeskus"
+  (testing "return status 200 and empty list if there are no hakukohde for haku, and do not invoke hakukohde/tilastokeskus"
     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   oppijat-batch-size 2
                   valintapisteet-batch-size 2
@@ -81,11 +81,15 @@
                   http/post (fn [url options transform] (mock-http url options transform))
                   fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
       (try
-       (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.9999009999"))]
-            (is (= false true)))
-       (catch Exception e
-         (is (= 500 ((ex-data e) :status)))))))
-  (testing "return status 500 if POST request to tilastokeskus fails with status 500"
+        (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.9999009999"))
+             status (-> response :status)
+             body (-> (parse-json-body response))]
+          (is (= status 200))
+          (log/info (to-json body true))
+          (def expected (parse-string (resource "test/resources/hakukohde/result-empty.json")))
+          (def difference (diff expected body))
+          (is (= [nil nil expected] difference) difference)))))
+  (testing "return status 500 if POST request to tilastokeskus fails with status 500 (don't get stuck)"
     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   oppijat-batch-size 2
                   valintapisteet-batch-size 2
