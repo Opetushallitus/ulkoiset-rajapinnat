@@ -20,8 +20,11 @@
 
 (def koulutustyyppi-json (resource "test/resources/hakukohde/koulutustyyppi.json"))
 (def hakukohde-json (resource "test/resources/hakukohde/hakukohde.json"))
+(def hakukohde-empty-json (resource "test/resources/hakukohde/hakukohde-empty.json"))
 (def hakukohde-tulos-json (resource "test/resources/hakukohde/hakukohde-tulos.json"))
+(def hakukohde-tulos-empty-json (resource "test/resources/hakukohde/hakukohde-tulos-empty.json"))
 (def koulutus-json (resource "test/resources/hakukohde/koulutus.json"))
+(def koulutus-empty-json (resource "test/resources/hakukohde/koulutus-empty.json"))
 (def kieli-json (resource "test/resources/hakukohde/kieli.json"))
 (def organisaatio-json (resource "test/resources/hakukohde/organisaatio.json"))
 (def tilastokeskus-json (resource "test/resources/hakukohde/tilastokeskus.json"))
@@ -31,8 +34,24 @@
   (def response (partial channel-response transform url))
   (case url
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1" (response 200 hakukohde-tulos-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.9999009999/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1" (response 200 hakukohde-tulos-empty-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.29.25191045126" (response 200 koulutus-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.29.9999009999" (response 200 koulutus-empty-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.29.25191045126&tila=JULKAISTU" (response 200 hakukohde-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.29.9999009999&tila=JULKAISTU" (response 200 hakukohde-empty-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1" (response 200 kieli-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/koulutustyyppi/1" (response 200 koulutustyyppi-json)
+    "http://fake.virkailija.opintopolku.fi/organisaatio-service/rest/organisaatio/v3/findbyoids" (response 200 organisaatio-json)
+    (response 404 "[]")))
+
+(defn mock-http-stuck [url options transform]
+  (log/info (str "Mocking url for tilastokeskus failed case " url))
+  (def response (partial channel-response transform url))
+  (case url
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1" (response 200 hakukohde-tulos-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.29.25191045126" (response 200 koulutus-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 500 tilastokeskus-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.29.25191045126&tila=JULKAISTU" (response 200 hakukohde-json)
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1" (response 200 kieli-json)
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/koulutustyyppi/1" (response 200 koulutustyyppi-json)
@@ -40,6 +59,10 @@
     (response 404 "[]")))
 
 (deftest hakukohde-api-test
+   ; Might be that this test case is not correct. Those API calls are not returning status 404 but empty object
+   ; To see the example empty objects, see those "*-empty.json" files. They are generated from the real output
+   ; (in test environment) of the APIs when given a non-existent hakuOid. All those also APIs returned status 200 when
+   ; given the wrong hakuOid.
   (testing "hakukohde not found"
     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   http/get (fn [url options transform] (channel-response transform url 404 ""))
@@ -50,6 +73,30 @@
           (is (= false true)))
         (catch Exception e
           (is (= 404 ((ex-data e) :status)))))))
+  (testing "return status 404 if hakukohde is not found, and do not invoke hakukohde/tilastokeskus"
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                  oppijat-batch-size 2
+                  valintapisteet-batch-size 2
+                  http/get (fn [url options transform] (mock-http url options transform))
+                  http/post (fn [url options transform] (mock-http url options transform))
+                  fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
+      (try
+       (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.9999009999"))]
+            (is (= false true)))
+       (catch Exception e
+         (is (= 500 ((ex-data e) :status)))))))
+  (testing "return status 500 if POST request to tilastokeskus fails with status 500"
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                  oppijat-batch-size 2
+                  valintapisteet-batch-size 2
+                  http/get (fn [url options transform] (mock-http-stuck url options transform))
+                  http/post (fn [url options transform] (mock-http-stuck url options transform))
+                  fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
+      (try
+        (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.25191045126"))]
+             (is (= false true)))
+        (catch Exception e
+          (is (= 500 ((ex-data e) :status)))))))
   (testing "Fetch hakukohde"
     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   oppijat-batch-size 2

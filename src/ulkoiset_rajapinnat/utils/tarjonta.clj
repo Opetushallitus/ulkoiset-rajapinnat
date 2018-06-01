@@ -1,7 +1,7 @@
 (ns ulkoiset-rajapinnat.utils.tarjonta
   (:require [clojure.string :as str]
             [full.async :refer :all]
-            [clojure.core.async :refer [<! promise-chan >! go put! close! map] :rename {map async-map}]
+            [clojure.core.async :refer [<! promise-chan >! go put! close! to-chan map] :rename {map async-map}]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.rest :refer :all]))
@@ -27,12 +27,16 @@
 (def tilastokeskus-batch-size 500)
 
 (defn fetch-tilastoskeskus-hakukohde-channel [hakukohde-oids]
-  (log/info "Fetching 'tilastokeskus' data from tarjonta for " (if (nil? hakukohde-oids) 0 (count hakukohde-oids)) " hakukohde!")
-  (go-try (let [url (resolve-url :tarjonta-service.tilastokeskus)
-                partitions (partition tilastokeskus-batch-size tilastokeskus-batch-size nil hakukohde-oids)
-                post (fn [x] (post-json-as-channel url x parse-json-body-stream))
-                hakukohteet (<? (async-map vector (map #(post %) partitions)))]
-    (apply merge hakukohteet))))
+  (let [hakukohde-count (if (nil? hakukohde-oids) 0 (count hakukohde-oids))]
+    (if (> hakukohde-count 0)
+      (do
+        (log/info "Fetching 'tilastokeskus' data from tarjonta for " hakukohde-count " hakukohde!")
+        (go-try (let [url (resolve-url :tarjonta-service.tilastokeskus)
+                      partitions (partition tilastokeskus-batch-size tilastokeskus-batch-size nil hakukohde-oids)
+                      post (fn [x] (post-json-as-channel url x parse-json-body-stream))
+                      hakukohteet (<? (async-map vector (map #(post %) partitions)))]
+                     (apply merge hakukohteet))))
+      (to-chan []))))
 
 (defn is-haku-with-ensikertalaisuus [haku]
   (if-let [some-haku haku]
