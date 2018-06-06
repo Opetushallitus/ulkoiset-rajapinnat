@@ -5,6 +5,7 @@
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel parse-json-body-stream]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
+            [ulkoiset-rajapinnat.utils.async_safe :refer :all]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
 
@@ -26,5 +27,5 @@
                             (if (> (count x) 1000)
                               (throw (new RuntimeException "Can only fetch 1000 orgs at once!")))
                             (post-json-as-channel url x mapper)))
-             organisaatiot (<? (async/map vector (map #(post %) partitions)))]
+             organisaatiot (<? (async-map-safe vector (map #(post %) partitions) []))]
          (apply merge organisaatiot))))))

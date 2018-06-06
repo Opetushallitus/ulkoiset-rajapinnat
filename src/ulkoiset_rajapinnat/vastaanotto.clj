@@ -10,6 +10,7 @@
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel get-as-channel status body-and-close exception-response to-json parse-json-body-stream]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
+            [ulkoiset-rajapinnat.utils.async_safe :refer :all]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
 
@@ -163,7 +164,7 @@
           mapper (comp group-valintapisteet parse-json-body-stream)
           post (fn [x] (post-json-as-channel url x mapper))
           partitions (partition valintapisteet-batch-size valintapisteet-batch-size nil kaikki-hakemus-oidit)
-          valintapisteet (<? (async/map vector (map #(post %) partitions)))]
+          valintapisteet (<? (async-map-safe vector (map #(post %) partitions) []))]
       (apply merge valintapisteet))))
 
 (defn fetch-ammatilliset-kielikokeet-channel [haku-oid kaikki-oppijanumerot]
@@ -174,7 +175,7 @@
           mapper (comp find-kielikokeet parse-json-body-stream)
           post (fn [x] (post-json-as-channel url x mapper jsession-id))
           partitions (partition oppijat-batch-size oppijat-batch-size nil kaikki-oppijanumerot)
-          valintaperusteet (<? (async/map vector (map #(post %) partitions)))]
+          valintaperusteet (<? (async-map-safe vector (map #(post %) partitions) []))]
       (apply merge valintaperusteet))))
 
 (defn vastaanotot-for-haku [haku-oid vuosi kausi request user channel]
