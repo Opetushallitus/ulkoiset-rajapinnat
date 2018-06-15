@@ -110,7 +110,9 @@
     (let [hakukohteen-kokeet (filter #(let [u (uri %)] (or (= u "syotettavanarvontyypit_kielikoe") (= u "syotettavanarvontyypit_valintakoe"))) (valintaperuste "valintaperusteDTO"))]
       {(valintaperuste "hakukohdeOid") (map transform-dto hakukohteen-kokeet)}))
 
-  (apply merge (map find-valintaperusteen-kokeet valintaperusteet)))
+  (if (seq valintaperusteet)
+    (apply merge (map find-valintaperusteen-kokeet valintaperusteet))
+    {}))
 
 (defn find-kielikokeet [oppijat]
   (let [arvosana (fn [a] (if (nil? a) {} {:osallistuminen (get (get a "arvio") "arvosana") :kieli (get a "lisatieto")}))
