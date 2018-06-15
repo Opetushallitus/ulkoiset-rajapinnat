@@ -42,10 +42,10 @@
                     fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
                     fetch-henkilot-channel (mock-channel-fn [])]
         (let [response (client/get (api-call "/api/hakemus-for-haku/foobar?vuosi=2018&kausi=kausi_s%231")
-                                   {:as :string})
+                                   {:as :json})
               bodyjson (-> response :body)
               status (-> response :status)]
-              (is (= bodyjson "[{\"error\":\"No hakukohde-oids found for haku foobar with vuosi 2018 and kausi kausi_s#1!\"}"))
+              (is (= bodyjson {:error "No hakukohde-oids found for haku foobar with vuosi 2018 and kausi kausi_s#1!"}))
               (is (= status 200)))))))
 
 (deftest hakemus-test
