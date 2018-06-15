@@ -216,11 +216,10 @@
                                                   (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?))
        hakukohde-oids-for-hakukausi (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi haku))
        haku-app-channel (if (empty? hakukohde-oids-for-hakukausi)
-                          (do (write-object-to-channel is-first-written
-                                                       {:error (format "No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi)}
-                                                       channel)
+                          (do (body channel (to-json {:error (format "No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi)}))
+                              (status channel 200)
                               (close channel)
-                              (throw (RuntimeException. (format "No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi))))
+                              (throw (RuntimeException. (format "error: No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi))))
                           (fetch-hakemukset-from-haku-app-as-streaming-channel
                             haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
                             (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)))
