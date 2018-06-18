@@ -75,7 +75,7 @@
          (def difference (diff expected body))
          (is (= [nil nil expected] difference) difference))))
 
-   (testing "Fetch vastaanotot but when avaimet returns empty list, return empty list of vastaanotot (don't return error)"
+   (testing "Fetch vastaanotot correctly also when avaimet returns empty list (don't return error)"
      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                    oppijat-batch-size 2
                    valintapisteet-batch-size 2
