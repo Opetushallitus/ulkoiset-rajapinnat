@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.core.async :refer [<! close! go go-loop chan timeout >! alt! alts! promise-chan]]
             [clojure.tools.logging :as log]
-            [full.async :refer [<? engulf alts?]]
+            [full.async :refer [<? engulf alts? go-try]]
             [schema.core :as s]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch-channel]]
             [ulkoiset-rajapinnat.onr :refer :all]
@@ -204,7 +204,7 @@
 
 (defn fetch-hakemukset-for-haku
   [haku-oid vuosi kausi palauta-null-arvot? channel]
-  (go
+  (go-try
    (let [start-time (System/currentTimeMillis)
        counter (atom 0)
        is-first-written (atom false)
@@ -267,7 +267,12 @@
                                   {:error (.getMessage e)}
                                   channel)))
      (finally
-       (close-channel))))))
+       (close-channel))))
+  (catch Exception e (do (log/error "Exception in fetch-hakemukset-for-haku" e)
+                         (status channel 500)
+                         (close channel)
+                       )))
+  )
 
 (defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request user channel]
   (fetch-hakemukset-for-haku haku-oid vuosi kausi palauta-null-arvot? channel)
