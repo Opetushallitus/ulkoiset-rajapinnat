@@ -22,6 +22,7 @@
 (def vastaanotot-json (resource "test/resources/vastaanotto/streaming.json"))
 (def pistetiedot-json (resource "test/resources/vastaanotto/pistetiedot.json"))
 (def avaimet-json (resource "test/resources/vastaanotto/avaimet.json"))
+(def avaimet-empty-json (resource "test/resources/vastaanotto/avaimet-empty.json"))
 (def oppijat-json (resource "test/resources/vastaanotto/oppijat.json"))
 (def haku-json (resource "test/resources/vastaanotto/haku.json"))
 (def tilastokeskus-json (resource "test/resources/vastaanotto/tilastokeskus.json"))
@@ -31,18 +32,19 @@
 (defn valintapisteet-chunk [hakemus-oidit]
   (to-json (filter (fn [x] (some #(= (get x "hakemusOID") %) (parse-string hakemus-oidit))) (parse-string pistetiedot-json))))
 
-(defn mock-http [url options transform]
-  (log/info (str "Mocking url " url))
+(defn mock-http [url options transform & flags]
+  (log/info (str "Mocking url " url " flags: " flags))
   (def response (partial channel-response transform url))
-  (if (str/starts-with? url "http://fake.internal.virkailija.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=-&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
-    (response 200 (valintapisteet-chunk (options :body)))
-    (case url
-      "http://fake.internal.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (response 200 vastaanotot-json)
-      "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (response 200 avaimet-json)
-      "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
-      "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 haku-json)
-      "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
-      (response 404 "[]"))))
+  (let [use-empty-avaimet (some #{:empty-avaimet} flags)]
+    (if (str/starts-with? url "http://fake.internal.virkailija.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=-&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
+      (response 200 (valintapisteet-chunk (options :body)))
+      (case url
+        "http://fake.internal.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (response 200 vastaanotot-json)
+        "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (response 200 (if use-empty-avaimet avaimet-empty-json avaimet-json))
+        "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
+        "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 haku-json)
+        "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
+        (response 404 "[]")))))
 
 (deftest vastaanotto-api-test
    (testing "No vastaanotot found"
@@ -71,7 +73,24 @@
          (log/info (to-json body true))
          (def expected (parse-string (resource "test/resources/vastaanotto/result.json")))
          (def difference (diff expected body))
-         (is (= [nil nil expected] difference) difference)))))
+         (is (= [nil nil expected] difference) difference))))
+
+   (testing "Fetch vastaanotot correctly also when avaimet returns empty list (don't return error)"
+     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                   oppijat-batch-size 2
+                   valintapisteet-batch-size 2
+                   http/get (fn [url options transform] (mock-http url options transform :empty-avaimet))
+                   http/post (fn [url options transform] (mock-http url options transform :empty-avaimet))
+                   fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
+       (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))
+             status (-> response :status)
+             body (-> (parse-json-body response))]
+         (is (= status 200))
+         (log/info (to-json body true))
+         (def expected (parse-string (resource "test/resources/vastaanotto/result-when-empty-avaimet.json")))
+         (def difference (diff expected body))
+         (is (= [nil nil expected] difference) difference))))
+   )
 
 (deftest vts-response-trim-test
   (testing "Trim streaming response"

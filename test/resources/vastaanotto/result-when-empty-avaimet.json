@@ -1,0 +1,97 @@
+[
+  {
+    "henkilo_oid": "1.2.246.562.24.22430847549",
+    "hakutoiveet": [
+      {
+        "hyvaksytty_harkinnanvaraisesti": false,
+        "osallistui_kielikokeeseen": true,
+        "ilmoittautumisen_tila": "EI_TEHTY",
+        "valinnan_tila": "HYVAKSYTTY",
+        "hakijan_lopullinen_jonosija": 104,
+        "osallistui_paasykokeeseen": null,
+        "hakukohde_oid": "1.2.246.562.20.72385087522",
+        "hakijan_jonosijan_tarkenne": 1,
+        "valintatapajono": "1476774926762-6272426481946884766",
+        "valinnan_tilan_lisatieto": null,
+        "vastaanoton_tila": "EI_VASTAANOTETTU_MAARA_AIKANA",
+        "yhteispisteet": 23.15,
+        "alin_hyvaksytty_pistemaara": 19.65,
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta": false
+      },
+      {
+        "hyvaksytty_harkinnanvaraisesti": false,
+        "osallistui_kielikokeeseen": true,
+        "ilmoittautumisen_tila": "EI_TEHTY",
+        "valinnan_tila": "PERUUNTUNUT",
+        "hakijan_lopullinen_jonosija": 41,
+        "osallistui_paasykokeeseen": null,
+        "hakukohde_oid": "1.2.246.562.20.16902536479",
+        "hakijan_jonosijan_tarkenne": 1,
+        "valintatapajono": "1476784379529-748676204640952695",
+        "valinnan_tilan_lisatieto": "Peruuntunut, hyväksytty ylemmälle hakutoiveelle",
+        "vastaanoton_tila": "KESKEN",
+        "yhteispisteet": 55,
+        "alin_hyvaksytty_pistemaara": 38,
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta": null
+      }
+    ]
+  },
+  {
+    "henkilo_oid": "1.2.246.562.24.11097025100",
+    "hakutoiveet": [
+      {
+        "hyvaksytty_harkinnanvaraisesti": false,
+        "osallistui_kielikokeeseen": null,
+        "ilmoittautumisen_tila": "EI_TEHTY",
+        "valinnan_tila": "HYLATTY",
+        "hakijan_lopullinen_jonosija": 211,
+        "osallistui_paasykokeeseen": null,
+        "hakukohde_oid": "1.2.246.562.20.760269451710",
+        "hakijan_jonosijan_tarkenne": 27,
+        "valintatapajono": "1474449226093-3944635560658602913",
+        "valinnan_tilan_lisatieto": null,
+        "vastaanoton_tila": "KESKEN",
+        "yhteispisteet": null,
+        "alin_hyvaksytty_pistemaara": 48.0,
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta": null
+      }
+    ]
+  },
+  {
+    "henkilo_oid": "1.2.246.562.24.78252877314",
+    "hakutoiveet": [
+      {
+        "hyvaksytty_harkinnanvaraisesti": false,
+        "osallistui_kielikokeeseen": null,
+        "ilmoittautumisen_tila": "EI_TEHTY",
+        "valinnan_tila": "HYVAKSYTTY",
+        "hakijan_lopullinen_jonosija": 122,
+        "osallistui_paasykokeeseen": null,
+        "hakukohde_oid": "1.2.246.562.20.72385087522",
+        "hakijan_jonosijan_tarkenne": 1,
+        "valintatapajono": "1476774926762-6272426481946884766",
+        "valinnan_tilan_lisatieto": null,
+        "vastaanoton_tila": "VASTAANOTTANUT_SITOVASTI",
+        "yhteispisteet": 20.45,
+        "alin_hyvaksytty_pistemaara": 19.65,
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta": true
+      },
+      {
+        "hyvaksytty_harkinnanvaraisesti": false,
+        "osallistui_kielikokeeseen": null,
+        "ilmoittautumisen_tila": "EI_TEHTY",
+        "valinnan_tila": "PERUUNTUNUT",
+        "hakijan_lopullinen_jonosija": 16,
+        "osallistui_paasykokeeseen": null,
+        "hakukohde_oid": "1.2.246.562.20.16902536479",
+        "hakijan_jonosijan_tarkenne": 1,
+        "valintatapajono": "1476784379529-748676204640952695",
+        "valinnan_tilan_lisatieto": "Peruuntunut, vastaanottanut toisen korkeakoulupaikan",
+        "vastaanoton_tila": "KESKEN",
+        "yhteispisteet": 67,
+        "alin_hyvaksytty_pistemaara": 38,
+        "hyvaksytty_ensikertalaisten_hakijaryhmasta": null
+      }
+    ]
+  }
+]
