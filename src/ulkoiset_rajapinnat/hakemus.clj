@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.core.async :refer [<! close! go go-loop chan timeout >! alt! alts! promise-chan]]
             [clojure.tools.logging :as log]
-            [full.async :refer [<? engulf alts?]]
+            [full.async :refer [<? engulf alts? go-try]]
             [schema.core :as s]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch-channel]]
             [ulkoiset-rajapinnat.onr :refer :all]
@@ -204,7 +204,7 @@
 
 (defn fetch-hakemukset-for-haku
   [haku-oid vuosi kausi palauta-null-arvot? channel]
-  (go
+  (go-try
    (let [start-time (System/currentTimeMillis)
        counter (atom 0)
        is-first-written (atom false)
@@ -216,7 +216,7 @@
                                                   (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?))
        hakukohde-oids-for-hakukausi (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi haku))
        haku-app-channel (if (empty? hakukohde-oids-for-hakukausi)
-                          (throw (RuntimeException. (format "No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi)))
+                            (throw (RuntimeException. (format "error: No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi)))
                           (fetch-hakemukset-from-haku-app-as-streaming-channel
                             haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
                             (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)))
@@ -263,7 +263,13 @@
                                   {:error (.getMessage e)}
                                   channel)))
      (finally
-       (close-channel))))))
+       (close-channel))))
+  (catch Exception e (do (log/error "Exception in fetch-hakemukset-for-haku" e)
+                         (status channel 500)
+                         (body channel (.getMessage e))
+                         (close channel)
+                       )))
+  )
 
 (defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request user channel]
   (fetch-hakemukset-for-haku haku-oid vuosi kausi palauta-null-arvot? channel)
