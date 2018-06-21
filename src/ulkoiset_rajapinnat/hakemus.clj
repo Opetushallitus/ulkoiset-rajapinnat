@@ -190,7 +190,7 @@
 (defn ataru-adapter [pohjakoulutuskkodw palauta-null-arvot?]
   (fn [batch] [(document-batch-to-henkilo-oid-list batch)
                batch
-               (fn [henkilo-by-oid oppijat-by-oid hakemus]
+               (fn [henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot]
                  (convert-ataru-hakemus
                    pohjakoulutuskkodw
                    palauta-null-arvot?

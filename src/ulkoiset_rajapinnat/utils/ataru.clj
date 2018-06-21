@@ -1,7 +1,6 @@
 (ns ulkoiset-rajapinnat.utils.ataru
   (:require [clojure.string :as str]
             [full.async :refer :all]
-            [clj-http.client :as client]
             [clojure.tools.logging :as log]
             [clojure.core.async :refer [chan promise-chan >! go put! close! alts! timeout <!]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
@@ -15,8 +14,8 @@
       (let [ticket (<? (fetch-service-ticket-channel "/lomake-editori/auth/cas" true))
             response (<? (get-as-channel (resolve-url :lomake-editori.cas-by-ticket ticket) {:follow-redirects false}))]
         (try
-          (let [hakemukset (client/get (resolve-url :lomake-editori.tilastokeskus-by-haku-oid haku-oid) {:headers {"Cookie" (-> response :headers :set-cookie)}
-                                                                         :as      :stream})
+          (let [hakemukset (<? (get-as-channel (resolve-url :lomake-editori.tilastokeskus-by-haku-oid haku-oid) {:headers {"Cookie" (-> response :headers :set-cookie)}
+                                                                                                            :as      :stream}))
                 body-stream (hakemukset :body)]
             (try
               (read-json-stream-to-channel body-stream channel batch-size result-mapper)
