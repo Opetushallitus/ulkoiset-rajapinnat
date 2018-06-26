@@ -190,7 +190,7 @@
 (defn ataru-adapter [pohjakoulutuskkodw palauta-null-arvot?]
   (fn [batch] [(document-batch-to-henkilo-oid-list batch)
                batch
-               (fn [henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot]
+               (fn [henkilo-by-oid oppijat-by-oid hakemus _ _]
                  (convert-ataru-hakemus
                    pohjakoulutuskkodw
                    palauta-null-arvot?
@@ -204,7 +204,7 @@
 
 (defn fetch-hakemukset-for-haku
   [haku-oid vuosi kausi palauta-null-arvot? channel]
-  (go-try
+  (go
    (let [start-time (System/currentTimeMillis)
        counter (atom 0)
        is-first-written (atom false)
@@ -216,7 +216,7 @@
                                                   (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?))
        hakukohde-oids-for-hakukausi (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi haku))
        haku-app-channel (if (empty? hakukohde-oids-for-hakukausi)
-                            (throw (RuntimeException. (format "error: No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi)))
+                          (chan 1)
                           (fetch-hakemukset-from-haku-app-as-streaming-channel
                             haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
                             (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)))
@@ -263,13 +263,7 @@
                                   {:error (.getMessage e)}
                                   channel)))
      (finally
-       (close-channel))))
-  (catch Exception e (do (log/error "Exception in fetch-hakemukset-for-haku" e)
-                         (status channel 500)
-                         (body channel (.getMessage e))
-                         (close channel)
-                       )))
-  )
+       (close-channel))))))
 
 (defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request user channel]
   (fetch-hakemukset-for-haku haku-oid vuosi kausi palauta-null-arvot? channel)

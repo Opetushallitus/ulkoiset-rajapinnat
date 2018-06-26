@@ -24,46 +24,29 @@
 
 (defn mock-mapped [response]
   (fn [& varargs]
-    (go [[] response (fn [& abc] ((last varargs) response))])))
+    (go [[] response (fn [& abc] response)])))
 
 (defn mock-channel-fn [response]
   (fn [& varargs]
     (go response)))
 
-(deftest hakemus-failure-test
-  (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                haku-for-haku-oid-channel (mock-channel-fn {})
-                hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn [])
-                fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
-                koodisto-as-channel (mock-channel-fn {})]
-    (testing "Fetch hakemukset for haku with no hakukohde-oids"
-      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                    fetch-hakemukset-from-ataru (mock-mapped [])
-                    fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
-                    fetch-henkilot-channel (mock-channel-fn [])]
-        (is (thrown? RuntimeException (client/get (api-call "/api/hakemus-for-haku/foobar?vuosi=2018&kausi=kausi_s%231"))))))))
-
-
 (deftest hakemus-test
-  (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                haku-for-haku-oid-channel (mock-channel-fn {})
+  (with-redefs [haku-for-haku-oid-channel (mock-channel-fn {})
                 hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
+                check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                 fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
+                fetch-henkilot-channel (mock-channel-fn [])
                 koodisto-as-channel (mock-channel-fn {})]
     (testing "Fetch hakemukset for haku with no hakemuksia!"
-      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                    fetch-hakemukset-from-ataru (mock-mapped [])
-                    fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
-                    fetch-henkilot-channel (mock-channel-fn [])]
+      (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
+                    fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])]
         (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231"))
               status (-> response :status)]
           (is (= status 200)))))
 
     (testing "Fetch hakemukset for haku with 'ataru' hakemuksia!"
-      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                    fetch-hakemukset-from-ataru (mock-mapped [{"oid" "1.2.3.4"}])
-                    fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
-                    fetch-henkilot-channel (mock-channel-fn [])]
+      (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [{"oid" "1.2.3.4.5.6"}])
+                    fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])]
         (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231")
                                    {:as :json})
               status (-> response :status)
@@ -73,10 +56,8 @@
           )))
 
     (testing "Fetch hakemukset for haku with 'haku-app' hakemuksia!"
-      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                    fetch-hakemukset-from-ataru (mock-mapped [])
-                    fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [{"oid" "1.2.3.4"}])
-                    fetch-henkilot-channel (mock-channel-fn [])]
+      (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
+                    fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [{"oid" "1.2.3.4"}])]
         (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231")
                                    {:as :json})
               status (-> response :status)
@@ -119,6 +100,36 @@
         (is (= status 200))
         (log/info (to-json body true))
         (def expected (parse-string (resource "test/resources/hakemus/result.json")))
+        (def difference (diff expected body))
+        (is (= [nil nil expected] difference) difference)
+        ))))
+
+(defn mock-ataru-http [url options transform]
+  (log/info (str "Mocking url " url))
+  (def response (partial channel-response transform url))
+  (def ataru-json (resource "test/resources/hakemus/ataru.json"))
+  (case url
+    "http://fake.virkailija.opintopolku.fi/lomake-editori/api/external/tilastokeskus?hakuOid=1.2.246.562.29.999999" (response 200 ataru-json)
+    (response 404 "[]")))
+
+(deftest ataru-deep-test
+  (testing "Fetch from Ataru, using also the ataru-adapter"
+    (with-redefs [haku-for-haku-oid-channel (mock-channel-fn {})
+                  hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
+                  check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                  fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
+                  fetch-service-ticket-channel (mock-channel-fn "FAKEST")
+                  fetch-henkilot-channel (mock-channel-fn [])
+                  koodisto-as-channel (mock-channel-fn {})
+                  fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
+                  http/get (fn [url options transform] (mock-ataru-http url options transform))
+                  http/post (fn [url options transform] (mock-ataru-http url options transform))]
+      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2017&kausi=kausi_s"))
+            status (-> response :status)
+            body (-> (parse-json-body response))]
+        (is (= status 200))
+        (log/info (to-json body true))
+        (def expected (parse-string (resource "test/resources/hakemus/result-ataru.json")))
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference)
         ))))

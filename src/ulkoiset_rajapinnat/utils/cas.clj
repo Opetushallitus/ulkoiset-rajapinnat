@@ -9,9 +9,12 @@
             [jsoup.soup :refer :all]))
 
 (defn ^:private read-action-attribute-from-cas-response [response]
-  (let [html (response :body)
-        action-attribute (attr "action" ($ (parse html) "form"))]
-    (first action-attribute)))
+  (let [html (slurp (response :body))
+        action-attribute (attr "action" ($ (parse html) "form"))
+        first-action-attribute (first action-attribute)]
+    (if (str/blank? first-action-attribute)
+      (RuntimeException. (str "No 'action' attribute found in CAS response: " response))
+      first-action-attribute)))
 
 (defn ^:private tgt-request-channel
   [host username password]
