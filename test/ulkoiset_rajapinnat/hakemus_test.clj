@@ -31,7 +31,7 @@
     (go response)))
 
 (deftest hakemus-test
-  (with-redefs [haku-for-haku-oid-channel (mock-channel-fn {})
+  (with-redefs [haku-for-haku-oid-channel (mock-channel-fn {"oid", "1.2.3.4.5"})
                 hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
                 check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                 fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
