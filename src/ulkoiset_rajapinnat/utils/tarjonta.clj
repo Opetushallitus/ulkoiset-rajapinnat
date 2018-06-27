@@ -23,7 +23,7 @@
   (let [url (resolve-url :tarjonta-service.haku haku-oid)]
     (get-as-channel url { :as :stream } (fn [response] (if-let [haku ((parse-json-body-stream response) "result")]
                                                          haku
-                                                         nil)))))
+                                                         {})))))
 
 (def tilastokeskus-batch-size 500)
 
