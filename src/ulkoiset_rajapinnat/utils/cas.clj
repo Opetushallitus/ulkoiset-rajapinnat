@@ -9,7 +9,7 @@
             [jsoup.soup :refer :all]))
 
 (defn ^:private read-action-attribute-from-cas-response [response]
-  (let [html (slurp (response :body))
+  (let [html (response :body)
         action-attribute (attr "action" ($ (parse html) "form"))
         first-action-attribute (first action-attribute)]
     (if (str/blank? first-action-attribute)
