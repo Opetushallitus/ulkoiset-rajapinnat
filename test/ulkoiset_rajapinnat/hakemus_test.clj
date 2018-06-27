@@ -67,6 +67,7 @@
           )))))
 
 (def haku-json (resource "test/resources/hakemus/haku.json"))
+(def haku-ataru-deep-json (resource "test/resources/hakemus/haku-ataru-deep.json"))
 (def tilastokeskus-json (resource "test/resources/hakemus/tilastokeskus.json"))
 (def hakemus-json (resource "test/resources/hakemus/hakemus.json"))
 (def henkilot-json (resource "test/resources/hakemus/henkilot.json"))
@@ -109,16 +110,17 @@
   (def response (partial channel-response transform url))
   (def ataru-json (resource "test/resources/hakemus/ataru.json"))
   (case url
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.999999" (response 200 haku-ataru-deep-json)
     "http://fake.virkailija.opintopolku.fi/lomake-editori/api/external/tilastokeskus?hakuOid=1.2.246.562.29.999999" (response 200 ataru-json)
     (response 404 "[]")))
 
 (deftest ataru-deep-test
   (testing "Fetch from Ataru, using also the ataru-adapter"
-    (with-redefs [haku-for-haku-oid-channel (mock-channel-fn {})
-                  hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
+    (with-redefs [hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
                   check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
                   fetch-service-ticket-channel (mock-channel-fn "FAKEST")
+                  fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
                   fetch-henkilot-channel (mock-channel-fn [])
                   koodisto-as-channel (mock-channel-fn {})
                   fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])

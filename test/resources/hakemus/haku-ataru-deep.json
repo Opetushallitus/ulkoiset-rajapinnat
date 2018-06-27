@@ -1,0 +1,64 @@
+{
+  "accessRights": {
+    "update": false,
+    "create": false,
+    "delete": false
+  },
+  "result": {
+    "modified": 1525871701186,
+    "modifiedBy": "1.2.246.562.24.62272201879",
+    "oid": "1.2.246.562.29.64078816267",
+    "hakukausiUri": "kausi_k#1",
+    "hakukausiVuosi": 2018,
+    "hakutapaUri": "hakutapa_02#1",
+    "ataruLomakeAvain": "30236ef6-0036-4fc6-9f3e-1f23ade4a66a",
+    "hakutyyppiUri": "hakutyyppi_01#1",
+    "kohdejoukkoUri": "haunkohdejoukko_12#1",
+    "koulutuksenAlkamisVuosi": 2018,
+    "koulutuksenAlkamiskausiUri": "kausi_s#1",
+    "tila": "JULKAISTU",
+    "ylioppilastutkintoAntaaHakukelpoisuuden": false,
+    "hakukohdeOidsYlioppilastutkintoAntaaHakukelpoisuuden": [],
+    "sijoittelu": false,
+    "jarjestelmanHakulomake": false,
+    "hakuaikas": [
+      {
+        "hakuaikaId": "20011596",
+        "alkuPvm": 1525864500000,
+        "loppuPvm": 1525950900000,
+        "nimet": {
+          "kieli_sv": "",
+          "kieli_fi": "",
+          "kieli_en": ""
+        }
+      }
+    ],
+    "hakukohdeOids": [
+      "1.2.246.562.20.46063019841"
+    ],
+    "nimi": {
+      "kieli_fi": "Minea"
+    },
+    "maxHakukohdes": 2,
+    "canSubmitMultipleApplications": true,
+    "organisaatioOids": [
+      "1.2.246.562.10.60198812368"
+    ],
+    "tarjoajaOids": [
+      "1.2.246.562.10.60198812368"
+    ],
+    "usePriority": false,
+    "sisaltyvatHaut": [],
+    "organisaatioryhmat": [],
+    "koulutusmoduuliTyyppi": "TUTKINTO",
+    "maksumuuriKaytossa": false,
+    "tunnistusKaytossa": false,
+    "yhdenPaikanSaanto": {
+      "voimassa": true,
+      "syy": "Korkeakouluhaku ilman kohdejoukon tarkennetta"
+    },
+    "autosyncTarjonta": false,
+    "korkeakouluHaku": true
+  },
+  "status": "OK"
+}
