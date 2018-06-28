@@ -21,9 +21,9 @@
 
 (defn haku-for-haku-oid-channel [haku-oid]
   (let [url (resolve-url :tarjonta-service.haku haku-oid)]
-    (get-as-channel url { :as :stream } (fn [response] (if-let [some-haku ((parse-json-body-stream response) "result")]
-                                            some-haku
-                                            (throw (RuntimeException. (format "Haku %s not found!" haku-oid))))))))
+    (get-as-channel url { :as :stream } (fn [response] (if-let [haku ((parse-json-body-stream response) "result")]
+                                                         haku
+                                                         {})))))
 
 (def tilastokeskus-batch-size 500)
 

@@ -20,9 +20,8 @@
             drain-to-vector (fn []
                               (let [v (vec (.toArray batch))]
                                 (.clear batch)
-                                (if (not-empty v)
-                                  (result-mapper v)
-                                  nil)))]
+                                (when (not-empty v)
+                                  (result-mapper v))))]
         (while (= (.nextToken parser) (JsonToken/START_OBJECT))
           (let [obj (-> mapper
                         (.readValue parser java.util.HashMap))]

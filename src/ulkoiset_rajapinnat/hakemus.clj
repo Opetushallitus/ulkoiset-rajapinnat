@@ -190,7 +190,7 @@
 (defn ataru-adapter [pohjakoulutuskkodw palauta-null-arvot?]
   (fn [batch] [(document-batch-to-henkilo-oid-list batch)
                batch
-               (fn [henkilo-by-oid oppijat-by-oid hakemus]
+               (fn [henkilo-by-oid oppijat-by-oid hakemus _ _]
                  (convert-ataru-hakemus
                    pohjakoulutuskkodw
                    palauta-null-arvot?
@@ -205,71 +205,73 @@
 (defn fetch-hakemukset-for-haku
   [haku-oid vuosi kausi palauta-null-arvot? channel]
   (go-try
-   (let [start-time (System/currentTimeMillis)
-       counter (atom 0)
-       is-first-written (atom false)
-       pohjakoulutuskkodw (<? (koodisto-as-channel "pohjakoulutuskkodw"))
-       haku (<? (haku-for-haku-oid-channel haku-oid))
-       is-haku-with-ensikertalaisuus? (is-haku-with-ensikertalaisuus haku)
-       is-toisen-asteen-haku? (is-toinen-aste haku)
-       ataru-channel (fetch-hakemukset-from-ataru haku-oid size-of-henkilo-batch-from-onr-at-once
-                                                  (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?))
-       hakukohde-oids-for-hakukausi (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi haku))
-       haku-app-channel (if (empty? hakukohde-oids-for-hakukausi)
-                            (throw (RuntimeException. (format "error: No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi)))
-                          (fetch-hakemukset-from-haku-app-as-streaming-channel
-                            haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
-                            (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)))
-       close-channel (fn []
-                       (do
-                         (close-and-drain! haku-app-channel)
-                         (close-and-drain! ataru-channel)
-                         (if (compare-and-set! is-first-written false true)
-                           (do (status channel 200)
-                               (body channel "[]")
-                               (close channel))
-                           (do (body channel "]")
-                               (close channel)))))
-       oppija-service-ticket-channel (fetch-hakurekisteri-service-ticket-channel)]
-   (try
-     (core-loop [channels [ataru-channel haku-app-channel]]
-       (let [[v ch] (alts? channels)]
-         (if (not (vector? v))
-           (let [new-channels (remove #{ch} channels)]
-             (if (not (empty? new-channels))
-               (recur new-channels)))
-           (let [[henkilo-oids batch mapper] v
-                 oppijat (if (or is-haku-with-ensikertalaisuus? is-toisen-asteen-haku?)
-                           (<? (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel haku-oid henkilo-oids is-haku-with-ensikertalaisuus? oppija-service-ticket-channel)) nil)
-                 jsessionid (<? (onr-sessionid-channel))
-                 henkilot (<? (fetch-henkilot-channel jsessionid henkilo-oids))
-                 oppijat-by-oid (group-by #(get % "oppijanumero") oppijat)
-                 henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)
-                 organisaatiot (if is-toisen-asteen-haku? (let [oppilaitos-oids (flatten (map #(get % "oppilaitosOid") (flatten (map #(get % "opiskelu") oppijat))))]
-                                                            (<? (fetch-organisations-in-batch-channel oppilaitos-oids))) nil)]
-             (doseq [hakemus batch]
-               (write-object-to-channel
-                 is-first-written
-                 (mapper henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot)
-                 channel))
-             (let [bs (int (count batch))]
-               (swap! counter (partial + bs)))
-             (recur channels)))))
-     (log/info "Returned successfully" @counter "'hakemusta' from Haku-App and Ataru! Took" (- (System/currentTimeMillis) start-time) "ms!")
-     (catch Throwable e
-       (do
-         (log/error "Failed to write 'hakemukset'!" e)
-         (write-object-to-channel is-first-written
-                                  {:error (.getMessage e)}
-                                  channel)))
-     (finally
-       (close-channel))))
-  (catch Exception e (do (log/error "Exception in fetch-hakemukset-for-haku" e)
-                         (status channel 500)
-                         (body channel (.getMessage e))
-                         (close channel)
-                       )))
-  )
+    (let [haku (<? (haku-for-haku-oid-channel haku-oid))]
+      (if (seq haku)
+        (let [start-time (System/currentTimeMillis)
+              counter (atom 0)
+              is-first-written (atom false)
+              pohjakoulutuskkodw (<? (koodisto-as-channel "pohjakoulutuskkodw"))
+              is-haku-with-ensikertalaisuus? (is-haku-with-ensikertalaisuus haku)
+              is-toisen-asteen-haku? (is-toinen-aste haku)
+              ataru-channel (fetch-hakemukset-from-ataru haku-oid size-of-henkilo-batch-from-onr-at-once
+                                                         (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?))
+              hakukohde-oids-for-hakukausi (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi haku))
+              haku-app-channel (if (empty? hakukohde-oids-for-hakukausi)
+                                 (throw (RuntimeException. (format "error: No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi)))
+                                 (fetch-hakemukset-from-haku-app-as-streaming-channel
+                                   haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
+                                   (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)))
+              close-channel (fn []
+                              (do
+                                (close-and-drain! haku-app-channel)
+                                (close-and-drain! ataru-channel)
+                                (if (compare-and-set! is-first-written false true)
+                                  (do (status channel 200)
+                                      (body channel "[]")
+                                      (close channel))
+                                  (do (body channel "]")
+                                      (close channel)))))
+              oppija-service-ticket-channel (fetch-hakurekisteri-service-ticket-channel)]
+          (try
+            (core-loop [channels [ataru-channel haku-app-channel]]
+              (let [[v ch] (alts? channels)]
+                (if (not (vector? v))
+                  (let [new-channels (remove #{ch} channels)]
+                    (if (not (empty? new-channels))
+                      (recur new-channels)))
+                  (let [[henkilo-oids batch mapper] v
+                        oppijat (if (or is-haku-with-ensikertalaisuus? is-toisen-asteen-haku?)
+                                  (<? (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel haku-oid henkilo-oids is-haku-with-ensikertalaisuus? oppija-service-ticket-channel)) nil)
+                        jsessionid (<? (onr-sessionid-channel))
+                        henkilot (<? (fetch-henkilot-channel jsessionid henkilo-oids))
+                        oppijat-by-oid (group-by #(get % "oppijanumero") oppijat)
+                        henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)
+                        organisaatiot (if is-toisen-asteen-haku? (let [oppilaitos-oids (flatten (map #(get % "oppilaitosOid") (flatten (map #(get % "opiskelu") oppijat))))]
+                                                                   (<? (fetch-organisations-in-batch-channel oppilaitos-oids))) nil)]
+                    (doseq [hakemus batch]
+                      (write-object-to-channel
+                        is-first-written
+                        (mapper henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot)
+                        channel))
+                    (let [bs (int (count batch))]
+                      (swap! counter (partial + bs)))
+                    (recur channels)))))
+            (log/info "Returned successfully" @counter "'hakemusta' from Haku-App and Ataru! Took" (- (System/currentTimeMillis) start-time) "ms!")
+            (catch Throwable e
+              (do
+                (log/error "Failed to write 'hakemukset'!" e)
+                (write-object-to-channel is-first-written
+                                         {:error (.getMessage e)}
+                                         channel)))
+            (finally
+              (close-channel))))
+        (do (status channel 404)
+            (body channel (to-json {:error (format "Haku %s not found" haku-oid)}))
+            (close channel))))
+    (catch Exception e (do (log/error "Exception in fetch-hakemukset-for-haku" e)
+                           (status channel 500)
+                           (body channel (.getMessage e))
+                           (close channel)))))
 
 (defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request user channel]
   (fetch-hakemukset-for-haku haku-oid vuosi kausi palauta-null-arvot? channel)
