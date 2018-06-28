@@ -14,8 +14,8 @@
       (let [ticket (<? (fetch-service-ticket-channel "/lomake-editori/auth/cas" true))
             response (<? (get-as-channel (resolve-url :lomake-editori.cas-by-ticket ticket) {:follow-redirects false}))]
         (try
-          (let [hakemukset (<? (get-as-channel (resolve-url :lomake-editori.tilastokeskus-by-haku-oid haku-oid) {:headers {"Cookie" (-> response :headers :set-cookie)}
-                                                                                                            :as      :stream}))
+          (let [hakemukset (<? (get-as-channel (resolve-url :lomake-editori.tilastokeskus-by-haku-oid haku-oid)
+                                               {:headers {"Cookie" (-> response :headers :set-cookie)} :as :stream}))
                 body-stream (hakemukset :body)]
             (try
               (read-json-stream-to-channel body-stream channel batch-size result-mapper)
