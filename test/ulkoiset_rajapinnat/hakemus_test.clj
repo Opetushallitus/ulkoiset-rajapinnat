@@ -41,8 +41,10 @@
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
                     fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])]
         (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231"))
-              status (-> response :status)]
-          (is (= status 200)))))
+              status (-> response :status)
+              body (response :body)]
+          (is (= status 200))
+          (is (= body "[]")))))
 
     (testing "Fetch hakemukset for haku with 'ataru' hakemuksia!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [{"oid" "1.2.3.4.5.6"}])
@@ -135,3 +137,43 @@
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference)
         ))))
+
+
+(defn mock-not-found-http [url options transform]
+  (log/info (str "Mocking url " url))
+  (def response (partial channel-response transform url))
+  (def ataru-json (resource "test/resources/hakemus/ataru.json"))
+  (case url
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.999999" (response 200 haku-ataru-deep-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/ABC" (response 200 "{}")
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
+    (response 404 "[]")))
+
+(deftest not-found-deep-test
+  (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
+                fetch-service-ticket-channel (mock-channel-fn "FAKEST")
+                fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
+                fetch-henkilot-channel (mock-channel-fn [])
+                koodisto-as-channel (mock-channel-fn {})
+                fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
+                http/get (fn [url options transform] (mock-not-found-http url options transform))
+                http/post (fn [url options transform] (mock-not-found-http url options transform))]
+
+    (testing "Hakemukset not found, returns empty array"
+      (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])]
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2017&kausi=kausi_s"))
+              status (-> response :status)
+              body (-> response :body)]
+          (is (= status 200))
+          (is (= "[]" body)))))
+
+    (testing "Haku not found, returns status 404"
+      (with-redefs []
+        (try
+          (let [response (client/get (api-call "/api/hakemus-for-haku/ABC?vuosi=2017&kausi=kausi_s"))]
+            (is (= false true) "should not reach this line"))
+          (catch Exception e
+            (is (= 404 ((ex-data e) :status)))
+            (is (re-find #"ABC" ((ex-data e) :body)))
+          ))))))
