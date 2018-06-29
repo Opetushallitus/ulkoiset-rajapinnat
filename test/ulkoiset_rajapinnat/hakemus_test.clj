@@ -160,9 +160,9 @@
                 http/get (fn [url options transform] (mock-not-found-http url options transform))
                 http/post (fn [url options transform] (mock-not-found-http url options transform))]
 
-    (testing "Hakemukset not found, returns empty array"
+    (testing "Hakemukset not found in statistics, returns empty array"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])]
-        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2017&kausi=kausi_s"))
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2015&kausi=kausi_s"))
               status (-> response :status)
               body (-> response :body)]
           (is (= status 200))
