@@ -42,6 +42,7 @@
   (let [duration (- (System/currentTimeMillis) start-time)
         method (get-method-from-request request)
         path-info (request :uri)
+        query-string (request :query-string)
         headers (request :headers)]
     {:user-agent    (user-agent-from-request request)
      :remote-addr   (remote-addr-from-request request)
@@ -51,7 +52,7 @@
      :customer      "OPH"
      :service       "ulkoiset-rajapinnat"
      :responseCode  response-code
-     :request       (str method " " path-info)
+     :request       (str method " " path-info "?" query-string)
      :requestMethod method
      :responseTime  (str duration)
      :caller-id (optional-value-or-dash "caller-id" headers)
