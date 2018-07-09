@@ -49,6 +49,7 @@
      :x-real-ip (optional-value-or-dash "x-real-ip" headers)
      :x-forwarded-for (optional-value-or-dash "x-forwarded-for" headers)
      :timestamp     (t/now)
+     :timestamp-local (t/time-now)
      :customer      "OPH"
      :service       "ulkoiset-rajapinnat"
      :responseCode  response-code
