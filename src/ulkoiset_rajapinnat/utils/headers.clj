@@ -1,5 +1,6 @@
 (ns ulkoiset-rajapinnat.utils.headers
-  (:require [clj-time.core :as t]))
+  (:require [clj-time.core :as t]
+            [clj-time.format :as f]))
 
 (defn- find-first [m & keys]
   (if-let [f (first keys)]
@@ -38,8 +39,13 @@
 (defn- optional-value-or-dash [name headers]
   (or (headers name) "-"))
 
+(def custom-time-formatter (f/with-zone (f/formatter "yyyy-MM-dd HH:mm:ss")
+                                        (t/default-time-zone)))
+
 (defn parse-request-headers [request response-code start-time]
   (let [duration (- (System/currentTimeMillis) start-time)
+        time-now (t/now)
+        time-now-local (f/unparse custom-time-formatter time-now)
         method (get-method-from-request request)
         path-info (request :uri)
         query-string (request :query-string)
@@ -48,7 +54,8 @@
      :remote-addr   (remote-addr-from-request request)
      :x-real-ip (optional-value-or-dash "x-real-ip" headers)
      :x-forwarded-for (optional-value-or-dash "x-forwarded-for" headers)
-     :timestamp     (t/now)
+     :timestamp     time-now
+     :timestamp-local time-now-local
      :customer      "OPH"
      :service       "ulkoiset-rajapinnat"
      :responseCode  response-code
