@@ -149,7 +149,7 @@
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
     (response 404 "[]")))
 
-(deftest not-found-deep-test
+(deftest invalid-request-deep-test
   (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                 fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
                 fetch-service-ticket-channel (mock-channel-fn "FAKEST")
@@ -160,14 +160,6 @@
                 http/get (fn [url options transform] (mock-not-found-http url options transform))
                 http/post (fn [url options transform] (mock-not-found-http url options transform))]
 
-    (testing "Hakemukset not found in statistics, returns empty array"
-      (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])]
-        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2015&kausi=kausi_s"))
-              status (-> response :status)
-              body (-> response :body)]
-          (is (= status 200))
-          (is (= "[]" body)))))
-
     (testing "Haku not found, returns status 404"
       (with-redefs []
         (try
@@ -176,4 +168,23 @@
           (catch Exception e
             (is (= 404 ((ex-data e) :status)))
             (is (re-find #"ABC" ((ex-data e) :body)))
-          ))))))
+            ))))
+
+    (testing "Invalid kausi parameter, returns status 400"
+      (with-redefs []
+        (try
+          (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2017&kausi=ABC"))]
+            (is (= false true) "should not reach this line"))
+          (catch Exception e
+            (is (= 400 ((ex-data e) :status)))
+            (is (re-find #"Unknown kausi param: ABC" ((ex-data e) :body)))))))
+
+    (testing "Hakemukset not found in statistics, returns empty array"
+      (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])]
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2015&kausi=kausi_s"))
+              status (-> response :status)
+              body (-> response :body)]
+          (is (= status 200))
+          (is (= "[]" body)))))
+
+))
