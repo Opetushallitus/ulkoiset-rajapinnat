@@ -70,7 +70,6 @@
 (defn handle-invalid-request [ex data request]
   (let [message (.getMessage ex)
         current-time (System/currentTimeMillis)]
-    (println (str "PETAR REQUEST "))
     (do-logging current-time "Server" request)
     (bad-request {:message message :type :info})))
 
