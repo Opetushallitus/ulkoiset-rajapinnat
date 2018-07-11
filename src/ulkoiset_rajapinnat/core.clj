@@ -2,11 +2,12 @@
   (:require [compojure.handler :only [site]]
         [org.httpkit.timer :refer :all]
         [compojure.api.sweet :refer :all]
+        [compojure.api.exception :as ex]
         [ring.util.http-response :refer :all]
         [schema.core :as s]
         [compojure.api.middleware :refer [no-response-coercion]]
         [ulkoiset-rajapinnat.utils.audit :refer [audit create-audit-logger]]
-        [ulkoiset-rajapinnat.utils.access :refer [access-log access-log-with-ticket-check-with-channel]]
+        [ulkoiset-rajapinnat.utils.access :refer [access-log access-log-with-ticket-check-with-channel handle-invalid-request]]
         [ulkoiset-rajapinnat.utils.runtime :refer [shutdown-hook]]
         [ulkoiset-rajapinnat.haku :refer [Haku haku-resource]]
         [ulkoiset-rajapinnat.hakukohde :refer [Hakukohde hakukohde-resource]]
@@ -15,7 +16,7 @@
         [ulkoiset-rajapinnat.valintaperusteet :refer [Valintaperusteet valintaperusteet-resource]]
         [ulkoiset-rajapinnat.utils.config :refer [config init-config]]
         [org.httpkit.server :refer :all]
-            [clojure.tools.logging :as log])
+        [clojure.tools.logging :as log])
   (:gen-class))
 
 (defn api-opintopolku-routes [audit-logger]
@@ -25,8 +26,8 @@
      {:ui   (-> @config :server :base-url)
       :spec (str (-> @config :server :base-url) "/swagger.json")
       :data {:info {:title       "Ulkoiset-rajapinnat"
-                    :description "Ulkoiset-rajapinnat"}
-             }}}
+                    :description "Ulkoiset-rajapinnat"}}}
+     :exceptions {:handlers {::ex/request-validation handle-invalid-request}}}
     (context (str (-> @config :server :base-url) "/api") []
       :tags ["api"]
       (GET "/healthcheck" []
@@ -67,7 +68,7 @@
                        vuosi :- String
                        kausi :- String]
         :responses {200 {:schema [Hakemus]}}
-        (log/info (str "Got incoming request to /hakemus-for-haku/" haku-oid))
+        (log/info (str "Got incoming request to /hakemus-for-haku/" haku-oid "?vuosi=" vuosi "&kausi=" kausi))
         (access-log-with-ticket-check-with-channel
            ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))

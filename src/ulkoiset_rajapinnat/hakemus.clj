@@ -270,7 +270,7 @@
             (close channel))))
     (catch Exception e (do (log/error "Exception in fetch-hakemukset-for-haku" e)
                            (status channel 500)
-                           (body channel (.getMessage e))
+                           (body channel (to-json {:error (.getMessage e)}))
                            (close channel)))))
 
 (defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request user channel]

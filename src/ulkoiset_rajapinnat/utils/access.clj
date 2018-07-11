@@ -30,9 +30,9 @@
    }
   )
 
-(defn- do-logging [start-time response-code request]
+(defn- do-logging [start-time closed-by request]
   (.info logger
-         (to-json (parse-request-headers request response-code start-time))))
+         (to-json (parse-request-headers request closed-by start-time))))
 
 (defn access-log
   ([response]
@@ -67,6 +67,11 @@
                   :personOid "1.2.246.562.24.50534365452"})))
     (do-real-authentication-and-authorisation-check ticket)))
 
+(defn handle-invalid-request [ex data request]
+  (let [message (.getMessage ex)
+        current-time (System/currentTimeMillis)]
+    (do-logging current-time "Server" request)
+    (bad-request {:message message :type :info})))
 
 (defn handle-exception [channel start-time exception]
   (let [message (.getMessage exception)]
@@ -93,7 +98,7 @@
     (if-let [some-ticket ticket]
       (let [start-time (System/currentTimeMillis)
             on-close-handler (fn [status] (do-logging start-time
-                                                      (case status :server-close "200" "Closed by client!") request))]
+                                                      (case status :server-close "Closed by server" "Closed by client!") request))]
         (with-channel request channel
                       (go
                         (try

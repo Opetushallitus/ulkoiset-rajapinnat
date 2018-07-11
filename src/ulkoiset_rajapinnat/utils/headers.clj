@@ -42,7 +42,7 @@
 (def custom-time-formatter (f/with-zone (f/formatter "yyyy-MM-dd HH:mm:ss")
                                         (t/default-time-zone)))
 
-(defn parse-request-headers [request response-code start-time]
+(defn parse-request-headers [request closed-by start-time]
   (let [duration (- (System/currentTimeMillis) start-time)
         time-now (t/now)
         time-now-local (f/unparse custom-time-formatter time-now)
@@ -58,7 +58,7 @@
      :timestamp-local time-now-local
      :customer      "OPH"
      :service       "ulkoiset-rajapinnat"
-     :responseCode  response-code
+     :closed-by     closed-by
      :request       (str method " " path-info "?" query-string)
      :requestMethod method
      :responseTime  (str duration)
