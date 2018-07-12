@@ -179,9 +179,18 @@
             (is (= 400 ((ex-data e) :status)))
             (is (re-find #"Unknown kausi param: ABC" ((ex-data e) :body)))))))
 
+    (testing "if year is not a four digit positive number, returns status 400"
+      (with-redefs []
+        (try
+          (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=-2017&kausi=s"))]
+            (is (= false true) "should not reach this line"))
+          (catch Exception e
+            (is (= 400 ((ex-data e) :status)))
+            (is (re-find #"Invalid vuosi: -2017" ((ex-data e) :body)))))))
+
     (testing "Hakemukset not found in statistics, returns empty array"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])]
-        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2015&kausi=kausi_s"))
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2015&kausi=s"))
               status (-> response :status)
               body (-> response :body)]
           (is (= status 200))

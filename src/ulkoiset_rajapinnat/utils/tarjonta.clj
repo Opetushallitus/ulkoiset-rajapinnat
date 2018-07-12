@@ -71,9 +71,15 @@
       kausi-uri-prefix-syksy
       (throw (IllegalArgumentException. (str "Unknown kausi param: " kausi))))))
 
+(defn- is-valid-year [year]
+  (when-let [year-digits (re-matches #"^\d\d\d\d$" year)]
+            (< 1000 (Integer/parseInt year-digits) 9000)))
+
 (defn hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan
   ([haku-oid vuosi kausi] (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi nil))
   ([haku-oid vuosi kausi valmis-haku]
+   (when (not (is-valid-year vuosi))
+     (throw (IllegalArgumentException. (str "Invalid vuosi: " vuosi))))
    (go-try (let [kausi-uri-prefix (to-kausi-uri-prefix kausi)
                  haku (if (nil? valmis-haku) (<? (haku-for-haku-oid-channel haku-oid)) valmis-haku)
                  hakukohde-oids (get haku "hakukohdeOids")

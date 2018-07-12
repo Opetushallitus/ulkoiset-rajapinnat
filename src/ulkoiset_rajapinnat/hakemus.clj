@@ -270,7 +270,8 @@
                (body channel (to-json {:error (format "Haku %s not found" haku-oid)}))
                (close channel))))
      (catch Throwable e (let [error-message (.getMessage e)
-                              is-illegal-argument (instance? IllegalArgumentException (.getCause e))
+                              is-illegal-argument (or (instance? IllegalArgumentException e)
+                                                      (instance? IllegalArgumentException (.getCause e)))
                               status-code (if is-illegal-argument 400 500)]
                           (log/error "Exception in fetch-hakemukset-for-haku" e)
                           (status channel status-code)
