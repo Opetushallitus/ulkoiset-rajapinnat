@@ -113,9 +113,9 @@
   ) (filter #(not (nil? %)) all-hakukohteet)))
 
 (defn valintaperusteet-resource
-  ([request user channel]
-    (valintaperusteet-resource nil request user channel))
-  ([hakukohde-oid request user channel]
+  ([request user channel log-to-access-log]
+    (valintaperusteet-resource nil request user channel log-to-access-log))
+  ([hakukohde-oid request user channel log-to-access-log]
     (def requested-oids (if (nil? hakukohde-oid) (parse-json-request request) (list hakukohde-oid)))
    (async/go
      (try (let [session-id (<? (fetch-jsessionid-channel "/valintaperusteet-service"))
@@ -131,11 +131,13 @@
                 syotettavat-arvot (<? (post-if-not-empty (resolve-url :valintaperusteet-service.hakukohde-avaimet) hakukohde-oidit))]
             (let [json (to-json (result hakukohteet valinnanvaiheet valintatapajonot hakijaryhmat valintaryhmat syotettavat-arvot))]
               (log/info (type hakukohteet))
+              (log-to-access-log 200 nil)
               (-> channel
                   (status 200)
                   (body-and-close json))))
           (catch Exception e
             (do
               (log/error (format "Virhe haettaessa valintaperusteita %d hakukohteelle!" (count requested-oids)), e)
+              (log-to-access-log 500 (.getMessage e))
               ((exception-response channel) e)))))
    (schedule-task (* 1000 60 60) (close channel))))

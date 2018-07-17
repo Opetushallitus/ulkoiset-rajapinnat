@@ -203,7 +203,7 @@
     (engulf channel)))
 
 (defn fetch-hakemukset-for-haku
-  [haku-oid vuosi kausi palauta-null-arvot? channel]
+  [haku-oid vuosi kausi palauta-null-arvot? channel log-to-access-log]
    (go
      (try
        (let [haku (<? (haku-for-haku-oid-channel haku-oid))]
@@ -257,18 +257,21 @@
                        (let [bs (int (count batch))]
                          (swap! counter (partial + bs)))
                        (recur channels)))))
+               (log-to-access-log 200 nil)
                (log/info "Returned successfully" @counter "'hakemusta' from Haku-App and Ataru! Took" (- (System/currentTimeMillis) start-time) "ms!")
                (catch Throwable e
                  (do
                    (log/error "Failed to write 'hakemukset'!" e)
                    (write-object-to-channel is-first-written
                                             {:error (.getMessage e)}
-                                            channel)))
+                                            channel)
+                   (log-to-access-log 500 (.getMessage e))))
                (finally
                  (close-channel))))
            (do (status channel 404)
                (body channel (to-json {:error (format "Haku %s not found" haku-oid)}))
-               (close channel))))
+               (close channel)
+               (log-to-access-log 404 (format "Haku %s not found" haku-oid)))))
      (catch Throwable e (let [error-message (.getMessage e)
                               is-illegal-argument (or (instance? IllegalArgumentException e)
                                                       (instance? IllegalArgumentException (.getCause e)))
@@ -276,8 +279,9 @@
                           (log/error "Exception in fetch-hakemukset-for-haku" e)
                           (status channel status-code)
                           (body channel (to-json {:error error-message}))
-                          (close channel))))))
+                          (close channel)
+                          (log-to-access-log status-code error-message))))))
 
-(defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request user channel]
-  (fetch-hakemukset-for-haku haku-oid vuosi kausi palauta-null-arvot? channel)
+(defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request user channel log-to-access-log]
+  (fetch-hakemukset-for-haku haku-oid vuosi kausi palauta-null-arvot? channel log-to-access-log)
   (schedule-task (* 1000 60 60 12) (close channel)))

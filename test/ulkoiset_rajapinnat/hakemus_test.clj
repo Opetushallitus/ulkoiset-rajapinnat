@@ -2,11 +2,11 @@
   (:require [clojure.test :refer :all]
             [full.async :refer :all]
             [clojure.core.async :refer [<! promise-chan >! go put! close!]]
-            [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles]]
+            [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles write-access-log]]
             [ulkoiset-rajapinnat.oppija :refer [fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel]]
             [clj-log4j2.core :as log]
             [org.httpkit.client :as http]
-            [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json]]
             [clj-http.client :as client]
             [cheshire.core :refer [parse-string]]
             [ulkoiset-rajapinnat.onr :refer :all]
@@ -17,7 +17,8 @@
             [ulkoiset-rajapinnat.utils.cas :refer :all]
             [ulkoiset-rajapinnat.fixture :refer :all]
             [clojure.data :refer [diff]]
-            [ulkoiset-rajapinnat.test_utils :refer :all]))
+            [picomock.core :as pico]
+            [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write]]))
 
  (use-fixtures :once fixture)
 
@@ -54,8 +55,7 @@
               status (-> response :status)
               body (response :body)]
           (is (= status 200))
-          (is (= (count body) 1))
-          )))
+          (is (= (count body) 1)))))
 
     (testing "Fetch hakemukset for haku with 'haku-app' hakemuksia!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
@@ -65,8 +65,7 @@
               status (-> response :status)
               body (response :body)]
           (is (= status 200))
-          (is (= (count body) 1))
-          )))))
+          (is (= (count body) 1)))))))
 
 (def haku-json (resource "test/resources/hakemus/haku.json"))
 (def haku-ataru-deep-json (resource "test/resources/hakemus/haku-ataru-deep.json"))
@@ -104,8 +103,7 @@
         (log/info (to-json body true))
         (def expected (parse-string (resource "test/resources/hakemus/result.json")))
         (def difference (diff expected body))
-        (is (= [nil nil expected] difference) difference)
-        ))))
+        (is (= [nil nil expected] difference) difference)))))
 
 (defn mock-ataru-http [url options transform]
   (log/info (str "Mocking url " url))
@@ -149,8 +147,8 @@
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
     (response 404 "[]")))
 
-(deftest invalid-request-deep-test
-  (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+(deftest valid-and-invalid-requests-deep-test
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                 fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
                 fetch-service-ticket-channel (mock-channel-fn "FAKEST")
                 fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
@@ -161,39 +159,45 @@
                 http/post (fn [url options transform] (mock-not-found-http url options transform))]
 
     (testing "Haku not found, returns status 404"
-      (with-redefs []
-        (try
-          (let [response (client/get (api-call "/api/hakemus-for-haku/ABC?vuosi=2017&kausi=kausi_s"))]
-            (is (= false true) "should not reach this line"))
-          (catch Exception e
-            (is (= 404 ((ex-data e) :status)))
-            (is (re-find #"ABC" ((ex-data e) :body)))
-            ))))
+      (let [access-log-mock (pico/mock mock-write-access-log)]
+        (with-redefs [write-access-log access-log-mock]
+          (try
+            (let [response (client/get (api-call "/api/hakemus-for-haku/ABC?vuosi=2017&kausi=kausi_s"))]
+              (is (= false true) "should not reach this line"))
+            (catch Exception e
+              (assert-access-log-write access-log-mock 404 "Haku ABC not found")
+              (is (= 404 ((ex-data e) :status)))
+              (is (re-find #"ABC" ((ex-data e) :body))))))))
 
     (testing "Invalid kausi parameter, returns status 400"
-      (with-redefs []
-        (try
-          (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2017&kausi=ABC"))]
-            (is (= false true) "should not reach this line"))
-          (catch Exception e
-            (is (= 400 ((ex-data e) :status)))
-            (is (re-find #"Unknown kausi param: ABC" ((ex-data e) :body)))))))
+      (let [access-log-mock (pico/mock mock-write-access-log)]
+        (with-redefs [write-access-log access-log-mock]
+          (try
+            (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2017&kausi=ABC"))]
+              (is (= false true) "should not reach this line"))
+            (catch Exception e
+              (assert-access-log-write access-log-mock 400 "Unknown kausi param: ABC")
+              (is (= 400 ((ex-data e) :status)))
+              (is (re-find #"Unknown kausi param: ABC" ((ex-data e) :body))))))))
 
     (testing "if year is not a four digit positive number, returns status 400"
-      (with-redefs []
-        (try
-          (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=-2017&kausi=s"))]
-            (is (= false true) "should not reach this line"))
-          (catch Exception e
-            (is (= 400 ((ex-data e) :status)))
-            (is (re-find #"Invalid vuosi: -2017" ((ex-data e) :body)))))))
+      (let [access-log-mock (pico/mock mock-write-access-log)]
+        (with-redefs [write-access-log access-log-mock]
+          (try
+            (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=-2017&kausi=s"))]
+              (is (= false true) "should not reach this line"))
+            (catch Exception e
+              (assert-access-log-write access-log-mock 400 "Invalid vuosi: -2017")
+              (is (= 400 ((ex-data e) :status)))
+              (is (re-find #"Invalid vuosi: -2017" ((ex-data e) :body))))))))
 
     (testing "Hakemukset not found in statistics, returns empty array"
-      (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])]
-        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2015&kausi=s"))
-              status (-> response :status)
-              body (-> response :body)]
-          (is (= status 200))
-          (is (= "[]" body)))))
-
-))
+      (let [access-log-mock (pico/mock mock-write-access-log)]
+        (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
+                      write-access-log access-log-mock]
+          (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2015&kausi=s"))
+                status (-> response :status)
+                body (-> response :body)]
+            (assert-access-log-write access-log-mock 200 nil)
+            (is (= status 200))
+            (is (= "[]" body))))))))

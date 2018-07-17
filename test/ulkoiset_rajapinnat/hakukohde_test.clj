@@ -7,13 +7,14 @@
             [clj-http.client :as client]
             [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string]]
-            [ulkoiset-rajapinnat.test_utils :refer :all]
             [clojure.core.async :refer [go]]
-            [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles]]
+            [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles write-access-log]]
             [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json to-json]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.fixture :refer :all]
-            [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size valintapisteet-batch-size trim-streaming-response]])
+            [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size valintapisteet-batch-size trim-streaming-response]]
+            [picomock.core :as pico]
+            [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write]])
   (:import (java.io ByteArrayInputStream)))
 
 (use-fixtures :once fixture)
@@ -59,60 +60,57 @@
     (response 404 "[]")))
 
 (deftest hakukohde-api-test
-   ; Might be that this test case is not correct. Those API calls are not returning status 404 but empty object
-   ; To see the example empty objects, see those "*-empty.json" files. They are generated from the real output
-   ; (in test environment) of the APIs when given a non-existent hakuOid. All those APIs returned status 200 when
-   ; given the wrong hakuOid.
-  (testing "hakukohde not found"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                  http/get (fn [url options transform] (channel-response transform url 404 ""))
-                  http/post (fn [url options transform] (channel-response transform url 404 ""))
-                  fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
-      (try
-        (let [response (client/post (api-call "/api/hakukohde-for-haku/1.2.246.562.29.25191045126") {:body "[\"1.2.3.444\"]" :content-type :json})]
-          (is (= false true)))
-        (catch Exception e
-          (is (= 404 ((ex-data e) :status)))))))
-  (testing "return status 200 and empty list if there are no hakukohde for haku, and do not invoke hakukohde/tilastokeskus"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                  oppijat-batch-size 2
-                  valintapisteet-batch-size 2
-                  http/get (fn [url options transform] (mock-http url options transform))
-                  http/post (fn [url options transform] (mock-http url options transform))
-                  fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
-      (try
+  (testing "return status 200 and empty list if there are no hakukohde for existing haku, and do not invoke hakukohde/tilastokeskus"
+    (let [access-log-mock (pico/mock mock-write-access-log)]
+      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                    oppijat-batch-size 2
+                    valintapisteet-batch-size 2
+                    http/get (fn [url options transform] (mock-http url options transform))
+                    http/post (fn [url options transform] (mock-http url options transform))
+                    fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))
+                    write-access-log access-log-mock]
         (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.9999009999"))
-             status (-> response :status)
-             body (-> (parse-json-body response))]
+              status (-> response :status)
+              body (-> (parse-json-body response))]
+          (assert-access-log-write access-log-mock 200 nil)
           (is (= status 200))
           (log/info (to-json body true))
           (def expected (parse-string (resource "test/resources/hakukohde/result-empty.json")))
           (def difference (diff expected body))
           (is (= [nil nil expected] difference) difference)))))
+
   (testing "return status 500 if POST request to tilastokeskus fails with status 500 (don't get stuck)"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                  oppijat-batch-size 2
-                  valintapisteet-batch-size 2
-                  http/get (fn [url options transform] (mock-http-stuck url options transform))
-                  http/post (fn [url options transform] (mock-http-stuck url options transform))
-                  fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
-      (try
-        (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.25191045126"))]
-             (is (= false true)))
-        (catch Exception e
-          (is (= 500 ((ex-data e) :status)))))))
+    (let [access-log-mock (pico/mock mock-write-access-log)]
+      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                    oppijat-batch-size 2
+                    valintapisteet-batch-size 2
+                    http/get (fn [url options transform] (mock-http-stuck url options transform))
+                    http/post (fn [url options transform] (mock-http-stuck url options transform))
+                    fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))
+                    write-access-log access-log-mock]
+        (try
+          (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.25191045126"))]
+            (is (= false true)))
+          (catch Exception e
+            (assert-access-log-write access-log-mock 500 "Unexpected response status 500 from url http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus")
+            (is (= 500 ((ex-data e) :status))))))))
+
+
   (testing "Fetch hakukohde"
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                  oppijat-batch-size 2
-                  valintapisteet-batch-size 2
-                  http/get (fn [url options transform] (mock-http url options transform))
-                  http/post (fn [url options transform] (mock-http url options transform))
-                  fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))]
-      (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.25191045126"))
-            status (-> response :status)
-            body (-> (parse-json-body response))]
-        (is (= status 200))
-        (log/info (to-json body true))
-        (def expected (parse-string (resource "test/resources/hakukohde/result.json")))
-        (def difference (diff expected body))
-        (is (= [nil nil expected] difference) difference)))))
+    (let [access-log-mock (pico/mock mock-write-access-log)]
+      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                    oppijat-batch-size 2
+                    valintapisteet-batch-size 2
+                    http/get (fn [url options transform] (mock-http url options transform))
+                    http/post (fn [url options transform] (mock-http url options transform))
+                    fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))
+                    write-access-log access-log-mock]
+        (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.25191045126"))
+              status (-> response :status)
+              body (-> (parse-json-body response))]
+          (is (= status 200))
+          (log/info (to-json body true))
+          (def expected (parse-string (resource "test/resources/hakukohde/result.json")))
+          (def difference (diff expected body))
+          (is (= [nil nil expected] difference) difference)
+          (assert-access-log-write access-log-mock 200 nil))))))

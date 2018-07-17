@@ -8,12 +8,13 @@
             [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string]]
             [clojure.core.async :refer [go]]
-            [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles]]
+            [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles write-access-log]]
             [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json to-json]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.fixture :refer :all]
             [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size valintapisteet-batch-size trim-streaming-response]]
-            [ulkoiset-rajapinnat.test_utils :refer :all]
+            [picomock.core :as pico]
+            [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write]]
             [clojure.string :as str])
   (:import (java.io ByteArrayInputStream)))
 
@@ -47,50 +48,60 @@
         (response 404 "[]")))))
 
 (deftest vastaanotto-api-test
-   (testing "No vastaanotot found"
-     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                   oppijat-batch-size 2
-                   valintapisteet-batch-size 2
-                   http/get (fn [url options transform] (channel-response transform url 404 ""))
-                   http/post (fn [url options transform] (channel-response transform url 404 ""))
-                   fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
-       (try
-         (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))]
-           (is (= false true)))
-         (catch Exception e
-           (is (= 500 ((ex-data e) :status)))))))
-   (testing "Fetch vastaanotot"
-     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                   oppijat-batch-size 2
-                   valintapisteet-batch-size 2
-                   http/get (fn [url options transform] (mock-http url options transform))
-                   http/post (fn [url options transform] (mock-http url options transform))
-                   fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
-       (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))
-             status (-> response :status)
-             body (-> (parse-json-body response))]
-         (is (= status 200))
-         (log/info (to-json body true))
-         (def expected (parse-string (resource "test/resources/vastaanotto/result.json")))
-         (def difference (diff expected body))
-         (is (= [nil nil expected] difference) difference))))
 
-   (testing "Fetch vastaanotot correctly also when avaimet returns empty list (don't return error)"
-     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                   oppijat-batch-size 2
-                   valintapisteet-batch-size 2
-                   http/get (fn [url options transform] (mock-http url options transform :empty-avaimet))
-                   http/post (fn [url options transform] (mock-http url options transform :empty-avaimet))
-                   fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
-       (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))
-             status (-> response :status)
-             body (-> (parse-json-body response))]
-         (is (= status 200))
-         (log/info (to-json body true))
-         (def expected (parse-string (resource "test/resources/vastaanotto/result-when-empty-avaimet.json")))
-         (def difference (diff expected body))
-         (is (= [nil nil expected] difference) difference))))
-   )
+  (testing "No vastaanotot found"
+    (let [access-log-mock (pico/mock mock-write-access-log)]
+      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                    oppijat-batch-size 2
+                    valintapisteet-batch-size 2
+                    http/get (fn [url options transform] (channel-response transform url 404 ""))
+                    http/post (fn [url options transform] (channel-response transform url 404 ""))
+                    fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
+                    write-access-log access-log-mock]
+        (try
+          (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))]
+            (is (= false true)))
+          (catch Exception e
+            (assert-access-log-write access-log-mock 500 "Unexpected response status 404 from url http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126")
+            (is (= 500 ((ex-data e) :status))))))))
+
+  (testing "Fetch vastaanotot"
+    (let [access-log-mock (pico/mock mock-write-access-log)]
+      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                    oppijat-batch-size 2
+                    valintapisteet-batch-size 2
+                    http/get (fn [url options transform] (mock-http url options transform))
+                    http/post (fn [url options transform] (mock-http url options transform))
+                    fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
+                    write-access-log access-log-mock]
+        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))
+              status (-> response :status)
+              body (-> (parse-json-body response))]
+          (is (= status 200))
+          (assert-access-log-write access-log-mock 200 nil)
+          (log/info (to-json body true))
+          (def expected (parse-string (resource "test/resources/vastaanotto/result.json")))
+          (def difference (diff expected body))
+          (is (= [nil nil expected] difference) difference)))))
+
+  (testing "Fetch vastaanotot correctly also when avaimet returns empty list (don't return error)"
+    (let [access-log-mock (pico/mock mock-write-access-log)]
+      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                    oppijat-batch-size 2
+                    valintapisteet-batch-size 2
+                    http/get (fn [url options transform] (mock-http url options transform :empty-avaimet))
+                    http/post (fn [url options transform] (mock-http url options transform :empty-avaimet))
+                    fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
+                    write-access-log access-log-mock]
+        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))
+              status (-> response :status)
+              body (-> (parse-json-body response))]
+          (is (= status 200))
+          (assert-access-log-write access-log-mock 200 nil)
+          (log/info (to-json body true))
+          (def expected (parse-string (resource "test/resources/vastaanotto/result-when-empty-avaimet.json")))
+          (def difference (diff expected body))
+          (is (= [nil nil expected] difference) difference))))))
 
 (deftest vts-response-trim-test
   (testing "Trim streaming response"

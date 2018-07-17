@@ -30,9 +30,12 @@
    }
   )
 
-(defn- do-logging [start-time closed-by request]
-  (.info logger
-         (to-json (parse-request-headers request closed-by start-time))))
+(defn write-access-log
+  ([start-time response-code request]
+   (write-access-log start-time response-code request nil))
+
+  ([start-time response-code request error-message]
+   (.info logger (to-json (parse-request-headers request response-code start-time error-message)))))
 
 (defn access-log
   ([response]
@@ -40,7 +43,7 @@
      (access-log response start-time)))
   ([response start-time]
    (fn [request]
-     (do-logging start-time (str (response :status)) request)
+     (write-access-log start-time (str (response :status)) request)
      response)))
 
 (defn- do-real-authentication-and-authorisation-check [ticket]
@@ -70,7 +73,7 @@
 (defn handle-invalid-request [ex data request]
   (let [message (.getMessage ex)
         current-time (System/currentTimeMillis)]
-    (do-logging current-time "Server" request)
+    (write-access-log current-time 400 request (.getMessage ex))
     (bad-request {:message message :type :info})))
 
 (defn handle-exception [channel start-time exception]
@@ -97,15 +100,17 @@
   (fn [request]
     (if-let [some-ticket ticket]
       (let [start-time (System/currentTimeMillis)
-            on-close-handler (fn [status] (do-logging start-time
-                                                      (case status :server-close "Closed by server" "Closed by client!") request))]
+            log-when-closed-by-client (fn [status] (when (not= status :server-close)
+                                                     (write-access-log start-time (format "Closed by client (%s)" status) request)))
+            log-when-closed-by-server (fn [response-code error-message]
+                                        (write-access-log start-time response-code request error-message))]
         (with-channel request channel
                       (go
                         (try
                           (let [user (<? (check-ticket-is-valid-and-user-has-required-roles ticket))]
-                            (on-close channel on-close-handler)
+                            (on-close channel log-when-closed-by-client)
                             (try
-                              (operation request user channel)
+                              (operation request user channel log-when-closed-by-server)
                               (catch Exception e (do
                                                    (log/error "Uncaught exception in request handler!")
                                                    (log/error e)
