@@ -26,7 +26,6 @@
 (def default-write-access-log write-access-log)
 
 (def mock-write-access-log (fn [start-time response-code request error-message]
-                             (println (str "ACCESS LOG CODE " response-code))
                              (default-write-access-log start-time response-code request error-message)))
 
 (defn assert-access-log-write [access-log-mock expected-status expected-error-message]
