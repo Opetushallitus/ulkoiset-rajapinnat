@@ -180,7 +180,7 @@
           valintaperusteet (<? (async-map-safe vector (map #(post %) partitions) []))]
       (apply merge valintaperusteet))))
 
-(defn vastaanotot-for-haku [haku-oid vuosi kausi request user channel]
+(defn vastaanotot-for-haku [haku-oid vuosi kausi request user channel log-to-access-log]
   (async/go
     (try
       (let [haun-hakukohteet (if-let [r (not-empty (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi)))] r
@@ -200,14 +200,16 @@
         (log/info (format "Haku %s kielikokeita %d kpl" haku-oid (count kielikokeet)))
         (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet kielikokeet)
               json (to-json (map build-vastaanotto vastaanotot))]
+          (log-to-access-log 200 nil)
           (-> channel
               (status 200)
               (body-and-close json))))
       (catch Exception e
         (do
           (log/error (format "Virhe haettaessa vastaanottoja haulle %s!" haku-oid), e)
+          (log-to-access-log 500 (.getMessage e))
           ((exception-response channel) e))))))
 
-(defn vastaanotto-resource [haku-oid vuosi kausi request user channel]
-  (vastaanotot-for-haku haku-oid vuosi kausi request user channel)
+(defn vastaanotto-resource [haku-oid vuosi kausi request user channel log-to-access-log]
+  (vastaanotot-for-haku haku-oid vuosi kausi request user channel log-to-access-log)
   (schedule-task (* 1000 60 60 12) (close channel)))

@@ -91,7 +91,7 @@
         mapper (comp handle-koulutus-result parse-json-body-stream (partial log-fetch "koulutukset" start-time))]
     (get-as-channel (resolve-url :tarjonta-service.koulutus-search-by-haku-oid haku-oid) {:as :stream} mapper)))
 
-(defn hakukohde-resource [haku-oid palauta-null-arvot? request user channel]
+(defn hakukohde-resource [haku-oid palauta-null-arvot? request user channel log-to-access-log]
   (async/go
     (try
       (let [hakukohde-tulos (<? (fetch-hakukohde-tulos-channel haku-oid))
@@ -117,6 +117,9 @@
               json (to-json (if palauta-null-arvot? converted-hakukohdes (remove-nils converted-hakukohdes)))]
           (-> channel
               (status 200)
-              (body-and-close json))))
-      (catch Exception e ((exception-response channel) e))))
+              (body-and-close json))
+          (log-to-access-log 200 nil)))
+      (catch Exception e
+        ((exception-response channel) e)
+        (log-to-access-log 500 (.getMessage e)))))
   (schedule-task (* 1000 60 60) (close channel)))
