@@ -22,3 +22,8 @@
 (defn get-value-if-not-nil
   [k coll]
   (if (nil? coll) nil (get coll k)))
+
+(defn is-valid-year
+  [year]
+  (when-let [year-digits (re-matches #"^\d\d\d\d$" year)]
+    (< 1000 (Integer/parseInt year-digits) 9000)))

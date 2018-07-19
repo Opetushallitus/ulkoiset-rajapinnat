@@ -148,7 +148,7 @@
     (response 404 "[]")))
 
 (deftest valid-and-invalid-requests-deep-test
-    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+  (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                 fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
                 fetch-service-ticket-channel (mock-channel-fn "FAKEST")
                 fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))

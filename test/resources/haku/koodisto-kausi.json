@@ -1,0 +1,46 @@
+[
+  {
+    "koodiUri": "kausi_s",
+    "metadata": [
+      {
+        "nimi": "Höst",
+        "lyhytNimi": "H",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Autumn",
+        "lyhytNimi": "A",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Syksy",
+        "lyhytNimi": "S",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "S"
+  },
+  {
+    "koodiUri": "kausi_k",
+    "metadata": [
+      {
+        "nimi": "Spring",
+        "lyhytNimi": "S",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Vår",
+        "lyhytNimi": "V",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Kevät",
+        "lyhytNimi": "K",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "K"
+  }
+]

@@ -1,0 +1,4287 @@
+[
+  {
+    "koodiUri": "kieli_bi",
+    "metadata": [
+      {
+        "nimi": "bislama",
+        "lyhytNimi": "bislama",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Bislama",
+        "lyhytNimi": "Bislama",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "bislama",
+        "lyhytNimi": "bislama",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "BI"
+  },
+  {
+    "koodiUri": "kieli_gd",
+    "metadata": [
+      {
+        "nimi": "skotsk gäliska",
+        "lyhytNimi": "skotsk gäliska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "gaeli",
+        "lyhytNimi": "gaeli",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Gaelic, Scottish Gaelic",
+        "lyhytNimi": "Gaelic, Scottish Gaelic",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "GD"
+  },
+  {
+    "koodiUri": "kieli_te",
+    "metadata": [
+      {
+        "nimi": "telugu",
+        "lyhytNimi": "telugu",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "telugu",
+        "lyhytNimi": "telugu",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Telegu",
+        "lyhytNimi": "Telegu",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TE"
+  },
+  {
+    "koodiUri": "kieli_kv",
+    "metadata": [
+      {
+        "nimi": "Komi",
+        "lyhytNimi": "Komi",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "komi",
+        "lyhytNimi": "komi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "komi",
+        "lyhytNimi": "komi",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KV"
+  },
+  {
+    "koodiUri": "kieli_hy",
+    "metadata": [
+      {
+        "nimi": "armeniska",
+        "lyhytNimi": "armeniska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Armenian",
+        "lyhytNimi": "Armenian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "armenia",
+        "lyhytNimi": "armenia",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "HY"
+  },
+  {
+    "koodiUri": "kieli_dz",
+    "metadata": [
+      {
+        "nimi": "dzongkha",
+        "lyhytNimi": "dzongkha",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "dzongkha",
+        "lyhytNimi": "dzongkha",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Dzongkha; Bhutani; Butanese",
+        "lyhytNimi": "Dzongkha; Bhutani; Butanese",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "DZ"
+  },
+  {
+    "koodiUri": "kieli_fj",
+    "metadata": [
+      {
+        "nimi": "fiji",
+        "lyhytNimi": "fiji",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "fidži",
+        "lyhytNimi": "fidži",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Fijian",
+        "lyhytNimi": "Fijian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "FJ"
+  },
+  {
+    "koodiUri": "kieli_my",
+    "metadata": [
+      {
+        "nimi": "Burmese, Myanmar",
+        "lyhytNimi": "Burmese, Myanmar",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "burmanska",
+        "lyhytNimi": "burmanska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "burma",
+        "lyhytNimi": "burma",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "MY"
+  },
+  {
+    "koodiUri": "kieli_oc",
+    "metadata": [
+      {
+        "nimi": "Occitan, Provencal",
+        "lyhytNimi": "Occitan, Provencal",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "occitanska, provensalska",
+        "lyhytNimi": "occitanska, provensalska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "oksitaani, provensaali",
+        "lyhytNimi": "oksitaani, provensaali",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "OC"
+  },
+  {
+    "koodiUri": "kieli_sd",
+    "metadata": [
+      {
+        "nimi": "sindhi",
+        "lyhytNimi": "sindhi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "sindhi",
+        "lyhytNimi": "sindhi",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Sindhi",
+        "lyhytNimi": "Sindhi",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SD"
+  },
+  {
+    "koodiUri": "kieli_hr",
+    "metadata": [
+      {
+        "nimi": "Croatian",
+        "lyhytNimi": "Croatian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kroatia",
+        "lyhytNimi": "kroatia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "kroatiska",
+        "lyhytNimi": "kroatiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "HR"
+  },
+  {
+    "koodiUri": "kieli_uz",
+    "metadata": [
+      {
+        "nimi": "Uzbek",
+        "lyhytNimi": "Uzbek",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "uzbekki",
+        "lyhytNimi": "uzbekki",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "uzbekiska",
+        "lyhytNimi": "uzbekiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "UZ"
+  },
+  {
+    "koodiUri": "kieli_vo",
+    "metadata": [
+      {
+        "nimi": "volapyk",
+        "lyhytNimi": "volapyk",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "volapük",
+        "lyhytNimi": "volapük",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Volapük",
+        "lyhytNimi": "Volapük",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "VO"
+  },
+  {
+    "koodiUri": "kieli_sq",
+    "metadata": [
+      {
+        "nimi": "Albanian",
+        "lyhytNimi": "Albanian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "albania",
+        "lyhytNimi": "albania",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "albanska",
+        "lyhytNimi": "albanska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SQ"
+  },
+  {
+    "koodiUri": "kieli_gg",
+    "metadata": [
+      {
+        "nimi": "guernsey",
+        "lyhytNimi": "guernsey",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "guernsey",
+        "lyhytNimi": "guernsey",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Guernesiais",
+        "lyhytNimi": "Guernesiais",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "GG"
+  },
+  {
+    "koodiUri": "kieli_ko",
+    "metadata": [
+      {
+        "nimi": "korea",
+        "lyhytNimi": "korea",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "koreanska",
+        "lyhytNimi": "koreanska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Korean",
+        "lyhytNimi": "Korean",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KO"
+  },
+  {
+    "koodiUri": "kieli_su",
+    "metadata": [
+      {
+        "nimi": "Sundanese",
+        "lyhytNimi": "Sundanese",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "sundanesiska",
+        "lyhytNimi": "sundanesiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "sunda",
+        "lyhytNimi": "sunda",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SU"
+  },
+  {
+    "koodiUri": "kieli_se",
+    "metadata": [
+      {
+        "nimi": "samiska",
+        "lyhytNimi": "samiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "pohjoissaame",
+        "lyhytNimi": "pohjoissaame",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Northern Sami",
+        "lyhytNimi": "Northern Sami",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SE"
+  },
+  {
+    "koodiUri": "kieli_tg",
+    "metadata": [
+      {
+        "nimi": "tadzjikiska",
+        "lyhytNimi": "tadzjikiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "tadžikki",
+        "lyhytNimi": "tadžikki",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Tajiki",
+        "lyhytNimi": "Tajiki",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TG"
+  },
+  {
+    "koodiUri": "kieli_98",
+    "metadata": [
+      {
+        "nimi": "Non-official language",
+        "lyhytNimi": "Non-official language",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "ei virallinen kieli",
+        "lyhytNimi": "ei virallinen kieli",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "inte officielt språk",
+        "lyhytNimi": "inte officielt språk",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "98"
+  },
+  {
+    "koodiUri": "kieli_ee",
+    "metadata": [
+      {
+        "nimi": "ewe",
+        "lyhytNimi": "ewe",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "ewe",
+        "lyhytNimi": "ewe",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Ewe",
+        "lyhytNimi": "Ewe",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "EE"
+  },
+  {
+    "koodiUri": "kieli_is",
+    "metadata": [
+      {
+        "nimi": "isländska",
+        "lyhytNimi": "isländska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "islanti",
+        "lyhytNimi": "islanti",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Icelandic",
+        "lyhytNimi": "Icelandic",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "IS"
+  },
+  {
+    "koodiUri": "kieli_ak",
+    "metadata": [
+      {
+        "nimi": "akan",
+        "lyhytNimi": "akan",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Akan",
+        "lyhytNimi": "Akan",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "akan",
+        "lyhytNimi": "akan",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AK"
+  },
+  {
+    "koodiUri": "kieli_mt",
+    "metadata": [
+      {
+        "nimi": "malta",
+        "lyhytNimi": "malta",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "maltesiska",
+        "lyhytNimi": "maltesiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Maltese",
+        "lyhytNimi": "Maltese",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "MT"
+  },
+  {
+    "koodiUri": "kieli_ug",
+    "metadata": [
+      {
+        "nimi": "Uighur",
+        "lyhytNimi": "Uighur",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "uiguriska",
+        "lyhytNimi": "uiguriska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "uiguuri",
+        "lyhytNimi": "uiguuri",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "UG"
+  },
+  {
+    "koodiUri": "kieli_mr",
+    "metadata": [
+      {
+        "nimi": "marathi",
+        "lyhytNimi": "marathi",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "marathi",
+        "lyhytNimi": "marathi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Marathi",
+        "lyhytNimi": "Marathi",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "MR"
+  },
+  {
+    "koodiUri": "kieli_sg",
+    "metadata": [
+      {
+        "nimi": "sango",
+        "lyhytNimi": "sango",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "sango",
+        "lyhytNimi": "sango",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Sango, Sangho",
+        "lyhytNimi": "Sango, Sangho",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SG"
+  },
+  {
+    "koodiUri": "kieli_ie",
+    "metadata": [
+      {
+        "nimi": "interlingue",
+        "lyhytNimi": "interlingue",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Interlingua",
+        "lyhytNimi": "Interlingua",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "interlingue, occidental",
+        "lyhytNimi": "interlingue, occidental",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "IE"
+  },
+  {
+    "koodiUri": "kieli_ro",
+    "metadata": [
+      {
+        "nimi": "rumänska",
+        "lyhytNimi": "rumänska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Romanian",
+        "lyhytNimi": "Romanian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "romania",
+        "lyhytNimi": "romania",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "RO"
+  },
+  {
+    "koodiUri": "kieli_aa",
+    "metadata": [
+      {
+        "nimi": "afar",
+        "lyhytNimi": "afar",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "afar",
+        "lyhytNimi": "afar",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Afar",
+        "lyhytNimi": "Afar",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AA"
+  },
+  {
+    "koodiUri": "kieli_ab",
+    "metadata": [
+      {
+        "nimi": "abchaziska",
+        "lyhytNimi": "abchaziska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Abkhazian",
+        "lyhytNimi": "Abkhazian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "abhaasi",
+        "lyhytNimi": "abhaasi",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AB"
+  },
+  {
+    "koodiUri": "kieli_ts",
+    "metadata": [
+      {
+        "nimi": "tsonga",
+        "lyhytNimi": "tsonga",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "tsonga",
+        "lyhytNimi": "tsonga",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Tsonga",
+        "lyhytNimi": "Tsonga",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TS"
+  },
+  {
+    "koodiUri": "kieli_ml",
+    "metadata": [
+      {
+        "nimi": "malayalam",
+        "lyhytNimi": "malayalam",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Malayalam",
+        "lyhytNimi": "Malayalam",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "malajalam",
+        "lyhytNimi": "malajalam",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ML"
+  },
+  {
+    "koodiUri": "kieli_nv",
+    "metadata": [
+      {
+        "nimi": "Navajo, Navaho",
+        "lyhytNimi": "Navajo, Navaho",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "navaho",
+        "lyhytNimi": "navaho",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "navajo",
+        "lyhytNimi": "navajo",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "NV"
+  },
+  {
+    "koodiUri": "kieli_xx",
+    "metadata": [
+      {
+        "nimi": "Other languages",
+        "lyhytNimi": "Other languages",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "muu kieli",
+        "lyhytNimi": "muu kieli",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "övrigt språk",
+        "lyhytNimi": "övrigt språk",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "XX"
+  },
+  {
+    "koodiUri": "kieli_ha",
+    "metadata": [
+      {
+        "nimi": "hausa",
+        "lyhytNimi": "hausa",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "hausa",
+        "lyhytNimi": "hausa",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Hausa",
+        "lyhytNimi": "Hausa",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "HA"
+  },
+  {
+    "koodiUri": "kieli_la",
+    "metadata": [
+      {
+        "nimi": "latin",
+        "lyhytNimi": "latin",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Latin",
+        "lyhytNimi": "Latin",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "latina",
+        "lyhytNimi": "latina",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "LA"
+  },
+  {
+    "koodiUri": "kieli_ho",
+    "metadata": [
+      {
+        "nimi": "hiri-motu",
+        "lyhytNimi": "hiri-motu",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "hirimotu",
+        "lyhytNimi": "hirimotu",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Hiri Motu",
+        "lyhytNimi": "Hiri Motu",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "HO"
+  },
+  {
+    "koodiUri": "kieli_co",
+    "metadata": [
+      {
+        "nimi": "korsika",
+        "lyhytNimi": "korsika",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Corsican",
+        "lyhytNimi": "Corsican",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "korsikanska",
+        "lyhytNimi": "korsikanska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "CO"
+  },
+  {
+    "koodiUri": "kieli_nr",
+    "metadata": [
+      {
+        "nimi": "ndebele (syd)",
+        "lyhytNimi": "ndebele (syd)",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "etelä-ndebele",
+        "lyhytNimi": "etelä-ndebele",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "South Ndebele",
+        "lyhytNimi": "South Ndebele",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "NR"
+  },
+  {
+    "koodiUri": "kieli_ke",
+    "metadata": [
+      {
+        "nimi": "karjala",
+        "lyhytNimi": "karjala",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "karjala",
+        "lyhytNimi": "karjala",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Karjala",
+        "lyhytNimi": "Karjala",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KE"
+  },
+  {
+    "koodiUri": "kieli_ks",
+    "metadata": [
+      {
+        "nimi": "kashmiri",
+        "lyhytNimi": "kashmiri",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Kashmiri",
+        "lyhytNimi": "Kashmiri",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kašmiri",
+        "lyhytNimi": "kašmiri",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KS"
+  },
+  {
+    "koodiUri": "kieli_bm",
+    "metadata": [
+      {
+        "nimi": "bambara",
+        "lyhytNimi": "bambara",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "bambara",
+        "lyhytNimi": "bambara",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Bambara",
+        "lyhytNimi": "Bambara",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "BM"
+  },
+  {
+    "koodiUri": "kieli_to",
+    "metadata": [
+      {
+        "nimi": "tongantonga",
+        "lyhytNimi": "tongantonga",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "tonga",
+        "lyhytNimi": "tonga",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Tongan (Tonga Islands)",
+        "lyhytNimi": "Tongan (Tonga Islands)",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TO"
+  },
+  {
+    "koodiUri": "kieli_vi",
+    "metadata": [
+      {
+        "nimi": "Vietnamese",
+        "lyhytNimi": "Vietnamese",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "vietnam",
+        "lyhytNimi": "vietnam",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "vietnamesiska",
+        "lyhytNimi": "vietnamesiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "VI"
+  },
+  {
+    "koodiUri": "kieli_ae",
+    "metadata": [
+      {
+        "nimi": "avestiska",
+        "lyhytNimi": "avestiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Avestan",
+        "lyhytNimi": "Avestan",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "avesta",
+        "lyhytNimi": "avesta",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AE"
+  },
+  {
+    "koodiUri": "kieli_lv",
+    "metadata": [
+      {
+        "nimi": "Latvian",
+        "lyhytNimi": "Latvian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "latvia",
+        "lyhytNimi": "latvia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "lettiska",
+        "lyhytNimi": "lettiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "LV"
+  },
+  {
+    "koodiUri": "kieli_ik",
+    "metadata": [
+      {
+        "nimi": "Inupiaq",
+        "lyhytNimi": "Inupiaq",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "inupiak",
+        "lyhytNimi": "inupiak",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "inupiaq",
+        "lyhytNimi": "inupiaq",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "IK"
+  },
+  {
+    "koodiUri": "kieli_kj",
+    "metadata": [
+      {
+        "nimi": "kuanyama",
+        "lyhytNimi": "kuanyama",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "kuanjama",
+        "lyhytNimi": "kuanjama",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Kwanyama, Kuanyama",
+        "lyhytNimi": "Kwanyama, Kuanyama",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KJ"
+  },
+  {
+    "koodiUri": "kieli_gl",
+    "metadata": [
+      {
+        "nimi": "galicia",
+        "lyhytNimi": "galicia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "galiciska",
+        "lyhytNimi": "galiciska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Galician; Gallegan",
+        "lyhytNimi": "Galician; Gallegan",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "GL"
+  },
+  {
+    "koodiUri": "kieli_ka",
+    "metadata": [
+      {
+        "nimi": "georgia",
+        "lyhytNimi": "georgia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "georgiska",
+        "lyhytNimi": "georgiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Georgian",
+        "lyhytNimi": "Georgian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KA"
+  },
+  {
+    "koodiUri": "kieli_cv",
+    "metadata": [
+      {
+        "nimi": "tjuvasjiska",
+        "lyhytNimi": "tjuvasjiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "tšuvassi",
+        "lyhytNimi": "tšuvassi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Chuvash",
+        "lyhytNimi": "Chuvash",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "CV"
+  },
+  {
+    "koodiUri": "kieli_tl",
+    "metadata": [
+      {
+        "nimi": "tagalog",
+        "lyhytNimi": "tagalog",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Tagalog",
+        "lyhytNimi": "Tagalog",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "tagalog",
+        "lyhytNimi": "tagalog",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TL"
+  },
+  {
+    "koodiUri": "kieli_be",
+    "metadata": [
+      {
+        "nimi": "valkovenäjä",
+        "lyhytNimi": "valkovenäjä",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "vitryska",
+        "lyhytNimi": "vitryska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Belarusian",
+        "lyhytNimi": "Belarusian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "BE"
+  },
+  {
+    "koodiUri": "kieli_ty",
+    "metadata": [
+      {
+        "nimi": "tahitiska",
+        "lyhytNimi": "tahitiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Tahitian",
+        "lyhytNimi": "Tahitian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "tahiti",
+        "lyhytNimi": "tahiti",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TY"
+  },
+  {
+    "koodiUri": "kieli_mo",
+    "metadata": [
+      {
+        "nimi": "Moldavian",
+        "lyhytNimi": "Moldavian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "moldaviska",
+        "lyhytNimi": "moldaviska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "moldova",
+        "lyhytNimi": "moldova",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "MO"
+  },
+  {
+    "koodiUri": "kieli_he",
+    "metadata": [
+      {
+        "nimi": "Hebrew",
+        "lyhytNimi": "Hebrew",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "heprea",
+        "lyhytNimi": "heprea",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "hebreiska",
+        "lyhytNimi": "hebreiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "HE"
+  },
+  {
+    "koodiUri": "kieli_hi",
+    "metadata": [
+      {
+        "nimi": "hindi",
+        "lyhytNimi": "hindi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Hindi",
+        "lyhytNimi": "Hindi",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "hindi",
+        "lyhytNimi": "hindi",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "HI"
+  },
+  {
+    "koodiUri": "kieli_kn",
+    "metadata": [
+      {
+        "nimi": "Kannada",
+        "lyhytNimi": "Kannada",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kannada",
+        "lyhytNimi": "kannada",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "kannada",
+        "lyhytNimi": "kannada",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KN"
+  },
+  {
+    "koodiUri": "kieli_tn",
+    "metadata": [
+      {
+        "nimi": "Setswana, Tswana",
+        "lyhytNimi": "Setswana, Tswana",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "tswana",
+        "lyhytNimi": "tswana",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "tswana",
+        "lyhytNimi": "tswana",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TN"
+  },
+  {
+    "koodiUri": "kieli_sa",
+    "metadata": [
+      {
+        "nimi": "Sanskrit",
+        "lyhytNimi": "Sanskrit",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "sanskrit",
+        "lyhytNimi": "sanskrit",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "sanskrit",
+        "lyhytNimi": "sanskrit",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SA"
+  },
+  {
+    "koodiUri": "kieli_sl",
+    "metadata": [
+      {
+        "nimi": "sloveeni",
+        "lyhytNimi": "sloveeni",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "slovenska",
+        "lyhytNimi": "slovenska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Slovenian",
+        "lyhytNimi": "Slovenian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SL"
+  },
+  {
+    "koodiUri": "kieli_fi",
+    "metadata": [
+      {
+        "nimi": "suomi",
+        "lyhytNimi": "suomi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Finnish",
+        "lyhytNimi": "Finnish",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "finska",
+        "lyhytNimi": "finska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "FI"
+  },
+  {
+    "koodiUri": "kieli_or",
+    "metadata": [
+      {
+        "nimi": "oriya",
+        "lyhytNimi": "oriya",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "orija",
+        "lyhytNimi": "orija",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Oriya",
+        "lyhytNimi": "Oriya",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "OR"
+  },
+  {
+    "koodiUri": "kieli_fy",
+    "metadata": [
+      {
+        "nimi": "länsifriisi",
+        "lyhytNimi": "länsifriisi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "frisiska",
+        "lyhytNimi": "frisiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Frisian",
+        "lyhytNimi": "Frisian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "FY"
+  },
+  {
+    "koodiUri": "kieli_ga",
+    "metadata": [
+      {
+        "nimi": "Irish",
+        "lyhytNimi": "Irish",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "iriska",
+        "lyhytNimi": "iriska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "iiri",
+        "lyhytNimi": "iiri",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "GA"
+  },
+  {
+    "koodiUri": "kieli_cr",
+    "metadata": [
+      {
+        "nimi": "cree",
+        "lyhytNimi": "cree",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "cree",
+        "lyhytNimi": "cree",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Cree",
+        "lyhytNimi": "Cree",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "CR"
+  },
+  {
+    "koodiUri": "kieli_eo",
+    "metadata": [
+      {
+        "nimi": "esperanto",
+        "lyhytNimi": "esperanto",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Esperanto",
+        "lyhytNimi": "Esperanto",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "esperanto",
+        "lyhytNimi": "esperanto",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "EO"
+  },
+  {
+    "koodiUri": "kieli_lo",
+    "metadata": [
+      {
+        "nimi": "lao",
+        "lyhytNimi": "lao",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "lao",
+        "lyhytNimi": "lao",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Laotian, Lao",
+        "lyhytNimi": "Laotian, Lao",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "LO"
+  },
+  {
+    "koodiUri": "kieli_lt",
+    "metadata": [
+      {
+        "nimi": "liettua",
+        "lyhytNimi": "liettua",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "litauiska",
+        "lyhytNimi": "litauiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Lithuanian",
+        "lyhytNimi": "Lithuanian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "LT"
+  },
+  {
+    "koodiUri": "kieli_en",
+    "metadata": [
+      {
+        "nimi": "English",
+        "lyhytNimi": "English",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "engelska",
+        "lyhytNimi": "engelska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "englanti",
+        "lyhytNimi": "englanti",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "EN"
+  },
+  {
+    "koodiUri": "kieli_ti",
+    "metadata": [
+      {
+        "nimi": "tigrinja",
+        "lyhytNimi": "tigrinja",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Tigrinya",
+        "lyhytNimi": "Tigrinya",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "tigrinja",
+        "lyhytNimi": "tigrinja",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TI"
+  },
+  {
+    "koodiUri": "kieli_eu",
+    "metadata": [
+      {
+        "nimi": "baskiska",
+        "lyhytNimi": "baskiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Basque",
+        "lyhytNimi": "Basque",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "baski, euskara",
+        "lyhytNimi": "baski, euskara",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "EU"
+  },
+  {
+    "koodiUri": "kieli_bo",
+    "metadata": [
+      {
+        "nimi": "tibetanska",
+        "lyhytNimi": "tibetanska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "tiibet",
+        "lyhytNimi": "tiibet",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Tibetan",
+        "lyhytNimi": "Tibetan",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "BO"
+  },
+  {
+    "koodiUri": "kieli_rw",
+    "metadata": [
+      {
+        "nimi": "Kinyarwanda, Rwanda",
+        "lyhytNimi": "Kinyarwanda, Rwanda",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "ruanda",
+        "lyhytNimi": "ruanda",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "kinyarwanda",
+        "lyhytNimi": "kinyarwanda",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "RW"
+  },
+  {
+    "koodiUri": "kieli_sc",
+    "metadata": [
+      {
+        "nimi": "Sardinian",
+        "lyhytNimi": "Sardinian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "sardi",
+        "lyhytNimi": "sardi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "sardiska",
+        "lyhytNimi": "sardiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SC"
+  },
+  {
+    "koodiUri": "kieli_nn",
+    "metadata": [
+      {
+        "nimi": "nynorsk",
+        "lyhytNimi": "nynorsk",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Norwegian Nynorsk",
+        "lyhytNimi": "Norwegian Nynorsk",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "norjan nynorsk",
+        "lyhytNimi": "norjan nynorsk",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "NN"
+  },
+  {
+    "koodiUri": "kieli_mk",
+    "metadata": [
+      {
+        "nimi": "makedonia",
+        "lyhytNimi": "makedonia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "makedonska",
+        "lyhytNimi": "makedonska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Macedonian",
+        "lyhytNimi": "Macedonian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "MK"
+  },
+  {
+    "koodiUri": "kieli_xh",
+    "metadata": [
+      {
+        "nimi": "xhosa",
+        "lyhytNimi": "xhosa",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "xhosa",
+        "lyhytNimi": "xhosa",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Xhosa",
+        "lyhytNimi": "Xhosa",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "XH"
+  },
+  {
+    "koodiUri": "kieli_ta",
+    "metadata": [
+      {
+        "nimi": "Tamil",
+        "lyhytNimi": "Tamil",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "tamili",
+        "lyhytNimi": "tamili",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "tamili",
+        "lyhytNimi": "tamili",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TA"
+  },
+  {
+    "koodiUri": "kieli_dv",
+    "metadata": [
+      {
+        "nimi": "Divehi; Maldivian",
+        "lyhytNimi": "Divehi; Maldivian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "divehi",
+        "lyhytNimi": "divehi",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "divehi",
+        "lyhytNimi": "divehi",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "DV"
+  },
+  {
+    "koodiUri": "kieli_io",
+    "metadata": [
+      {
+        "nimi": "ido",
+        "lyhytNimi": "ido",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "ido",
+        "lyhytNimi": "ido",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Ido",
+        "lyhytNimi": "Ido",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "IO"
+  },
+  {
+    "koodiUri": "kieli_ru",
+    "metadata": [
+      {
+        "nimi": "Russian",
+        "lyhytNimi": "Russian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "venäjä",
+        "lyhytNimi": "venäjä",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "ryska",
+        "lyhytNimi": "ryska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "RU"
+  },
+  {
+    "koodiUri": "kieli_bn",
+    "metadata": [
+      {
+        "nimi": "bengali",
+        "lyhytNimi": "bengali",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Bengali, Bangla",
+        "lyhytNimi": "Bengali, Bangla",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "bengali",
+        "lyhytNimi": "bengali",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "BN"
+  },
+  {
+    "koodiUri": "kieli_ja",
+    "metadata": [
+      {
+        "nimi": "japani",
+        "lyhytNimi": "japani",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Japanese",
+        "lyhytNimi": "Japanese",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "japanska",
+        "lyhytNimi": "japanska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "JA"
+  },
+  {
+    "koodiUri": "kieli_99",
+    "metadata": [
+      {
+        "nimi": "Other",
+        "lyhytNimi": "Other",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "okänt",
+        "lyhytNimi": "okänt",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "tuntematon",
+        "lyhytNimi": "tuntematon",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "99"
+  },
+  {
+    "koodiUri": "kieli_ay",
+    "metadata": [
+      {
+        "nimi": "aimara",
+        "lyhytNimi": "aimara",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "aymará",
+        "lyhytNimi": "aymará",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Aymara",
+        "lyhytNimi": "Aymara",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AY"
+  },
+  {
+    "koodiUri": "kieli_zh",
+    "metadata": [
+      {
+        "nimi": "kiina",
+        "lyhytNimi": "kiina",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Chinese",
+        "lyhytNimi": "Chinese",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kinesiska",
+        "lyhytNimi": "kinesiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ZH"
+  },
+  {
+    "koodiUri": "kieli_kl",
+    "metadata": [
+      {
+        "nimi": "grönländska",
+        "lyhytNimi": "grönländska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Greenlandic, Kalaallisut",
+        "lyhytNimi": "Greenlandic, Kalaallisut",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kalaallisut, grönlanti",
+        "lyhytNimi": "kalaallisut, grönlanti",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KL"
+  },
+  {
+    "koodiUri": "kieli_mg",
+    "metadata": [
+      {
+        "nimi": "malagasi",
+        "lyhytNimi": "malagasi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "malagassiska",
+        "lyhytNimi": "malagassiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Malagasy",
+        "lyhytNimi": "Malagasy",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "MG"
+  },
+  {
+    "koodiUri": "kieli_oj",
+    "metadata": [
+      {
+        "nimi": "odžibwa",
+        "lyhytNimi": "odžibwa",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Ojibwa",
+        "lyhytNimi": "Ojibwa",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "ojibwa",
+        "lyhytNimi": "ojibwa",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "OJ"
+  },
+  {
+    "koodiUri": "kieli_pa",
+    "metadata": [
+      {
+        "nimi": "panjabi",
+        "lyhytNimi": "panjabi",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "pandžabi",
+        "lyhytNimi": "pandžabi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Punjabi, Panjabi",
+        "lyhytNimi": "Punjabi, Panjabi",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "PA"
+  },
+  {
+    "koodiUri": "kieli_kw",
+    "metadata": [
+      {
+        "nimi": "Cornish",
+        "lyhytNimi": "Cornish",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "korniska",
+        "lyhytNimi": "korniska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "korni",
+        "lyhytNimi": "korni",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KW"
+  },
+  {
+    "koodiUri": "kieli_uk",
+    "metadata": [
+      {
+        "nimi": "Ukrainian",
+        "lyhytNimi": "Ukrainian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "ukraina",
+        "lyhytNimi": "ukraina",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "ukrainska",
+        "lyhytNimi": "ukrainska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "UK"
+  },
+  {
+    "koodiUri": "kieli_am",
+    "metadata": [
+      {
+        "nimi": "amhara",
+        "lyhytNimi": "amhara",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "amhariska",
+        "lyhytNimi": "amhariska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Amharic",
+        "lyhytNimi": "Amharic",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AM"
+  },
+  {
+    "koodiUri": "kieli_ii",
+    "metadata": [
+      {
+        "nimi": "sichuan yi",
+        "lyhytNimi": "sichuan yi",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "inupiaq, inupiatun",
+        "lyhytNimi": "inupiaq, inupiatun",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Sichuan Yi",
+        "lyhytNimi": "Sichuan Yi",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "II"
+  },
+  {
+    "koodiUri": "kieli_wo",
+    "metadata": [
+      {
+        "nimi": "wolof",
+        "lyhytNimi": "wolof",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "wolof",
+        "lyhytNimi": "wolof",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Wolof",
+        "lyhytNimi": "Wolof",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "WO"
+  },
+  {
+    "koodiUri": "kieli_ce",
+    "metadata": [
+      {
+        "nimi": "tjetjenska",
+        "lyhytNimi": "tjetjenska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Chechen",
+        "lyhytNimi": "Chechen",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "tšetšeeni",
+        "lyhytNimi": "tšetšeeni",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "CE"
+  },
+  {
+    "koodiUri": "kieli_je",
+    "metadata": [
+      {
+        "nimi": "jersey",
+        "lyhytNimi": "jersey",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "jersey",
+        "lyhytNimi": "jersey",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Jerriais",
+        "lyhytNimi": "Jerriais",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "JE"
+  },
+  {
+    "koodiUri": "kieli_az",
+    "metadata": [
+      {
+        "nimi": "azeri",
+        "lyhytNimi": "azeri",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "azerbajdzjanska",
+        "lyhytNimi": "azerbajdzjanska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Azerbaijani",
+        "lyhytNimi": "Azerbaijani",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AZ"
+  },
+  {
+    "koodiUri": "kieli_hu",
+    "metadata": [
+      {
+        "nimi": "unkari",
+        "lyhytNimi": "unkari",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "ungerska",
+        "lyhytNimi": "ungerska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Hungarian",
+        "lyhytNimi": "Hungarian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "HU"
+  },
+  {
+    "koodiUri": "kieli_sk",
+    "metadata": [
+      {
+        "nimi": "Slovak",
+        "lyhytNimi": "Slovak",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "slovakki",
+        "lyhytNimi": "slovakki",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "slovakiska",
+        "lyhytNimi": "slovakiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SK"
+  },
+  {
+    "koodiUri": "kieli_zu",
+    "metadata": [
+      {
+        "nimi": "Zulu",
+        "lyhytNimi": "Zulu",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "zulu",
+        "lyhytNimi": "zulu",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "zulu",
+        "lyhytNimi": "zulu",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ZU"
+  },
+  {
+    "koodiUri": "kieli_ng",
+    "metadata": [
+      {
+        "nimi": "Ndonga",
+        "lyhytNimi": "Ndonga",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "ndonga",
+        "lyhytNimi": "ndonga",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "ndonga",
+        "lyhytNimi": "ndonga",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "NG"
+  },
+  {
+    "koodiUri": "kieli_gu",
+    "metadata": [
+      {
+        "nimi": "gujarati",
+        "lyhytNimi": "gujarati",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Gujarati",
+        "lyhytNimi": "Gujarati",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "gudžarati",
+        "lyhytNimi": "gudžarati",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "GU"
+  },
+  {
+    "koodiUri": "kieli_so",
+    "metadata": [
+      {
+        "nimi": "Somali",
+        "lyhytNimi": "Somali",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "somali",
+        "lyhytNimi": "somali",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "somaliska",
+        "lyhytNimi": "somaliska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SO"
+  },
+  {
+    "koodiUri": "kieli_ur",
+    "metadata": [
+      {
+        "nimi": "urdu",
+        "lyhytNimi": "urdu",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Urdu",
+        "lyhytNimi": "Urdu",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "urdu",
+        "lyhytNimi": "urdu",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "UR"
+  },
+  {
+    "koodiUri": "kieli_lg",
+    "metadata": [
+      {
+        "nimi": "luganda",
+        "lyhytNimi": "luganda",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Ganda; Luganda",
+        "lyhytNimi": "Ganda; Luganda",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "ganda",
+        "lyhytNimi": "ganda",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "LG"
+  },
+  {
+    "koodiUri": "kieli_ne",
+    "metadata": [
+      {
+        "nimi": "nepali",
+        "lyhytNimi": "nepali",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "nepali",
+        "lyhytNimi": "nepali",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Nepali",
+        "lyhytNimi": "Nepali",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "NE"
+  },
+  {
+    "koodiUri": "kieli_nb",
+    "metadata": [
+      {
+        "nimi": "norjan bokmål",
+        "lyhytNimi": "norjan bokmål",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "bokmål",
+        "lyhytNimi": "bokmål",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Norwegian Bokmål",
+        "lyhytNimi": "Norwegian Bokmål",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "NB"
+  },
+  {
+    "koodiUri": "kieli_as",
+    "metadata": [
+      {
+        "nimi": "Assamese",
+        "lyhytNimi": "Assamese",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "assamesiska",
+        "lyhytNimi": "assamesiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "assami",
+        "lyhytNimi": "assami",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AS"
+  },
+  {
+    "koodiUri": "kieli_li",
+    "metadata": [
+      {
+        "nimi": "limburgiska",
+        "lyhytNimi": "limburgiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Limburgan, Limburger",
+        "lyhytNimi": "Limburgan, Limburger",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "limburg",
+        "lyhytNimi": "limburg",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "LI"
+  },
+  {
+    "koodiUri": "kieli_gn",
+    "metadata": [
+      {
+        "nimi": "guarani",
+        "lyhytNimi": "guarani",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Guarani",
+        "lyhytNimi": "Guarani",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "guarani",
+        "lyhytNimi": "guarani",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "GN"
+  },
+  {
+    "koodiUri": "kieli_cy",
+    "metadata": [
+      {
+        "nimi": "kymri",
+        "lyhytNimi": "kymri",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "kymriska",
+        "lyhytNimi": "kymriska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Welsh",
+        "lyhytNimi": "Welsh",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "CY"
+  },
+  {
+    "koodiUri": "kieli_da",
+    "metadata": [
+      {
+        "nimi": "danska",
+        "lyhytNimi": "danska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "tanska",
+        "lyhytNimi": "tanska",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Danish",
+        "lyhytNimi": "Danish",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "DA"
+  },
+  {
+    "koodiUri": "kieli_sw",
+    "metadata": [
+      {
+        "nimi": "swahili",
+        "lyhytNimi": "swahili",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Swahili, Kiswahili",
+        "lyhytNimi": "Swahili, Kiswahili",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "suahili",
+        "lyhytNimi": "suahili",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SW"
+  },
+  {
+    "koodiUri": "kieli_ch",
+    "metadata": [
+      {
+        "nimi": "chamorro",
+        "lyhytNimi": "chamorro",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "tšamorro",
+        "lyhytNimi": "tšamorro",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Chamorro",
+        "lyhytNimi": "Chamorro",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "CH"
+  },
+  {
+    "koodiUri": "kieli_no",
+    "metadata": [
+      {
+        "nimi": "norja",
+        "lyhytNimi": "norja",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Norwegian",
+        "lyhytNimi": "Norwegian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "norska",
+        "lyhytNimi": "norska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "NO"
+  },
+  {
+    "koodiUri": "kieli_ig",
+    "metadata": [
+      {
+        "nimi": "Igbo",
+        "lyhytNimi": "Igbo",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "ibo",
+        "lyhytNimi": "ibo",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "igbo",
+        "lyhytNimi": "igbo",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "IG"
+  },
+  {
+    "koodiUri": "kieli_lu",
+    "metadata": [
+      {
+        "nimi": "luba-katanga",
+        "lyhytNimi": "luba-katanga",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Luba-Katanga",
+        "lyhytNimi": "Luba-Katanga",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "katanganluba",
+        "lyhytNimi": "katanganluba",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "LU"
+  },
+  {
+    "koodiUri": "kieli_ki",
+    "metadata": [
+      {
+        "nimi": "Kikuyu, Gikuyu",
+        "lyhytNimi": "Kikuyu, Gikuyu",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kikuyu",
+        "lyhytNimi": "kikuyu",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "kikuju",
+        "lyhytNimi": "kikuju",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KI"
+  },
+  {
+    "koodiUri": "kieli_es",
+    "metadata": [
+      {
+        "nimi": "espanja",
+        "lyhytNimi": "espanja",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Spanish, Castilian",
+        "lyhytNimi": "Spanish, Castilian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "spanska",
+        "lyhytNimi": "spanska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ES"
+  },
+  {
+    "koodiUri": "kieli_tr",
+    "metadata": [
+      {
+        "nimi": "turkiska",
+        "lyhytNimi": "turkiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "turkki",
+        "lyhytNimi": "turkki",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Turkish",
+        "lyhytNimi": "Turkish",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TR"
+  },
+  {
+    "koodiUri": "kieli_ku",
+    "metadata": [
+      {
+        "nimi": "Kurdish",
+        "lyhytNimi": "Kurdish",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kurdiska",
+        "lyhytNimi": "kurdiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "kurdi",
+        "lyhytNimi": "kurdi",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KU"
+  },
+  {
+    "koodiUri": "kieli_el",
+    "metadata": [
+      {
+        "nimi": "kreikka",
+        "lyhytNimi": "kreikka",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Modern Greek",
+        "lyhytNimi": "Modern Greek",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "grekiska",
+        "lyhytNimi": "grekiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "EL"
+  },
+  {
+    "koodiUri": "kieli_lb",
+    "metadata": [
+      {
+        "nimi": "luxemburg, myös: letzeburg",
+        "lyhytNimi": "luxemburg, myös: letzeburg",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "letzebuergesch (luxemburgiska)",
+        "lyhytNimi": "letzebuergesch (luxemburgiska)",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Luxembourgish",
+        "lyhytNimi": "Luxembourgish",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "LB"
+  },
+  {
+    "koodiUri": "kieli_tw",
+    "metadata": [
+      {
+        "nimi": "twi",
+        "lyhytNimi": "twi",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "twi",
+        "lyhytNimi": "twi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Twi",
+        "lyhytNimi": "Twi",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TW"
+  },
+  {
+    "koodiUri": "kieli_av",
+    "metadata": [
+      {
+        "nimi": "avaari",
+        "lyhytNimi": "avaari",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "avariskt språk",
+        "lyhytNimi": "avariskt språk",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Avar, Avarish",
+        "lyhytNimi": "Avar, Avarish",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AV"
+  },
+  {
+    "koodiUri": "kieli_sm",
+    "metadata": [
+      {
+        "nimi": "Samoan",
+        "lyhytNimi": "Samoan",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "samoanska",
+        "lyhytNimi": "samoanska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "samoa",
+        "lyhytNimi": "samoa",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SM"
+  },
+  {
+    "koodiUri": "kieli_ff",
+    "metadata": [
+      {
+        "nimi": "fulani",
+        "lyhytNimi": "fulani",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "fulani",
+        "lyhytNimi": "fulani",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Fulah; Fula; Fulani; Fulfulde; Peul",
+        "lyhytNimi": "Fulah; Fula; Fulani; Fulfulde; Peul",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "FF"
+  },
+  {
+    "koodiUri": "kieli_rn",
+    "metadata": [
+      {
+        "nimi": "rundi",
+        "lyhytNimi": "rundi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "rundi, kirundi",
+        "lyhytNimi": "rundi, kirundi",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Kirundi; Rundi",
+        "lyhytNimi": "Kirundi; Rundi",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "RN"
+  },
+  {
+    "koodiUri": "kieli_ia",
+    "metadata": [
+      {
+        "nimi": "Interlingua",
+        "lyhytNimi": "Interlingua",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "interlingua",
+        "lyhytNimi": "interlingua",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "interlingua",
+        "lyhytNimi": "interlingua",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "IA"
+  },
+  {
+    "koodiUri": "kieli_os",
+    "metadata": [
+      {
+        "nimi": "osseetti",
+        "lyhytNimi": "osseetti",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "ossetiska",
+        "lyhytNimi": "ossetiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Ossetian, Ossetic",
+        "lyhytNimi": "Ossetian, Ossetic",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "OS"
+  },
+  {
+    "koodiUri": "kieli_af",
+    "metadata": [
+      {
+        "nimi": "afrikaans",
+        "lyhytNimi": "afrikaans",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Afrikaans",
+        "lyhytNimi": "Afrikaans",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "afrikaans",
+        "lyhytNimi": "afrikaans",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AF"
+  },
+  {
+    "koodiUri": "kieli_jv",
+    "metadata": [
+      {
+        "nimi": "javanesiska",
+        "lyhytNimi": "javanesiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Javanese",
+        "lyhytNimi": "Javanese",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "jaava",
+        "lyhytNimi": "jaava",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "JV"
+  },
+  {
+    "koodiUri": "kieli_za",
+    "metadata": [
+      {
+        "nimi": "tšuang",
+        "lyhytNimi": "tšuang",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Zhuang, Chuang",
+        "lyhytNimi": "Zhuang, Chuang",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "zhuang",
+        "lyhytNimi": "zhuang",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ZA"
+  },
+  {
+    "koodiUri": "kieli_bs",
+    "metadata": [
+      {
+        "nimi": "Bosnian",
+        "lyhytNimi": "Bosnian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "bosnia",
+        "lyhytNimi": "bosnia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "bosniska",
+        "lyhytNimi": "bosniska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "BS"
+  },
+  {
+    "koodiUri": "kieli_ri",
+    "metadata": [
+      {
+        "nimi": "romani",
+        "lyhytNimi": "romani",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "romani",
+        "lyhytNimi": "romani",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Romani",
+        "lyhytNimi": "Romani",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "RI"
+  },
+  {
+    "koodiUri": "kieli_rm",
+    "metadata": [
+      {
+        "nimi": "retoromaani",
+        "lyhytNimi": "retoromaani",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Rhaeto-Romance",
+        "lyhytNimi": "Rhaeto-Romance",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "rätoromanska",
+        "lyhytNimi": "rätoromanska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "RM"
+  },
+  {
+    "koodiUri": "kieli_mn",
+    "metadata": [
+      {
+        "nimi": "Mongolian",
+        "lyhytNimi": "Mongolian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "mongoli",
+        "lyhytNimi": "mongoli",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "mongoliska",
+        "lyhytNimi": "mongoliska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "MN"
+  },
+  {
+    "koodiUri": "kieli_om",
+    "metadata": [
+      {
+        "nimi": "Afan Oromo; Oromo",
+        "lyhytNimi": "Afan Oromo; Oromo",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "oromo",
+        "lyhytNimi": "oromo",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "oromo",
+        "lyhytNimi": "oromo",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "OM"
+  },
+  {
+    "koodiUri": "kieli_na",
+    "metadata": [
+      {
+        "nimi": "nauru",
+        "lyhytNimi": "nauru",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Nauruan",
+        "lyhytNimi": "Nauruan",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "nauru",
+        "lyhytNimi": "nauru",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "NA"
+  },
+  {
+    "koodiUri": "kieli_gv",
+    "metadata": [
+      {
+        "nimi": "manksi",
+        "lyhytNimi": "manksi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Manx",
+        "lyhytNimi": "Manx",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "manx",
+        "lyhytNimi": "manx",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "GV"
+  },
+  {
+    "koodiUri": "kieli_ln",
+    "metadata": [
+      {
+        "nimi": "lingala",
+        "lyhytNimi": "lingala",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Lingala",
+        "lyhytNimi": "Lingala",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "lingala",
+        "lyhytNimi": "lingala",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "LN"
+  },
+  {
+    "koodiUri": "kieli_ve",
+    "metadata": [
+      {
+        "nimi": "Venda",
+        "lyhytNimi": "Venda",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "venda",
+        "lyhytNimi": "venda",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "venda",
+        "lyhytNimi": "venda",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "VE"
+  },
+  {
+    "koodiUri": "kieli_sn",
+    "metadata": [
+      {
+        "nimi": "shona",
+        "lyhytNimi": "shona",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Shona",
+        "lyhytNimi": "Shona",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "šona",
+        "lyhytNimi": "shona",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SN"
+  },
+  {
+    "koodiUri": "kieli_fo",
+    "metadata": [
+      {
+        "nimi": "fääri",
+        "lyhytNimi": "fääri",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Faroese; Faeroese",
+        "lyhytNimi": "Faroese; Faeroese",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "färiska",
+        "lyhytNimi": "färiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "FO"
+  },
+  {
+    "koodiUri": "kieli_et",
+    "metadata": [
+      {
+        "nimi": "estniska",
+        "lyhytNimi": "estniska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "viro",
+        "lyhytNimi": "viro",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Estonian",
+        "lyhytNimi": "Estonian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ET"
+  },
+  {
+    "koodiUri": "kieli_mi",
+    "metadata": [
+      {
+        "nimi": "Maori",
+        "lyhytNimi": "Maori",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "maori",
+        "lyhytNimi": "maori",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "maori",
+        "lyhytNimi": "maori",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "MI"
+  },
+  {
+    "koodiUri": "kieli_hz",
+    "metadata": [
+      {
+        "nimi": "herero",
+        "lyhytNimi": "herero",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "herero",
+        "lyhytNimi": "herero",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Herero",
+        "lyhytNimi": "Herero",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "HZ"
+  },
+  {
+    "koodiUri": "kieli_st",
+    "metadata": [
+      {
+        "nimi": "eteläsotho",
+        "lyhytNimi": "eteläsotho",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "sotho",
+        "lyhytNimi": "sotho",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Sesotho, Southern Sotho",
+        "lyhytNimi": "Sesotho, Southern Sotho",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ST"
+  },
+  {
+    "koodiUri": "kieli_ss",
+    "metadata": [
+      {
+        "nimi": "Siswati, Swazi, Swati",
+        "lyhytNimi": "Siswati, Swazi, Swati",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "swazi",
+        "lyhytNimi": "swazi",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "swazi",
+        "lyhytNimi": "swazi",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SS"
+  },
+  {
+    "koodiUri": "kieli_th",
+    "metadata": [
+      {
+        "nimi": "thai",
+        "lyhytNimi": "thai",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "thai",
+        "lyhytNimi": "thai",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Thai",
+        "lyhytNimi": "Thai",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TH"
+  },
+  {
+    "koodiUri": "kieli_ar",
+    "metadata": [
+      {
+        "nimi": "Arabic",
+        "lyhytNimi": "Arabic",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "arabia",
+        "lyhytNimi": "arabia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "arabiska",
+        "lyhytNimi": "arabiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AR"
+  },
+  {
+    "koodiUri": "kieli_ba",
+    "metadata": [
+      {
+        "nimi": "baškiiri",
+        "lyhytNimi": "baškiiri",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Bashkir",
+        "lyhytNimi": "Bashkir",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "basjkiriska",
+        "lyhytNimi": "basjkiriska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "BA"
+  },
+  {
+    "koodiUri": "kieli_ms",
+    "metadata": [
+      {
+        "nimi": "malaiji",
+        "lyhytNimi": "malaiji",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Malay",
+        "lyhytNimi": "Malay",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "malajiska",
+        "lyhytNimi": "malajiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "MS"
+  },
+  {
+    "koodiUri": "kieli_ps",
+    "metadata": [
+      {
+        "nimi": "Pashto, Pushto",
+        "lyhytNimi": "Pashto, Pushto",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "paštu, myös: afgaani",
+        "lyhytNimi": "paštu, myös: afgaani",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "pashto",
+        "lyhytNimi": "pashto",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "PS"
+  },
+  {
+    "koodiUri": "kieli_sh",
+    "metadata": [
+      {
+        "nimi": "serbokroatiska",
+        "lyhytNimi": "serbokroatiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "serbokroatia",
+        "lyhytNimi": "serbokroatia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Serbo-Croatian",
+        "lyhytNimi": "Serbo-Croatian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SH"
+  },
+  {
+    "koodiUri": "kieli_im",
+    "metadata": [
+      {
+        "nimi": "mansaari",
+        "lyhytNimi": "mansaari",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "mansaari",
+        "lyhytNimi": "mansaari",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "IM"
+  },
+  {
+    "koodiUri": "kieli_pi",
+    "metadata": [
+      {
+        "nimi": "pali",
+        "lyhytNimi": "pali",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Paali",
+        "lyhytNimi": "Pali",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "paali",
+        "lyhytNimi": "paali",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "PI"
+  },
+  {
+    "koodiUri": "kieli_id",
+    "metadata": [
+      {
+        "nimi": "indonesia",
+        "lyhytNimi": "indonesia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Indonesian",
+        "lyhytNimi": "Indonesian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "indonesiska",
+        "lyhytNimi": "indonesiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ID"
+  },
+  {
+    "koodiUri": "kieli_vk",
+    "metadata": [
+      {
+        "nimi": "teckenspråk",
+        "lyhytNimi": "teckenspråk",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Sign language",
+        "lyhytNimi": "Sign language",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "viittomakieli",
+        "lyhytNimi": "viittomakieli",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "VK"
+  },
+  {
+    "koodiUri": "kieli_bh",
+    "metadata": [
+      {
+        "nimi": "bihari",
+        "lyhytNimi": "bihari",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "bihari",
+        "lyhytNimi": "bihari",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Bihari",
+        "lyhytNimi": "Bihari",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "BH"
+  },
+  {
+    "koodiUri": "kieli_sr",
+    "metadata": [
+      {
+        "nimi": "serbia",
+        "lyhytNimi": "serbia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Serbian",
+        "lyhytNimi": "Serbian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "serbiska",
+        "lyhytNimi": "serbiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SR"
+  },
+  {
+    "koodiUri": "kieli_pl",
+    "metadata": [
+      {
+        "nimi": "Polish",
+        "lyhytNimi": "Polish",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "polska",
+        "lyhytNimi": "polska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "puola",
+        "lyhytNimi": "puola",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "PL"
+  },
+  {
+    "koodiUri": "kieli_br",
+    "metadata": [
+      {
+        "nimi": "bretoni",
+        "lyhytNimi": "bretoni",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "bretonska",
+        "lyhytNimi": "bretonska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Breton",
+        "lyhytNimi": "Breton",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "BR"
+  },
+  {
+    "koodiUri": "kieli_nl",
+    "metadata": [
+      {
+        "nimi": "Dutch",
+        "lyhytNimi": "Dutch",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "holländska",
+        "lyhytNimi": "holländska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "hollanti",
+        "lyhytNimi": "hollanti",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "NL"
+  },
+  {
+    "koodiUri": "kieli_kr",
+    "metadata": [
+      {
+        "nimi": "kanuri",
+        "lyhytNimi": "kanuri",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Kanuri",
+        "lyhytNimi": "Kanuri",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kanuri",
+        "lyhytNimi": "kanuri",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KR"
+  },
+  {
+    "koodiUri": "kieli_tk",
+    "metadata": [
+      {
+        "nimi": "turkmeniska",
+        "lyhytNimi": "turkmeniska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "turkmeeni",
+        "lyhytNimi": "turkmeeni",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Turkmen",
+        "lyhytNimi": "Turkmen",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TK"
+  },
+  {
+    "koodiUri": "kieli_it",
+    "metadata": [
+      {
+        "nimi": "italia",
+        "lyhytNimi": "italia",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "italienska",
+        "lyhytNimi": "italienska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Italian",
+        "lyhytNimi": "Italian",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "IT"
+  },
+  {
+    "koodiUri": "kieli_cs",
+    "metadata": [
+      {
+        "nimi": "tšekki",
+        "lyhytNimi": "tšekki",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "tjeckiska",
+        "lyhytNimi": "tjeckiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Czech",
+        "lyhytNimi": "Czech",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "CS"
+  },
+  {
+    "koodiUri": "kieli_iu",
+    "metadata": [
+      {
+        "nimi": "eskimåiska",
+        "lyhytNimi": "eskimåiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "inuktitut",
+        "lyhytNimi": "inuktitut",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Inuktitut",
+        "lyhytNimi": "Inuktitut",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "IU"
+  },
+  {
+    "koodiUri": "kieli_kg",
+    "metadata": [
+      {
+        "nimi": "Kongo",
+        "lyhytNimi": "Kongo",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kongo",
+        "lyhytNimi": "kongo",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "kikongo",
+        "lyhytNimi": "kikongo",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KG"
+  },
+  {
+    "koodiUri": "kieli_ny",
+    "metadata": [
+      {
+        "nimi": "nyanja",
+        "lyhytNimi": "nyanja",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Chichewa, Cheva, Nyanja",
+        "lyhytNimi": "Chichewa, Cheva, Nyanja",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "njandža, myös: tšitšewa, tšewa",
+        "lyhytNimi": "njandža, myös: tšitšewa, tšewa",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "NY"
+  },
+  {
+    "koodiUri": "kieli_mh",
+    "metadata": [
+      {
+        "nimi": "Marshallese",
+        "lyhytNimi": "Marshallese",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "marshall",
+        "lyhytNimi": "marshall",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "marshall",
+        "lyhytNimi": "marshall",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "MH"
+  },
+  {
+    "koodiUri": "kieli_an",
+    "metadata": [
+      {
+        "nimi": "aragonska",
+        "lyhytNimi": "aragonska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Aragonese",
+        "lyhytNimi": "Aragonese",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "aragonia",
+        "lyhytNimi": "aragonia",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "AN"
+  },
+  {
+    "koodiUri": "kieli_de",
+    "metadata": [
+      {
+        "nimi": "saksa",
+        "lyhytNimi": "saksa",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "German",
+        "lyhytNimi": "German",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "tyska",
+        "lyhytNimi": "tyska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "DE"
+  },
+  {
+    "koodiUri": "kieli_yi",
+    "metadata": [
+      {
+        "nimi": "jiddisch",
+        "lyhytNimi": "jiddisch",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Yiddish",
+        "lyhytNimi": "Yiddish",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "jiddiš",
+        "lyhytNimi": "jiddiš",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "YI"
+  },
+  {
+    "koodiUri": "kieli_tt",
+    "metadata": [
+      {
+        "nimi": "tatariska",
+        "lyhytNimi": "tatariska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Tatar",
+        "lyhytNimi": "Tatar",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "tataari",
+        "lyhytNimi": "tataari",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "TT"
+  },
+  {
+    "koodiUri": "kieli_si",
+    "metadata": [
+      {
+        "nimi": "sinhala",
+        "lyhytNimi": "sinhala",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "singalesiska",
+        "lyhytNimi": "singalesiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Sinhala; Sinhalese; Singhalese",
+        "lyhytNimi": "Sinhala; Sinhalese; Singhalese",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SI"
+  },
+  {
+    "koodiUri": "kieli_fa",
+    "metadata": [
+      {
+        "nimi": "Persian, Farsi",
+        "lyhytNimi": "Persian, Farsi",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "persiska",
+        "lyhytNimi": "persiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "persia, farsi",
+        "lyhytNimi": "persia, farsi",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "FA"
+  },
+  {
+    "koodiUri": "kieli_cu",
+    "metadata": [
+      {
+        "nimi": "kirkkoslaavi",
+        "lyhytNimi": "kirkkoslaavi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "kyrkoslaviska",
+        "lyhytNimi": "kyrkoslaviska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Old Slavonic",
+        "lyhytNimi": "Old Slavonic",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "CU"
+  },
+  {
+    "koodiUri": "kieli_kk",
+    "metadata": [
+      {
+        "nimi": "Kazakh",
+        "lyhytNimi": "Kazakh",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kazakki",
+        "lyhytNimi": "kazakki",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "kazakiska",
+        "lyhytNimi": "kazakiska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KK"
+  },
+  {
+    "koodiUri": "kieli_nd",
+    "metadata": [
+      {
+        "nimi": "ndebele (nord)",
+        "lyhytNimi": "ndebele (nord)",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "North Ndebele",
+        "lyhytNimi": "North Ndebele",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "pohjoisndebele",
+        "lyhytNimi": "pohjoisndebele",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ND"
+  },
+  {
+    "koodiUri": "kieli_ca",
+    "metadata": [
+      {
+        "nimi": "katalanska",
+        "lyhytNimi": "katalanska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Catalan",
+        "lyhytNimi": "Catalan",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "katalaani",
+        "lyhytNimi": "katalaani",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "CA"
+  },
+  {
+    "koodiUri": "kieli_wa",
+    "metadata": [
+      {
+        "nimi": "vallonska",
+        "lyhytNimi": "vallonska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Walloon",
+        "lyhytNimi": "Walloon",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "valloni",
+        "lyhytNimi": "valloni",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "WA"
+  },
+  {
+    "koodiUri": "kieli_qu",
+    "metadata": [
+      {
+        "nimi": "kechua",
+        "lyhytNimi": "kechua",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "ketšua",
+        "lyhytNimi": "ketšua",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Quechua",
+        "lyhytNimi": "Quechua",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "QU"
+  },
+  {
+    "koodiUri": "kieli_fr",
+    "metadata": [
+      {
+        "nimi": "ranska",
+        "lyhytNimi": "ranska",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "French",
+        "lyhytNimi": "French",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "franska",
+        "lyhytNimi": "franska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "FR"
+  },
+  {
+    "koodiUri": "kieli_pt",
+    "metadata": [
+      {
+        "nimi": "portugisiska",
+        "lyhytNimi": "portugisiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Portuguese",
+        "lyhytNimi": "Portuguese",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "portugali",
+        "lyhytNimi": "portugali",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "PT"
+  },
+  {
+    "koodiUri": "kieli_km",
+    "metadata": [
+      {
+        "nimi": "Cambodian, Khmer",
+        "lyhytNimi": "Cambodian, Khmer",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "keskikhmer",
+        "lyhytNimi": "keskikhmer",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "khmeriska, kambodjanska",
+        "lyhytNimi": "khmeriska, kambodjanska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KM"
+  },
+  {
+    "koodiUri": "kieli_bg",
+    "metadata": [
+      {
+        "nimi": "Bulgarian",
+        "lyhytNimi": "Bulgarian",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "bulgaria",
+        "lyhytNimi": "bulgaria",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "bulgariska",
+        "lyhytNimi": "bulgariska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "BG"
+  },
+  {
+    "koodiUri": "kieli_ht",
+    "metadata": [
+      {
+        "nimi": "haiti",
+        "lyhytNimi": "haiti",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Haitian, Haitian Creole",
+        "lyhytNimi": "Haitian, Haitian Creole",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "haitiska, haitisk kreol",
+        "lyhytNimi": "haitiska, haitisk kreol",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "HT"
+  },
+  {
+    "koodiUri": "kieli_ky",
+    "metadata": [
+      {
+        "nimi": "kirgisiska",
+        "lyhytNimi": "kirgisiska",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Kirghiz, Kyrgyz",
+        "lyhytNimi": "Kirghiz, Kyrgyz",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "kirgiisi",
+        "lyhytNimi": "kirgiisi",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "KY"
+  },
+  {
+    "koodiUri": "kieli_yo",
+    "metadata": [
+      {
+        "nimi": "Yoruba",
+        "lyhytNimi": "Yoruba",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "joruba",
+        "lyhytNimi": "joruba",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "joruba",
+        "lyhytNimi": "joruba",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "YO"
+  },
+  {
+    "koodiUri": "kieli_sv",
+    "metadata": [
+      {
+        "nimi": "ruotsi",
+        "lyhytNimi": "ruotsi",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Swedish",
+        "lyhytNimi": "Swedish",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "svenska",
+        "lyhytNimi": "svenska",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "SV"
+  }
+]
