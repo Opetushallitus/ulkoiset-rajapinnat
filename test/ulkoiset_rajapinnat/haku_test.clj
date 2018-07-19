@@ -84,6 +84,7 @@
             (let [response (client/get (api-call "/api/haku-for-year/2017"))
                   status (-> response :status)
                   body (-> (parse-json-body response))]
+              (assert-access-log-write access-log-mock 200 nil)
               (is (= status 200))
               (log/info (to-json body true))
               (def expected [])
@@ -98,6 +99,7 @@
             (let [response (client/get (api-call "/api/haku-for-year/2017"))
                   status (-> response :status)
                   body (-> (parse-json-body response))]
+              (assert-access-log-write access-log-mock 200 nil)
               (is (= status 200))
               (log/info (to-json body true))
               (def expected (parse-string (resource "test/resources/haku/result.json")))
