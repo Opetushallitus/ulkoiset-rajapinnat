@@ -4,6 +4,7 @@
             [clojure.core.async :refer [<! promise-chan >! go put! close!]]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
+            [ulkoiset-rajapinnat.utils.snippets :refer [is-valid-year]]
             [ulkoiset-rajapinnat.utils.rest :refer :all]
             [ulkoiset-rajapinnat.utils.async_safe :refer :all]))
 
@@ -70,10 +71,6 @@
     (if (syksy? kausi)
       kausi-uri-prefix-syksy
       (throw (IllegalArgumentException. (str "Unknown kausi param: " kausi))))))
-
-(defn- is-valid-year [year]
-  (when-let [year-digits (re-matches #"^\d\d\d\d$" year)]
-            (< 1000 (Integer/parseInt year-digits) 9000)))
 
 (defn hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan
   ([haku-oid vuosi kausi] (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi nil))

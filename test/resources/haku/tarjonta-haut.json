@@ -1,0 +1,296 @@
+{
+  "accessRights": {},
+  "result": [
+    {
+      "modified": 1454587429278,
+      "modifiedBy": "1.2.246.562.24.55481405949",
+      "oid": "1.2.246.562.29.44544852054",
+      "hakukausiUri": "kausi_s#1",
+      "hakukausiVuosi": 2014,
+      "hakutapaUri": "hakutapa_02#1",
+      "hakulomakeUri": "https://kyselyt.businesscollege.fi/vastaa.htm?/18695",
+      "hakutyyppiUri": "hakutyyppi_01#1",
+      "kohdejoukkoUri": "haunkohdejoukko_10#1",
+      "koulutuksenAlkamisVuosi": 2015,
+      "koulutuksenAlkamiskausiUri": "kausi_k#1",
+      "tila": "JULKAISTU",
+      "ylioppilastutkintoAntaaHakukelpoisuuden": false,
+      "hakukohdeOidsYlioppilastutkintoAntaaHakukelpoisuuden": [
+        "1.2.246.562.20.48918781252"
+      ],
+      "sijoittelu": false,
+      "jarjestelmanHakulomake": false,
+      "hakuaikas": [
+        {
+          "hakuaikaId": "1409932",
+          "alkuPvm": 1416780057997,
+          "loppuPvm": 1429093800867,
+          "nimet": {
+            "kieli_sv": "",
+            "kieli_fi": "",
+            "kieli_en": ""
+          }
+        }
+      ],
+      "hakukohdeOids": [
+        "1.2.246.562.20.48918781252"
+      ],
+      "nimi": {
+        "kieli_fi": "Johtamisen erikoisammattitutkinto",
+        "kieli_sv": "",
+        "kieli_en": ""
+      },
+      "maxHakukohdes": 0,
+      "canSubmitMultipleApplications": false,
+      "organisaatioOids": [
+        "1.2.246.562.10.32284448423",
+        "1.2.246.562.10.314297330210"
+      ],
+      "tarjoajaOids": [
+        "1.2.246.562.10.32284448423",
+        "1.2.246.562.10.314297330210"
+      ],
+      "usePriority": false,
+      "sisaltyvatHaut": [],
+      "opintopolunNayttaminenLoppuu": "2016-02-04",
+      "maksumuuriKaytossa": false,
+      "tunnistusKaytossa": false,
+      "yhdenPaikanSaanto": {
+        "voimassa": false,
+        "syy": "Ei korkeakouluhaku"
+      },
+      "autosyncTarjonta": false,
+      "korkeakouluHaku": false
+    },
+    {
+      "modified": 1416316423331,
+      "modifiedBy": "1.2.246.562.24.10224546547",
+      "oid": "1.2.246.562.29.10737177757",
+      "hakukausiUri": "kausi_s#1",
+      "hakukausiVuosi": 2014,
+      "hakutapaUri": "hakutapa_02#1",
+      "hakulomakeUri": "http://www.axxell.fi/yrkesexamen-inom-omsorgsarbete-for-utvecklingsstorda-pargas-",
+      "hakutyyppiUri": "hakutyyppi_01#1",
+      "kohdejoukkoUri": "haunkohdejoukko_10#1",
+      "koulutuksenAlkamisVuosi": 2015,
+      "koulutuksenAlkamiskausiUri": "kausi_k#1",
+      "tila": "JULKAISTU",
+      "ylioppilastutkintoAntaaHakukelpoisuuden": false,
+      "hakukohdeOidsYlioppilastutkintoAntaaHakukelpoisuuden": [
+        "1.2.246.562.20.91650169245"
+      ],
+      "sijoittelu": false,
+      "jarjestelmanHakulomake": false,
+      "hakuaikas": [
+        {
+          "hakuaikaId": "1385847",
+          "alkuPvm": 1416316082352,
+          "loppuPvm": 1421071219568,
+          "nimet": {
+            "kieli_sv": "",
+            "kieli_fi": "",
+            "kieli_en": ""
+          }
+        }
+      ],
+      "hakukohdeOids": [
+        "1.2.246.562.20.91650169245"
+      ],
+      "nimi": {
+        "kieli_sv": "Axxell vuxenutbildning - YE inom omsorgsarbete för utvecklingsstörda - Pargas"
+      },
+      "maxHakukohdes": 0,
+      "canSubmitMultipleApplications": false,
+      "organisaatioOids": [
+        "1.2.246.562.10.20423940541"
+      ],
+      "tarjoajaOids": [
+        "1.2.246.562.10.20423940541"
+      ],
+      "usePriority": false,
+      "sisaltyvatHaut": [],
+      "maksumuuriKaytossa": false,
+      "tunnistusKaytossa": false,
+      "yhdenPaikanSaanto": {
+        "voimassa": false,
+        "syy": "Ei korkeakouluhaku"
+      },
+      "autosyncTarjonta": false,
+      "korkeakouluHaku": false
+    },
+    {
+      "modified": 1410789830475,
+      "modifiedBy": "1.2.246.562.24.60859782768",
+      "oid": "1.2.246.562.29.27444937943",
+      "hakukausiUri": "kausi_s#1",
+      "hakukausiVuosi": 2014,
+      "hakutapaUri": "hakutapa_02#1",
+      "hakulomakeUri": "http://www.amisto.fi/fi/Start/MIHIN-AMMATTIIN/Ammattistartti/",
+      "hakutyyppiUri": "hakutyyppi_01#1",
+      "kohdejoukkoUri": "haunkohdejoukko_17#1",
+      "koulutuksenAlkamisVuosi": 2015,
+      "koulutuksenAlkamiskausiUri": "kausi_k#1",
+      "tila": "JULKAISTU",
+      "ylioppilastutkintoAntaaHakukelpoisuuden": false,
+      "hakukohdeOidsYlioppilastutkintoAntaaHakukelpoisuuden": [
+        "1.2.246.562.20.88882699858",
+        "1.2.246.562.20.93613755235"
+      ],
+      "sijoittelu": false,
+      "jarjestelmanHakulomake": false,
+      "hakuaikas": [
+        {
+          "hakuaikaId": "405977",
+          "alkuPvm": 1414849724654,
+          "loppuPvm": 1418046520640,
+          "nimet": {
+            "kieli_fi": ""
+          }
+        }
+      ],
+      "hakukohdeOids": [
+        "1.2.246.562.20.93613755235",
+        "1.2.246.562.20.88882699858"
+      ],
+      "nimi": {
+        "kieli_fi": "Haku ammattistartille kevät 2015 AMISTO",
+        "kieli_sv": "",
+        "kieli_en": ""
+      },
+      "maxHakukohdes": 0,
+      "canSubmitMultipleApplications": true,
+      "organisaatioOids": [
+        "1.2.246.562.10.70819998348"
+      ],
+      "tarjoajaOids": [
+        "1.2.246.562.10.70819998348"
+      ],
+      "usePriority": false,
+      "sisaltyvatHaut": [],
+      "maksumuuriKaytossa": false,
+      "tunnistusKaytossa": false,
+      "yhdenPaikanSaanto": {
+        "voimassa": false,
+        "syy": "Ei korkeakouluhaku"
+      },
+      "autosyncTarjonta": false,
+      "korkeakouluHaku": false
+    },
+    {
+      "modified": 1412940803432,
+      "modifiedBy": "1.2.246.562.24.74159344588",
+      "oid": "1.2.246.562.29.25719003797",
+      "hakukausiUri": "kausi_s#1",
+      "hakukausiVuosi": 2014,
+      "hakutapaUri": "hakutapa_02#1",
+      "hakulomakeUri": "http://www.oppimaan.fi/ilmoittaudu/",
+      "hakutyyppiUri": "hakutyyppi_01#1",
+      "kohdejoukkoUri": "haunkohdejoukko_18#1",
+      "koulutuksenAlkamisVuosi": 2015,
+      "koulutuksenAlkamiskausiUri": "kausi_k#1",
+      "tila": "JULKAISTU",
+      "ylioppilastutkintoAntaaHakukelpoisuuden": false,
+      "hakukohdeOidsYlioppilastutkintoAntaaHakukelpoisuuden": [
+        "1.2.246.562.20.33538320749"
+      ],
+      "sijoittelu": false,
+      "jarjestelmanHakulomake": false,
+      "hakuaikas": [
+        {
+          "hakuaikaId": "860341",
+          "alkuPvm": 1412940638753,
+          "loppuPvm": 1422621049680,
+          "nimet": {
+            "kieli_fi": "Syksy 2014"
+          }
+        }
+      ],
+      "hakukohdeOids": [
+        "1.2.246.562.20.33538320749"
+      ],
+      "nimi": {
+        "kieli_sv": "",
+        "kieli_fi": "Laajasalon opiston Pelituotanto",
+        "kieli_en": ""
+      },
+      "maxHakukohdes": 0,
+      "canSubmitMultipleApplications": false,
+      "organisaatioOids": [
+        "1.2.246.562.10.51107062948",
+        "1.2.246.562.10.76140499609"
+      ],
+      "tarjoajaOids": [
+        "1.2.246.562.10.51107062948",
+        "1.2.246.562.10.76140499609"
+      ],
+      "usePriority": false,
+      "sisaltyvatHaut": [],
+      "maksumuuriKaytossa": false,
+      "tunnistusKaytossa": false,
+      "yhdenPaikanSaanto": {
+        "voimassa": false,
+        "syy": "Ei korkeakouluhaku"
+      },
+      "autosyncTarjonta": false,
+      "korkeakouluHaku": false
+    },
+    {
+      "modified": 1415951810564,
+      "modifiedBy": "1.2.246.562.24.97834638509",
+      "oid": "1.2.246.562.29.49557859631",
+      "hakukausiUri": "kausi_s#1",
+      "hakukausiVuosi": 2014,
+      "hakutapaUri": "hakutapa_03#1",
+      "hakulomakeUri": "https://www.jao.fi/fi",
+      "hakutyyppiUri": "hakutyyppi_01#1",
+      "kohdejoukkoUri": "haunkohdejoukko_10#1",
+      "koulutuksenAlkamisVuosi": 0,
+      "tila": "JULKAISTU",
+      "ylioppilastutkintoAntaaHakukelpoisuuden": false,
+      "hakukohdeOidsYlioppilastutkintoAntaaHakukelpoisuuden": [
+        "1.2.246.562.20.977544568010"
+      ],
+      "sijoittelu": false,
+      "jarjestelmanHakulomake": false,
+      "hakuaikas": [
+        {
+          "hakuaikaId": "1344012",
+          "alkuPvm": 1415685651768,
+          "loppuPvm": 1451599193413,
+          "nimet": {
+            "kieli_sv": "",
+            "kieli_fi": "",
+            "kieli_en": ""
+          }
+        }
+      ],
+      "hakukohdeOids": [
+        "1.2.246.562.20.977544568010"
+      ],
+      "nimi": {
+        "kieli_fi": "Tekstiilialan ammattitutkinto",
+        "kieli_sv": "",
+        "kieli_en": ""
+      },
+      "maxHakukohdes": 0,
+      "canSubmitMultipleApplications": false,
+      "organisaatioOids": [
+        "1.2.246.562.10.69183077952"
+      ],
+      "tarjoajaOids": [
+        "1.2.246.562.10.69183077952"
+      ],
+      "usePriority": false,
+      "sisaltyvatHaut": [],
+      "maksumuuriKaytossa": false,
+      "tunnistusKaytossa": false,
+      "yhdenPaikanSaanto": {
+        "voimassa": false,
+        "syy": "Ei korkeakouluhaku"
+      },
+      "autosyncTarjonta": false,
+      "korkeakouluHaku": false
+    }
+  ],
+  "status": "OK"
+}

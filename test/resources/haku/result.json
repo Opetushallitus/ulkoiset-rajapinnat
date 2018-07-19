@@ -1,0 +1,93 @@
+[
+  {
+    "haku_nimi": {
+      "FI": "Johtamisen erikoisammattitutkinto"
+    },
+    "koulutuksen_alkamisvuosi": 2015,
+    "haun_hakukohteiden_oidit": [
+      "1.2.246.562.20.48918781252"
+    ],
+    "haun_kohdejoukko": "10",
+    "koulutuksen_alkamiskausi": "K",
+    "hakukohteiden_priorisointi": false,
+    "hakukausi": "S",
+    "hakutapa_koodi": null,
+    "haku_oid": "1.2.246.562.29.44544852054",
+    "hakutyyppi_koodi": "01",
+    "hakuvuosi": 2014,
+    "haun_kohdejoukon_tarkenne": null
+  },
+  {
+    "haku_nimi": {
+      "SV": "Axxell vuxenutbildning - YE inom omsorgsarbete för utvecklingsstörda - Pargas"
+    },
+    "koulutuksen_alkamisvuosi": 2015,
+    "haun_hakukohteiden_oidit": [
+      "1.2.246.562.20.91650169245"
+    ],
+    "haun_kohdejoukko": "10",
+    "koulutuksen_alkamiskausi": "K",
+    "hakukohteiden_priorisointi": false,
+    "hakukausi": "S",
+    "hakutapa_koodi": null,
+    "haku_oid": "1.2.246.562.29.10737177757",
+    "hakutyyppi_koodi": "01",
+    "hakuvuosi": 2014,
+    "haun_kohdejoukon_tarkenne": null
+  },
+  {
+    "haku_nimi": {
+      "FI": "Haku ammattistartille kevät 2015 AMISTO"
+    },
+    "koulutuksen_alkamisvuosi": 2015,
+    "haun_hakukohteiden_oidit": [
+      "1.2.246.562.20.93613755235",
+      "1.2.246.562.20.88882699858"
+    ],
+    "haun_kohdejoukko": "17",
+    "koulutuksen_alkamiskausi": "K",
+    "hakukohteiden_priorisointi": false,
+    "hakukausi": "S",
+    "hakutapa_koodi": null,
+    "haku_oid": "1.2.246.562.29.27444937943",
+    "hakutyyppi_koodi": "01",
+    "hakuvuosi": 2014,
+    "haun_kohdejoukon_tarkenne": null
+  },
+  {
+    "haku_nimi": {
+      "FI": "Laajasalon opiston Pelituotanto"
+    },
+    "koulutuksen_alkamisvuosi": 2015,
+    "haun_hakukohteiden_oidit": [
+      "1.2.246.562.20.33538320749"
+    ],
+    "haun_kohdejoukko": "18",
+    "koulutuksen_alkamiskausi": "K",
+    "hakukohteiden_priorisointi": false,
+    "hakukausi": "S",
+    "hakutapa_koodi": null,
+    "haku_oid": "1.2.246.562.29.25719003797",
+    "hakutyyppi_koodi": "01",
+    "hakuvuosi": 2014,
+    "haun_kohdejoukon_tarkenne": null
+  },
+  {
+    "haku_nimi": {
+      "FI": "Tekstiilialan ammattitutkinto"
+    },
+    "koulutuksen_alkamisvuosi": 0,
+    "haun_hakukohteiden_oidit": [
+      "1.2.246.562.20.977544568010"
+    ],
+    "haun_kohdejoukko": "10",
+    "koulutuksen_alkamiskausi": null,
+    "hakukohteiden_priorisointi": false,
+    "hakukausi": "S",
+    "hakutapa_koodi": null,
+    "haku_oid": "1.2.246.562.29.49557859631",
+    "hakutyyppi_koodi": "01",
+    "hakuvuosi": 2014,
+    "haun_kohdejoukon_tarkenne": null
+  }
+]
