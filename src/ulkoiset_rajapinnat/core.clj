@@ -3,7 +3,7 @@
         [org.httpkit.timer :refer :all]
         [compojure.api.sweet :refer :all]
         [compojure.api.exception :as ex]
-        [ring.util.http-response :refer :all]
+        [ring.util.http-response :refer [ok not-found]]
         [schema.core :as s]
         [compojure.api.middleware :refer [no-response-coercion]]
         [ulkoiset-rajapinnat.utils.audit :refer [audit create-audit-logger]]
