@@ -14,7 +14,7 @@
             [ulkoiset-rajapinnat.fixture :refer :all]
             [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size valintapisteet-batch-size trim-streaming-response]]
             [picomock.core :as pico]
-            [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write]])
+            [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write mock-haku-not-found-http]])
   (:import (java.io ByteArrayInputStream)))
 
 (use-fixtures :once fixture)
@@ -47,14 +47,6 @@
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/koulutustyyppi/1" (response 200 koulutustyyppi-json)
     "http://fake.virkailija.opintopolku.fi/organisaatio-service/rest/organisaatio/v3/findbyoids" (response 200 organisaatio-json)
     (response 404 "[]")))
-
-(defn mock-not-found-http [url options transform]
-  (log/info (str "Mocking url " url))
-  (def response (partial channel-response transform url))
-  (case url
-    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/INVALID_HAKU" (response 200 "{}")
-    (response 404 "[]")))
-
 
 (defn mock-http-stuck [url options transform]
   (log/info (str "Mocking url for tilastokeskus failed case " url))
@@ -95,7 +87,7 @@
       (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                     oppijat-batch-size 2
                     valintapisteet-batch-size 2
-                    http/get (fn [url options transform] (mock-not-found-http url options transform))
+                    http/get (fn [url options transform] (mock-haku-not-found-http url transform))
                     fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))
                     write-access-log access-log-mock]
         (try

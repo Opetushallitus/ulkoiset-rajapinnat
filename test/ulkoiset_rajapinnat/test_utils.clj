@@ -1,6 +1,7 @@
 (ns ulkoiset-rajapinnat.test_utils
   (:require [clojure.core.async :refer [promise-chan put! >!! close! go]]
             [clojure.test :refer [is]]
+            [clj-log4j2.core :as log]
             [ulkoiset-rajapinnat.utils.access :refer [write-access-log]]
             [picomock.core :as pico])
   (:import (java.io ByteArrayInputStream)))
@@ -33,3 +34,11 @@
   (is (= expected-status (-> (pico/mock-args access-log-mock) first second)))
   (when expected-error-message
     (is (re-find (re-pattern expected-error-message) (nth (first (pico/mock-args access-log-mock)) 3)))))
+
+(defn mock-haku-not-found-http [url transform]
+  (log/info (str "Mocking url " url))
+  (def response (partial channel-response transform url))
+  (case url
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/INVALID_HAKU" (response 200 "{}")
+    (response 404 "[]")))
+

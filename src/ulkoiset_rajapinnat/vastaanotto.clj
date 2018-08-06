@@ -5,32 +5,32 @@
             [schema.core :as s]
             [clojure.core.async :as async]
             [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request]]
-            [ulkoiset-rajapinnat.utils.tarjonta :refer [hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan]]
+            [ulkoiset-rajapinnat.utils.tarjonta :refer [hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-for-haku-oid-channel]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
-            [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel get-as-channel status body-and-close exception-response to-json parse-json-body-stream]]
+            [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel get-as-channel status body-and-close exception-response to-json parse-json-body-stream body]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [ulkoiset-rajapinnat.utils.async_safe :refer :all]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
 
 (s/defschema Vastaanotto
-  {:henkilo_oid s/Str
+  {:henkilo_oid                  s/Str
    (s/optional-key :hakutoiveet) {
-                                  (s/optional-key :hakukohde_oid) s/Any
-                                  (s/optional-key :valinnan_tila) s/Any
-                                  (s/optional-key :valinnan_tilan_lisatieto) s/Any
-                                  (s/optional-key :valintatapajono) s/Any
-                                  (s/optional-key :hakijan_lopullinen_jonosija) s/Any
-                                  (s/optional-key :hakijan_jonosijan_tarkenne) s/Any
-                                  (s/optional-key :yhteispisteet) s/Any
-                                  (s/optional-key :ilmoittautumisen_tila) s/Any
-                                  (s/optional-key :vastaanoton_tila) s/Any
-                                  (s/optional-key :alin_hyvaksytty_pistemaara) s/Any
-                                  (s/optional-key :hyvaksytty_harkinnanvaraisesti) s/Any
+                                  (s/optional-key :hakukohde_oid)                              s/Any
+                                  (s/optional-key :valinnan_tila)                              s/Any
+                                  (s/optional-key :valinnan_tilan_lisatieto)                   s/Any
+                                  (s/optional-key :valintatapajono)                            s/Any
+                                  (s/optional-key :hakijan_lopullinen_jonosija)                s/Any
+                                  (s/optional-key :hakijan_jonosijan_tarkenne)                 s/Any
+                                  (s/optional-key :yhteispisteet)                              s/Any
+                                  (s/optional-key :ilmoittautumisen_tila)                      s/Any
+                                  (s/optional-key :vastaanoton_tila)                           s/Any
+                                  (s/optional-key :alin_hyvaksytty_pistemaara)                 s/Any
+                                  (s/optional-key :hyvaksytty_harkinnanvaraisesti)             s/Any
                                   (s/optional-key :hyvaksytty_ensikertalaisten_hakijaryhmasta) s/Any
-                                  (s/optional-key :osallistui_paasykokeeseen) s/Any
-                                  (s/optional-key :osallistui_kielikokeeseen) s/Any
+                                  (s/optional-key :osallistui_paasykokeeseen)                  s/Any
+                                  (s/optional-key :osallistui_kielikokeeseen)                  s/Any
                                   }})
 
 (def oppijat-batch-size 5000)
@@ -49,12 +49,12 @@
     (fn [tunnisteet]
       (let [osallistumiset (map kokeeseen-osallistuminen tunnisteet)]
         (if (some #(= "OSALLISTUI" %) osallistumiset) true
-          (if (some #(= "EI_OSALLISTUNUT" %) osallistumiset) false nil)))))
+                                                      (if (some #(= "EI_OSALLISTUNUT" %) osallistumiset) false nil)))))
 
   (defn- ammatilliseen-kielikokeeseen-osallistuminen [hakijan-kielikokeet]
     (let [osallistumiset (map #(% :osallistuminen) hakijan-kielikokeet)]
       (if (some #(= "osallistui" %) osallistumiset) true
-        (if (some #(= "ei_osallistunut" %) osallistumiset) false nil))))
+                                                    (if (some #(= "ei_osallistunut" %) osallistumiset) false nil))))
 
   (defn- hakutoive-builder [hakutoiveiden-kokeet hakemuksen-valintapisteet hakijan-kielikokeet]
 
@@ -70,22 +70,22 @@
           (let [muuKielikoeOsallistuminen (osallistuminen kielikokeiden-tunnisteet)
                 ammatillinenKielikoeOsallistuminen (ammatilliseen-kielikokeeseen-osallistuminen hakijan-kielikokeet)]
             (if (or muuKielikoeOsallistuminen ammatillinenKielikoeOsallistuminen) true
-              (if (or (false? muuKielikoeOsallistuminen) (false? ammatillinenKielikoeOsallistuminen)) false nil))))
+                                                                                  (if (or (false? muuKielikoeOsallistuminen) (false? ammatillinenKielikoeOsallistuminen)) false nil))))
 
-        {"hakukohde_oid"                  hakutoive-oid
-         "valinnan_tila"                  (valintatapajono "tila")
-         "valinnan_tilan_lisatieto"       ((valintatapajono "tilanKuvaukset") "FI")
-         "valintatapajono"                (valintatapajono "valintatapajonoOid")
-         "hakijan_lopullinen_jonosija"    (valintatapajono "jonosija")
-         "hakijan_jonosijan_tarkenne"     (valintatapajono "tasasijaJonosija")
-         "yhteispisteet"                  (valintatapajono "pisteet")
-         "ilmoittautumisen_tila"          (valintatapajono "ilmoittautumisTila")
-         "vastaanoton_tila"               (hakutoive "vastaanottotieto")
-         "alin_hyvaksytty_pistemaara"     (valintatapajono "alinHyvaksyttyPistemaara")
-         "hyvaksytty_harkinnanvaraisesti" (valintatapajono "hyvaksyttyHarkinnanvaraisesti")
+        {"hakukohde_oid"                              hakutoive-oid
+         "valinnan_tila"                              (valintatapajono "tila")
+         "valinnan_tilan_lisatieto"                   ((valintatapajono "tilanKuvaukset") "FI")
+         "valintatapajono"                            (valintatapajono "valintatapajonoOid")
+         "hakijan_lopullinen_jonosija"                (valintatapajono "jonosija")
+         "hakijan_jonosijan_tarkenne"                 (valintatapajono "tasasijaJonosija")
+         "yhteispisteet"                              (valintatapajono "pisteet")
+         "ilmoittautumisen_tila"                      (valintatapajono "ilmoittautumisTila")
+         "vastaanoton_tila"                           (hakutoive "vastaanottotieto")
+         "alin_hyvaksytty_pistemaara"                 (valintatapajono "alinHyvaksyttyPistemaara")
+         "hyvaksytty_harkinnanvaraisesti"             (valintatapajono "hyvaksyttyHarkinnanvaraisesti")
          "hyvaksytty_ensikertalaisten_hakijaryhmasta" (hyvaksytty-ensikertalaisen-hakijaryhmasta (hakutoive "hakijaryhmat"))
-         "osallistui_paasykokeeseen"      (osallistuminen valintakokeiden-tunnisteet)
-         "osallistui_kielikokeeseen"      kielikokeeseen-osallistuminen})))
+         "osallistui_paasykokeeseen"                  (osallistuminen valintakokeiden-tunnisteet)
+         "osallistui_kielikokeeseen"                  kielikokeeseen-osallistuminen})))
 
   (fn [vastaanotto]
     (let [hakemus-oid (vastaanotto "hakemusOid")
@@ -100,7 +100,7 @@
   (defn- transform-dto [dto]
     (let [tyyppi (dto "syötettavanArvonTyyppi")
           uri (if (nil? tyyppi) nil (tyyppi "uri"))]
-      { :tunniste (dto "tunniste") :kielikoe (= uri "syotettavanarvontyypit_kielikoe") :valintakoe (= uri "syotettavanarvontyypit_valintakoe")}))
+      {:tunniste (dto "tunniste") :kielikoe (= uri "syotettavanarvontyypit_kielikoe") :valintakoe (= uri "syotettavanarvontyypit_valintakoe")}))
 
   (defn- uri [dto]
     (let [tyyppi (dto "syötettavanArvonTyyppi")]
@@ -124,12 +124,12 @@
     (if (empty? oppijoiden-kielikokeet) {} oppijoiden-kielikokeet)))
 
 (def valintatapajono-trim-keys ["ehdollisenHyvaksymisenEhtoEN" "ehdollisenHyvaksymisenEhtoFI" "ehdollisenHyvaksymisenEhtoKoodi"
-                                  "ehdollisenHyvaksymisenEhtoSV" "ehdollisestiHyvaksyttavissa" "eiVarasijatayttoa"
-                                  "hakemuksenTilanViimeisinMuutos" "hakeneet" "hyvaksytty" "hyvaksyttyVarasijalta"
-                                  "paasyJaSoveltuvuusKokeenTulos" "julkaistavissa" "tayttojono" "valintatapajonoNimi"
-                                  "valintatapajonoPrioriteetti" "valintatuloksenViimeisinMuutos" "varalla"
-                                  "varasijaTayttoPaivat" "varasijanNumero" "varasijat" "varasijojaKaytetaanAlkaen"
-                                  "varasijojaTaytetaanAsti"])
+                                "ehdollisenHyvaksymisenEhtoSV" "ehdollisestiHyvaksyttavissa" "eiVarasijatayttoa"
+                                "hakemuksenTilanViimeisinMuutos" "hakeneet" "hyvaksytty" "hyvaksyttyVarasijalta"
+                                "paasyJaSoveltuvuusKokeenTulos" "julkaistavissa" "tayttojono" "valintatapajonoNimi"
+                                "valintatapajonoPrioriteetti" "valintatuloksenViimeisinMuutos" "varalla"
+                                "varasijaTayttoPaivat" "varasijanNumero" "varasijat" "varasijojaKaytetaanAlkaen"
+                                "varasijojaTaytetaanAsti"])
 
 (defn trim-streaming-response [hakukohde-oidit vastaanotot]
   (defn- trim-hakutoive [h]
@@ -142,7 +142,7 @@
     (let [hakutoive-filter (fn [h] (some #(= % (h "hakukohdeOid")) hakukohde-oidit))
           hakutoiveet (map trim-hakutoive (filter hakutoive-filter (v "hakutoiveet")))
           vastaanotto (dissoc v "etunimi" "sukunimi")]
-        (assoc vastaanotto "hakutoiveet" hakutoiveet)))
+      (assoc vastaanotto "hakutoiveet" hakutoiveet)))
   (if (empty? hakukohde-oidit) [] (filter #(not-empty (% "hakutoiveet")) (map trim-vastaanotto vastaanotot))))
 
 (defn vastaanotot-channel [haku-oid hakukohde-oidit]
@@ -183,27 +183,34 @@
 (defn vastaanotot-for-haku [haku-oid vuosi kausi request user channel log-to-access-log]
   (async/go
     (try
-      (let [haun-hakukohteet (if-let [r (not-empty (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi)))] r
-                               (throw (RuntimeException. (format "No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi))))
-            vastaanotot (<? (vastaanotot-channel haku-oid haun-hakukohteet))
-            hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
-            hakemus-oidit (map #(% "hakemusOid") vastaanotot)
-            valintakokeet (if (empty? hakukohde-oidit) {} (<? (fetch-kokeet-channel haku-oid hakukohde-oidit)))
-            valintapisteet (if (empty? hakemus-oidit) {} (<? (fetch-valintapisteet-channel haku-oid hakemus-oidit request user)))
-            oppijanumerot (map #(% "hakijaOid") vastaanotot)
-            kielikokeet (if (empty? oppijanumerot) {} (<? (fetch-ammatilliset-kielikokeet-channel haku-oid oppijanumerot)))]
-        (log/info (format "Haku %s hakijoita %d kpl" haku-oid (count hakemus-oidit)))
-        (log/info (format "Haku %s hakukohteita %d kpl" haku-oid (count hakukohde-oidit)))
-        (log/info (format "Haku %s hakemuksia %d kpl" haku-oid (count hakemus-oidit)))
-        (log/info (format "Haku %s valintakokeet %d kpl" haku-oid (count valintakokeet)))
-        (log/info (format "Haku %s valintapisteitä %d kpl" haku-oid (count valintapisteet)))
-        (log/info (format "Haku %s kielikokeita %d kpl" haku-oid (count kielikokeet)))
-        (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet kielikokeet)
-              json (to-json (map build-vastaanotto vastaanotot))]
-          (log-to-access-log 200 nil)
-          (-> channel
-              (status 200)
-              (body-and-close json))))
+      (if (seq (<? (haku-for-haku-oid-channel haku-oid)))
+        (let [haun-hakukohteet (if-let [r (not-empty (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi)))]
+                                 r
+                                 (throw (RuntimeException. (format "No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi))))
+              vastaanotot (<? (vastaanotot-channel haku-oid haun-hakukohteet))
+              hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
+              hakemus-oidit (map #(% "hakemusOid") vastaanotot)
+              valintakokeet (if (empty? hakukohde-oidit) {} (<? (fetch-kokeet-channel haku-oid hakukohde-oidit)))
+              valintapisteet (if (empty? hakemus-oidit) {} (<? (fetch-valintapisteet-channel haku-oid hakemus-oidit request user)))
+              oppijanumerot (map #(% "hakijaOid") vastaanotot)
+              kielikokeet (if (empty? oppijanumerot) {} (<? (fetch-ammatilliset-kielikokeet-channel haku-oid oppijanumerot)))]
+          (log/info (format "Haku %s hakijoita %d kpl" haku-oid (count hakemus-oidit)))
+          (log/info (format "Haku %s hakukohteita %d kpl" haku-oid (count hakukohde-oidit)))
+          (log/info (format "Haku %s hakemuksia %d kpl" haku-oid (count hakemus-oidit)))
+          (log/info (format "Haku %s valintakokeet %d kpl" haku-oid (count valintakokeet)))
+          (log/info (format "Haku %s valintapisteitä %d kpl" haku-oid (count valintapisteet)))
+          (log/info (format "Haku %s kielikokeita %d kpl" haku-oid (count kielikokeet)))
+          (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet kielikokeet)
+                json (to-json (map build-vastaanotto vastaanotot))]
+            (log-to-access-log 200 nil)
+            (-> channel
+                (status 200)
+                (body-and-close json))))
+        (let [message (format "Haku %s not found" haku-oid)]
+          (status channel 404)
+          (body channel (to-json {:error message}))
+          (close channel)
+          (log-to-access-log 404 message)))
       (catch Exception e
         (do
           (log/error (format "Virhe haettaessa vastaanottoja haulle %s!" haku-oid), e)
