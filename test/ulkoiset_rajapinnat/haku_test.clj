@@ -71,7 +71,7 @@
             (let [response (client/get (api-call "/api/haku-for-year/2017"))]
               (is (= false true) "should not reach this line"))
             (catch Exception e
-              (assert-access-log-write access-log-mock 500 "Unexpected error from url http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1 -> fake.virkailija.opintopolku.fi: nodename nor servname provided, or not known")
+              (assert-access-log-write access-log-mock 500 "Unexpected error from url http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1")
               (is (= 500 ((ex-data e) :status)))
               (is (re-find #"Unexpected error" ((ex-data e) :body))))))))
 

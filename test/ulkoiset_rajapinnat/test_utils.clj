@@ -31,4 +31,5 @@
 (defn assert-access-log-write [access-log-mock expected-status expected-error-message]
   (is (= 1 (pico/mock-calls access-log-mock)))
   (is (= expected-status (-> (pico/mock-args access-log-mock) first second)))
-  (is (= expected-error-message (nth (first (pico/mock-args access-log-mock)) 3))))
+  (when expected-error-message
+    (is (re-find (re-pattern expected-error-message) (nth (first (pico/mock-args access-log-mock)) 3)))))

@@ -268,10 +268,11 @@
                    (log-to-access-log 500 (.getMessage e))))
                (finally
                  (close-channel))))
-           (do (status channel 404)
-               (body channel (to-json {:error (format "Haku %s not found" haku-oid)}))
-               (close channel)
-               (log-to-access-log 404 (format "Haku %s not found" haku-oid)))))
+           (let [message (format "Haku %s not found" haku-oid)]
+             (status channel 404)
+             (body channel (to-json {:error message}))
+             (close channel)
+             (log-to-access-log 404 message))))
      (catch Throwable e (let [error-message (.getMessage e)
                               is-illegal-argument (or (instance? IllegalArgumentException e)
                                                       (instance? IllegalArgumentException (.getCause e)))
