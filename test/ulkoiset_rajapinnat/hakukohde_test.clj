@@ -14,7 +14,7 @@
             [ulkoiset-rajapinnat.fixture :refer :all]
             [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size valintapisteet-batch-size trim-streaming-response]]
             [picomock.core :as pico]
-            [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write]])
+            [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write mock-haku-not-found-http]])
   (:import (java.io ByteArrayInputStream)))
 
 (use-fixtures :once fixture)
@@ -34,6 +34,8 @@
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
   (case url
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 "{\"result\": \"dummy\"}")
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.9999009999" (response 200 "{\"result\": \"dummy\"}")
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1" (response 200 hakukohde-tulos-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.9999009999/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1" (response 200 hakukohde-tulos-empty-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.29.25191045126" (response 200 koulutus-json)
@@ -50,6 +52,7 @@
   (log/info (str "Mocking url for tilastokeskus failed case " url))
   (def response (partial channel-response transform url))
   (case url
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 "{\"result\": \"dummy\"}")
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1" (response 200 hakukohde-tulos-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.29.25191045126" (response 200 koulutus-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 500 tilastokeskus-json)
@@ -78,6 +81,21 @@
           (def expected (parse-string (resource "test/resources/hakukohde/result-empty.json")))
           (def difference (diff expected body))
           (is (= [nil nil expected] difference) difference)))))
+
+  (testing "return status 404 if haku is not found"
+    (let [access-log-mock (pico/mock mock-write-access-log)]
+      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                    oppijat-batch-size 2
+                    valintapisteet-batch-size 2
+                    http/get (fn [url options transform] (mock-haku-not-found-http url transform))
+                    fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))
+                    write-access-log access-log-mock]
+        (try
+          (let [response (client/get (api-call "/api/hakukohde-for-haku/INVALID_HAKU"))]
+            (is (= false true)))
+          (catch Exception e
+            (assert-access-log-write access-log-mock 404 "Haku INVALID_HAKU not found")
+            (is (= 404 ((ex-data e) :status))))))))
 
   (testing "return status 500 if POST request to tilastokeskus fails with status 500 (don't get stuck)"
     (let [access-log-mock (pico/mock mock-write-access-log)]
@@ -113,4 +131,7 @@
           (def expected (parse-string (resource "test/resources/hakukohde/result.json")))
           (def difference (diff expected body))
           (is (= [nil nil expected] difference) difference)
-          (assert-access-log-write access-log-mock 200 nil))))))
+          (assert-access-log-write access-log-mock 200 nil)))))
+
+
+  )

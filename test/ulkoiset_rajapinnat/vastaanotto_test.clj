@@ -14,7 +14,7 @@
             [ulkoiset-rajapinnat.fixture :refer :all]
             [ulkoiset-rajapinnat.vastaanotto :refer [oppijat-batch-size valintapisteet-batch-size trim-streaming-response]]
             [picomock.core :as pico]
-            [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write]]
+            [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write mock-haku-not-found-http]]
             [clojure.string :as str])
   (:import (java.io ByteArrayInputStream)))
 
@@ -42,12 +42,27 @@
       (case url
         "http://fake.internal.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (response 200 vastaanotot-json)
         "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (response 200 (if use-empty-avaimet avaimet-empty-json avaimet-json))
-        "http://fake.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
+        "http://fake.internal.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
         "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 haku-json)
         "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
         (response 404 "[]")))))
 
 (deftest vastaanotto-api-test
+
+  (testing "Haku does not exist, return status 404"
+    (let [access-log-mock (pico/mock mock-write-access-log)]
+      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                    oppijat-batch-size 2
+                    valintapisteet-batch-size 2
+                    http/get (fn [url options transform] (mock-haku-not-found-http url transform))
+                    fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
+                    write-access-log access-log-mock]
+        (try
+          (let [response (client/get (api-call "/api/vastaanotto-for-haku/INVALID_HAKU?vuosi=2017&kausi=s"))]
+            (is (= false true)))
+          (catch Exception e
+            (assert-access-log-write access-log-mock 404 "Haku INVALID_HAKU not found")
+            (is (= 404 ((ex-data e) :status))))))))
 
   (testing "No vastaanotot found"
     (let [access-log-mock (pico/mock mock-write-access-log)]
