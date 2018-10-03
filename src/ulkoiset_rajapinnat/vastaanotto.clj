@@ -148,7 +148,7 @@
 (defn vastaanotot-channel [haku-oid hakukohde-oidit]
   (log/info (format "Haku %s haetaan vastaanotot..." haku-oid))
   (let [mapper (comp (partial trim-streaming-response hakukohde-oidit) parse-json-body-stream)]
-    (get-as-channel (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid) {:as :stream} mapper)))
+    (get-as-channel (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid) {:as :stream :timeout 600000} mapper)))
 
 (defn fetch-kokeet-channel [haku-oid hakukohde-oidit]
   (log/info (format "Haku %s haetaan valintakokeet %d hakukohteelle..." haku-oid (count hakukohde-oidit)))
