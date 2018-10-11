@@ -70,12 +70,14 @@
           (let [haku-converter (partial transform-haku kieli kausi hakutyyppi hakutapa haunkohdejoukko haunkohdejoukontarkenne)
                 converted-hakus (map haku-converter hakus)
                 json (to-json converted-hakus)]
+            (log/error "XYZ: konvertoitiin haut")
             (log-to-access-log 200 nil)
             (-> channel
                 (status 200)
                 (body-and-close json))))
         (let [message (str "Invalid vuosi parameter " vuosi)
               status-code 400]
+          (log/error "XYZ: haku-resource huono parametri" vuosi)
           (log-to-access-log status-code message)
           (-> channel
               (status status-code)
@@ -83,6 +85,6 @@
       (catch Throwable e
         (log-to-access-log 500 (.getMessage e))
         ((exception-response channel) e))))
-  (schedule-task (* 1000 60 60) ((exception-response channel) (RuntimeException. "Timeout!"))))
+  (schedule-task (* 1000 60 60) ((exception-response channel) (log/error "XYZ: haku-resource timed out") (RuntimeException. "Timeout!"))))
 
 

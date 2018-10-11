@@ -61,7 +61,9 @@
               (is (= false true) "should not reach this line"))
             (catch Exception e
               (assert-access-log-write access-log-mock 400 "Invalid vuosi parameter -2017")
-              (is (= 400 ((ex-data e) :status)))
+              (let [data (ex-data e)]
+                (log/error "XYZ exception data: " data)
+                (is (= 400 (data :status))))
               (is (re-find #"Invalid vuosi parameter -2017" ((ex-data e) :body))))))))
 
     (testing "Fetch haku-for-year internal server error returns 500"

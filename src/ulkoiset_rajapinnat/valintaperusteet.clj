@@ -140,4 +140,4 @@
               (log/error (format "Virhe haettaessa valintaperusteita %d hakukohteelle!" (count requested-oids)), e)
               (log-to-access-log 500 (.getMessage e))
               ((exception-response channel) e)))))
-   (schedule-task (* 1000 60 60) ((exception-response channel) (RuntimeException. "Timeout!")))))
+   (schedule-task (* 1000 60 60) ((exception-response channel) (log/error "XYZ: valintaperusteet-resource timed out") (RuntimeException. "Timeout!")))))

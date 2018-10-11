@@ -30,7 +30,7 @@
                              (default-write-access-log start-time response-code request error-message)))
 
 (defn assert-access-log-write [access-log-mock expected-status expected-error-message]
-  (Thread/sleep 2000)
+  (Thread/sleep 10000)
   (is (= 1 (pico/mock-calls access-log-mock)))
   (is (= expected-status (-> (pico/mock-args access-log-mock) first second)))
   (when expected-error-message

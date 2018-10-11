@@ -128,4 +128,4 @@
       (catch Exception e
         ((exception-response channel) e)
         (log-to-access-log 500 (.getMessage e)))))
-  (schedule-task (* 1000 60 60) ((exception-response channel) (RuntimeException. "Timeout!"))))
+  (schedule-task (* 1000 60 60) ((exception-response channel) (log/error "XYZ: hakukohde-resource timed out") (RuntimeException. "Timeout!"))))

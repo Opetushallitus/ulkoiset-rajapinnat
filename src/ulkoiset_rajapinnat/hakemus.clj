@@ -285,4 +285,4 @@
 
 (defn hakemus-resource [haku-oid vuosi kausi palauta-null-arvot? request user channel log-to-access-log]
   (fetch-hakemukset-for-haku haku-oid vuosi kausi palauta-null-arvot? channel log-to-access-log)
-  (schedule-task (* 1000 60 60 12) ((exception-response channel) (RuntimeException. "Timeout!"))))
+  (schedule-task (* 1000 60 60 12) ((exception-response channel) (log/error "XYZ: hakemus-resource timed out") (RuntimeException. "Timeout!"))))
