@@ -28,4 +28,5 @@
 (defn fixture [f]
   (let [server-close-handle (start-server [(test-edn)])]
     (f)
+    (Thread/sleep 2000)
     (server-close-handle)))

@@ -176,7 +176,9 @@
              (is (= status 200))
              (log/info (to-json body true)))
            (catch Exception e
+             (println (str "No vastaanottoja e: " e))
              (let [data (ex-data e)
+                   foo (println (str "No vastaanottoja data: " data))
                    status (data :status)]
                (log/info (str "Exception " status)))
              (is (= false true)))))))
