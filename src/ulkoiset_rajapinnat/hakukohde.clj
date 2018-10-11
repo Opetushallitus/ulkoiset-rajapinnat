@@ -128,4 +128,4 @@
       (catch Exception e
         ((exception-response channel) e)
         (log-to-access-log 500 (.getMessage e)))))
-  (schedule-task (* 1000 60 60) (close channel)))
+  (schedule-task (* 1000 60 60) ((exception-response channel) (RuntimeException. "Timeout!"))))

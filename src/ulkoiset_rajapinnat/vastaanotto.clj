@@ -219,4 +219,4 @@
 
 (defn vastaanotto-resource [haku-oid vuosi kausi request user channel log-to-access-log]
   (vastaanotot-for-haku haku-oid vuosi kausi request user channel log-to-access-log)
-  (schedule-task (* 1000 60 60 12) (close channel)))
+  (schedule-task (* 1000 60 60 12) ((exception-response channel) (RuntimeException. "Timeout!"))))
