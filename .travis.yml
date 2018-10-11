@@ -16,7 +16,7 @@ install:
   - export ARTIFACT_NAME="ulkoiset-rajapinnat"
 
 script:
-  - lein ci-test
+  - lein test
   - lein uberjar
 
   - mv target/ulkoiset-rajapinnat.jar $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}.jar
