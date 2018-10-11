@@ -19,7 +19,7 @@ script:
   - lein test
   - lein uberjar
 
-  - mv target/ulkoiset-rajapinnat.jar $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}.jar
+  - mv target/ulkoiset-rajapinnat-0.1.0-SNAPSHOT-standalone.jar $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}.jar
   - cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
 
   - export BASE_IMAGE="base-legacy:0.1"
