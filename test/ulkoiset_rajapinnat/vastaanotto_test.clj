@@ -176,5 +176,7 @@
              (is (= status 200))
              (log/info (to-json body true)))
            (catch Exception e
-             (log/info (str "Exception " ((ex-data e) :status)))
+             (let [data (ex-data e)
+                   status (data :status)]
+               (log/info (str "Exception " status)))
              (is (= false true)))))))

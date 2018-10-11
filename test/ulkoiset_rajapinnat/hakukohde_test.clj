@@ -123,7 +123,8 @@
                     http/post (fn [url options transform] (mock-http url options transform))
                     fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))
                     write-access-log access-log-mock]
-        (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.25191045126"))
+        (let [call (api-call "/api/hakukohde-for-haku/1.2.246.562.29.25191045126")
+              response (client/get call)
               status (-> response :status)
               body (-> (parse-json-body response))]
           (is (= status 200))
