@@ -29,7 +29,9 @@
     (str (name ulkoiset-rajapinnat-property-key) "=" tmp-test-edn-file)))
 
 (defonce my-executor
-         (let [executor-svc (Executors/newSingleThreadExecutor)]
+         (let [executor-svc (Executors/newFixedThreadPool
+                              1
+                              (conc/counted-thread-factory "async-dispatch-%d" false))]
            (reify protocols/Executor
              (protocols/exec [this r]
                (.execute executor-svc ^Runnable r)))))
