@@ -1,0 +1,243 @@
+[{
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutuskkulk",
+    "metadata": [
+      {
+        "nimi": "Muualla kuin Suomessa suoritettu korkeakoulututkinto",
+        "lyhytNimi": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Higher education qualification completed outside Finland",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Högskoleexamen som avlagts annanstans än i Finland",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_kk_ulk"
+  },
+  {
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutusamt",
+    "metadata": [
+      {
+        "nimi": "Yrkesexamen eller specialyrkesexamen som avlagts i Finland",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Further vocational qualification or specialist vocational qualification completed in Finland",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Suomessa suoritettu ammatti- tai erikoisammattitutkinto",
+        "lyhytNimi": null,
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_amt"
+  },
+  {
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutusyoulkomainen",
+    "metadata": [
+      {
+        "nimi": "Muualla kuin Suomessa suoritettu kansainvälinen ylioppilastutkinto",
+        "lyhytNimi": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "International matriculation examination completed outside Finland",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Internationell studentexamen som avlagts annanstans än i Finland",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_yo_ulkomainen"
+  },
+  {
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutusulk",
+    "metadata": [
+      {
+        "nimi": "Övrig examen som avlagts annanstans än i Finland, och ger behörighet för högskolestudier i ifrågavarande land",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Other qualification completed outside Finland that provides eligibility to apply for higher education in the country in question",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Muualla kuin Suomessa suoritettu muu tutkinto, joka asianomaisessa maassa antaa hakukelpoisuuden korkeakouluun",
+        "lyhytNimi": null,
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_ulk"
+  },
+  {
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutuskk",
+    "metadata": [
+      {
+        "nimi": "Högskoleexamen som avlagts i Finland",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Higher education qualification completed in Finland",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Suomessa suoritettu korkeakoulututkinto",
+        "lyhytNimi": null,
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_kk"
+  },
+  {
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutusam",
+    "metadata": [
+      {
+        "nimi": "Yrkesinriktad grundexamen, examen på skolnivå, examen på institutsnivå eller yrkesinriktad examen på högre nivå som avlagts i Finland",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Vocational upper secondary qualification, school-level qualification, post-secondary level qualification or higher vocational level qualification completed in Finland",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Suomessa suoritettu ammatillinen perustutkinto, kouluasteen, opistoasteen tai ammatillisen korkea-asteen tutkinto",
+        "lyhytNimi": "",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_am"
+  },
+  {
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutusyokansainvalinensuomessa",
+    "metadata": [
+      {
+        "nimi": "Internationell studentexamen som avlagts i Finland",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "International matriculation examination completed in Finland",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Suomessa suoritettu kansainvälinen ylioppilastutkinto",
+        "lyhytNimi": null,
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_yo_kansainvalinen_suomessa"
+  },
+  {
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutusmuu",
+    "metadata": [
+      {
+        "nimi": "Muu korkeakoulukelpoisuus",
+        "lyhytNimi": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Other eligibility for higher education",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Övrig högskolebehörighet",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_muu"
+  },
+  {
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutusavoin",
+    "metadata": [
+      {
+        "nimi": "Studies required by the higher education institution completed at open university or open polytechnic/UAS",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Studier som högskolan kräver vid en öppen högskola",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Korkeakoulun edellyttämät avoimen korkeakoulun opinnot",
+        "lyhytNimi": null,
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_avoin"
+  },
+  {
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutusyo",
+    "metadata": [
+      {
+        "nimi": "Matriculation examination and/or general upper secondary school syllabus completed in Finland",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Studentexamen och/eller gymnasiets lärokurs som avlagts i Finland",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Suomessa suoritettu ylioppilastutkinto ja/tai lukion oppimäärä",
+        "lyhytNimi": null,
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_yo"
+  },
+  {
+    "koodiUri": "pohjakoulutuskkodw_pohjakoulutusyoammatillinen",
+    "metadata": [
+      {
+        "nimi": "Double degree (secondary level)",
+        "lyhytNimi": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Ammatillinen perustutkinto ja ylioppilastutkinto (kaksoistutkinto)",
+        "lyhytNimi": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Dubbelexamen",
+        "lyhytNimi": null,
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "pohjakoulutus_yo_ammatillinen"
+  }
+]
