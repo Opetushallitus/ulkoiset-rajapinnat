@@ -81,9 +81,11 @@
           (log-to-access-log status-code message)
           (-> channel
               (status status-code)
-              (body-and-close (to-json {:error message})))))
+              (body-and-close (to-json {:error message})))
+          (log/error "XYZ: haku-resource finished")))
       (catch Throwable e
         (log-to-access-log 500 (.getMessage e))
+        (log/error "XYZ: exception in haku-resource")
         ((exception-response channel) e))))
   (schedule-task (* 1000 60 60) ((exception-response channel) (log/error "XYZ: haku-resource timed out") (RuntimeException. "Timeout!"))))
 

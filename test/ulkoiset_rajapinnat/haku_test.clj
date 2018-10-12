@@ -60,6 +60,7 @@
             (let [response (client/get (api-call "/api/haku-for-year/-2017"))]
               (is (= false true) "should not reach this line"))
             (catch Exception e
+              (log/error "XYZ exception e: " e)
               (assert-access-log-write access-log-mock 400 "Invalid vuosi parameter -2017")
               (let [data (ex-data e)]
                 (log/error "XYZ exception data: " data)

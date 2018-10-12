@@ -105,11 +105,15 @@
   channel)
 
 (defn body [channel body]
+  (log/error "XYZ: send body " body " without closing channel " channel)
   (send! channel body false)
+  (log/error "XYZ: sent")
   channel)
 
 (defn body-and-close [channel body]
+  (log/error "XYZ: send body " body " and close channel " channel)
   (send! channel body true)
+  (log/error "XYZ: channel closed")
   channel)
 
 (defn exception-response [channel]
