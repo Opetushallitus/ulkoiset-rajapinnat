@@ -110,7 +110,6 @@
 
 (defn body-and-close [channel body]
   (send! channel body false)
-  (Thread/sleep 2000)
   (close channel)
   channel)
 
