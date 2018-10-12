@@ -122,5 +122,4 @@
       (log/error "Internal server error!" exception)
       (-> channel
           (status 500)
-          (body (to-json {:error (.getMessage exception)}))
-          (close)))))
+          (body-and-close (to-json {:error (.getMessage exception)}))))))
