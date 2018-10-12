@@ -112,7 +112,10 @@
 
 (defn body-and-close [channel body]
   (log/error "XYZ: send body " body " and close channel " channel)
-  (send! channel body true)
+  (send! channel body false)
+  (log/error "XYZ: closing channel")
+  (Thread/sleep 2000)
+  (close channel)
   (log/error "XYZ: channel closed")
   channel)
 
