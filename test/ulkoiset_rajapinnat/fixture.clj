@@ -30,7 +30,7 @@
 
 (defonce my-executor
          (let [executor-svc (Executors/newFixedThreadPool
-                              1
+                              5
                               (conc/counted-thread-factory "async-dispatch-%d" false))]
            (reify protocols/Executor
              (protocols/exec [this r]
