@@ -1,0 +1,37 @@
+sudo: required
+language: clojure
+services:
+  - docker
+
+env:
+  global:
+    # AWS_ACCESS_KEY_ID
+    - secure: "E7gPaSLdhDqlKgd0wrtrHx4DVwcmTk3ZOMvIMloYFoPXZ3r8iZK9Nv4xqxa7IQiaY4MiatfsovgShNwItJZbVXijYS6/ACYKUBEyN+o6JrzwUeVj6cNhy3c9WNVdPS72r+GfBx1iPi/jFewk86q0uuTGS4Dg8FleC1HCoZScuN2TsjLTdi3A/N8P3qUHr/y2BaKjUXTAGyU4pMAIbf6fC83jjvmyFpuZamyb3Sy7xIW5AdlOAuEhpeQYy8sKOnQUFGoKIqljgKTSdrVeJJ7odrwlSlKRolrI86kWQAw3OVcaWj5MIf1FSRA9Z3rgu/hVB9GnobAuMMNgSwYpvvJZRfgmn6DBGw0MoLVMRqIGLndCtV1GL0kIayOcBTosk0+mmS/MJP5QjM2ivEl/ZDZf9s0jx33n4CHE6MqXKPNvMs02nEdf2SAtwpo3O7WTUgBQPK72hGc1XXPzsZtYbsSNCeRHyZEZ6FaB9Fm9c7SmF025dWZMVLfBLLvjsmy+hw6FGU5uCHdLc5ifHo+6H/7HCdu0KQrkndifk3eh2UtgxRRejJNt2F5TqU1FAWf3xblXEYk99lc22M+naRjUHiyXs2FkJHZmFV49AwaMU6Uz1r4wQJiSkyUYeZPND/DYrnaJWNS8ovtZNJ36Cl8tGd2AhtYdbU/K9u8Fl7pHaCCOkAQ="
+    # AWS_SECRET_ACCESS_KEY
+    - secure: "XAx97Ht/3wA8uDOc16s/rtB3cy7DspuaF0SOnD9XAhKnsq7qUC+GgyPKDcP26tKmcvXrq93yy7VKcdQWmjQdxZrxWH/boHAHXHIF8EjoFPSovxztNAbRYbfjoJ6ONmQUUmCEGoqw6nN+rHjl2nvQTJ3y79iHVIYUQDlT/v1Oq4X1++uFV62HiE5EapqB/SYuA6e1SgfDVvfvi4mlwPjDfuh7LeZFLRBVmM1V60ROy+gYeqiP6LppaFfriB2mCU+QNv9/aToxWYAA9ojOxW/HwX2Qs0ASkPUGare+Fu/XeSOsIVGf0pmYYcfys+nDfMITV+2EU+X/xq6DAB+KqMF3Q3CFaFDVGqK2a8xesMPzmXCSHQdmGD7P2HAOAhw4ZngdNlU0ChFLHsTT3H8clFeI8svfJ/MGVgfQ3ugEfQglz9vWWQ/hBKR5ViW7BV0VUz2vZCO43SE+VgOHIkuhpWNn+MNHHj0MQpIurDReMvWiyZAADxC11FEw/UJg+O+v9sBupIClEcEzr42apaCZHWnCSrTkmLfbvgr8ViZv57Yc0tDj8NDtt/smkdT6ln9wVuszPjtITapMPCZwx7kKEsT70ex9eEmDJ2V4aXnEMI4g0F22tR2gGbZASCMIMOQSRWZQxJmqN6uWHXvPKz81gQYBOVPjQBjmJ638/vE4Q16ZaM8="
+
+install:
+  - git clone https://github.com/Opetushallitus/ci-tools.git
+  - source ci-tools/common/setup-tools.sh
+  - export ARTIFACT_NAME="ulkoiset-rajapinnat"
+
+script:
+  - lein test
+  - lein uberjar
+
+  - mv target/ulkoiset-rajapinnat-0.1.0-SNAPSHOT-standalone.jar $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}.jar
+  - cp -vr oph-configuration $DOCKER_BUILD_DIR/config/
+
+  - export BASE_IMAGE="base-legacy:0.1"
+  - ./ci-tools/common/pull-image.sh
+  - ./ci-tools/build/build-fatjar.sh ${ARTIFACT_NAME}
+
+deploy:
+  provider: script
+  script: ./ci-tools/build/upload-image.sh ${ARTIFACT_NAME}
+  on:
+    all_branches: true
+
+cache:
+  directories:
+  - $HOME/.m2

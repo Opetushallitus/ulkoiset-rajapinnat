@@ -109,7 +109,8 @@
   channel)
 
 (defn body-and-close [channel body]
-  (send! channel body true)
+  (send! channel body false)
+  (close channel)
   channel)
 
 (defn exception-response [channel]

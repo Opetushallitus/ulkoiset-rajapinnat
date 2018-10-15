@@ -3,11 +3,11 @@
   :url "http://api.opintopolku.fi"
   :license {:name "EUPL"
             :url "http://www.osor.eu/eupl/"}
-  :deploy-repositories {"snapshots" {:url "https://artifactory.oph.ware.fi/artifactory/oph-sade-snapshot-local"}
-                        "releases" {:url "https://artifactory.oph.ware.fi/artifactory/oph-sade-release-local"}}
-  :repositories [["oph-releases" "https://artifactory.oph.ware.fi/artifactory/oph-sade-release-local"]
-                 ["oph-snapshots" "https://artifactory.oph.ware.fi/artifactory/oph-sade-snapshot-local"]
-                 ["ext-snapshots" "https://artifactory.oph.ware.fi/artifactory/ext-snapshot-local"]]
+  :deploy-repositories {"snapshots" {:url "https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local"}
+                        "releases" {:url "https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local"}}
+  :repositories [["oph-releases" "https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local"]
+                 ["oph-snapshots" "https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local"]
+                 ["ext-snapshots" "https://artifactory.opintopolku.fi/artifactory/ext-snapshot-local"]]
   :dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/core.async "0.3.443"]
