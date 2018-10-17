@@ -43,7 +43,7 @@
 
    (s/optional-key :hakijan_koulusivistyskieli)                                s/Str
    (s/optional-key :pohjakoulutus_2aste)                                       s/Str
-   (s/optional-key :pohjakoulutus_kk)                                          s/Str
+   (s/optional-key :pohjakoulutus_kk)                                          [s/Str]
    (s/optional-key :lahtokoulun_organisaatio_oid)                              s/Str
    (s/optional-key :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa) s/Str
 
