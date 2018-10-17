@@ -98,7 +98,6 @@
 (def haku-json (resource "test/resources/hakemus/haku.json"))
 (def haku-ataru-deep-json (resource "test/resources/hakemus/haku-ataru-deep.json"))
 (def tilastokeskus-json (resource "test/resources/hakemus/tilastokeskus.json"))
-(def koodisto-json (resource "test/resources/hakemus/koodisto.json"))
 (def henkilot-json (resource "test/resources/hakemus/henkilot.json"))
 (def oppijat-json (resource "test/resources/hakemus/oppijat.json"))
 (def organisaatio-json (resource "test/resources/hakemus/organisaatio.json"))
@@ -107,7 +106,7 @@
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
   (case url
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/pohjakoulutuskklomake/1" (response 200 koodisto-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/pohjakoulutuskklomake/1" (response 200 "[]")
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.999999" (response 200 haku-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
     "http://fake.virkailija.opintopolku.fi/oppijanumerorekisteri-service/henkilo/henkilotByHenkiloOidList" (response 200 henkilot-json)
