@@ -51,28 +51,28 @@
           ticket
           (partial audit audit-logger (str "Hakukohteet haku OID:lla" haku-oid))
           (partial hakukohde-resource haku-oid palauta-null-arvot)))
-      (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid vuosi kausi ticket] ; hakuoid + kaudet
+      (GET "/vastaanotto-for-haku/:haku-oid" [haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi ticket] ; hakuoid + kaudet
         :summary "Vastaanotot haku OID:lla"
         :query-params [ticket :- String
-                       vuosi :- String
-                       kausi :- String]
+                       koulutuksen_alkamisvuosi :- String
+                       koulutuksen_alkamiskausi :- String]
         :responses {200 {:schema [Vastaanotto]}}
         (log/info (str "Got incoming request to /vastaanotto-for-haku/" haku-oid))
         (access-log-with-ticket-check-with-channel
            ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
-          (partial vastaanotto-resource haku-oid vuosi kausi)))
-      (GET "/hakemus-for-haku/:haku-oid" [haku-oid vuosi kausi palauta-null-arvot ticket] ; hakuoid + kaudet
+          (partial vastaanotto-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi)))
+      (GET "/hakemus-for-haku/:haku-oid" [haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot ticket] ; hakuoid + kaudet
         :summary "Hakemukset haku OID:lla"
         :query-params [ticket :- String
-                       vuosi :- String
-                       kausi :- String]
+                       koulutuksen_alkamisvuosi :- String
+                       koulutuksen_alkamiskausi :- String]
         :responses {200 {:schema [Hakemus]}}
-        (log/info (str "Got incoming request to /hakemus-for-haku/" haku-oid "?vuosi=" vuosi "&kausi=" kausi))
+        (log/info (str "Got incoming request to /hakemus-for-haku/" haku-oid "?koulutuksen_alkamisvuosi=" koulutuksen_alkamisvuosi "&koulutuksen_alkamiskausi=" koulutuksen_alkamiskausi))
         (access-log-with-ticket-check-with-channel
            ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
-          (partial hakemus-resource haku-oid vuosi kausi palauta-null-arvot)))
+          (partial hakemus-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot)))
       (GET "/valintaperusteet/hakukohde/:hakukohde-oid" [hakukohde-oid ticket]
         :summary "Hakukohde valintaperusteista"
         :query-params [ticket :- String]
