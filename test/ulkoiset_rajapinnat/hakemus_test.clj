@@ -44,7 +44,7 @@
     (testing "Fetch hakemukset for haku with no hakemuksia!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
                     fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])]
-        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231"))
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s%231"))
               status (-> response :status)
               body (response :body)]
           (is (= status 200))
@@ -53,7 +53,7 @@
     (testing "Fetch hakemukset for haku with 'ataru' hakemuksia!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [{"oid" "1.2.3.4.5.6"}])
                     fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])]
-        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231")
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s%231")
                                    {:as :json})
               status (-> response :status)
               body (response :body)]
@@ -63,7 +63,7 @@
     (testing "Fetch hakemukset for haku with 'haku-app' hakemuksia!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
                     fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [{"oid" "1.2.3.4"}])]
-        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231")
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s%231")
                                    {:as :json})
               status (-> response :status)
               body (response :body)]
@@ -123,7 +123,7 @@
                   http/get (fn [url options transform] (mock-http url options transform))
                   http/post (fn [url options transform] (mock-http url options transform))
                   fetch-jsessionid-channel (mock-channel-fn "FAKEJSESSIONID")]
-      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2017&kausi=kausi_s"))
+      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
             status (-> response :status)
             body (-> (parse-json-body response))]
         (is (= status 200))
@@ -153,7 +153,7 @@
                   fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
                   http/get (fn [url options transform] (mock-ataru-http url options transform))
                   http/post (fn [url options transform] (mock-ataru-http url options transform))]
-      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2017&kausi=kausi_s"))
+      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
             status (-> response :status)
             body (-> (parse-json-body response))]
         (is (= status 200))
@@ -188,7 +188,7 @@
       (let [access-log-mock (pico/mock mock-write-access-log)]
         (with-redefs [write-access-log access-log-mock]
           (try
-            (let [response (client/get (api-call "/api/hakemus-for-haku/ABC?vuosi=2017&kausi=kausi_s"))]
+            (let [response (client/get (api-call "/api/hakemus-for-haku/ABC?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))]
               (is (= false true) "should not reach this line"))
             (catch Exception e
               (assert-access-log-write access-log-mock 404 "Haku ABC not found")
@@ -199,7 +199,7 @@
       (let [access-log-mock (pico/mock mock-write-access-log)]
         (with-redefs [write-access-log access-log-mock]
           (try
-            (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2017&kausi=ABC"))]
+            (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=ABC"))]
               (is (= false true) "should not reach this line"))
             (catch Exception e
               (assert-access-log-write access-log-mock 400 "Unknown kausi param: ABC")
@@ -210,7 +210,7 @@
       (let [access-log-mock (pico/mock mock-write-access-log)]
         (with-redefs [write-access-log access-log-mock]
           (try
-            (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=-2017&kausi=s"))]
+            (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=-2017&koulutuksen_alkamiskausi=s"))]
               (is (= false true) "should not reach this line"))
             (catch Exception e
               (assert-access-log-write access-log-mock 400 "Invalid vuosi: -2017")
@@ -221,7 +221,7 @@
       (let [access-log-mock (pico/mock mock-write-access-log)]
         (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
                       write-access-log access-log-mock]
-          (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?vuosi=2015&kausi=s"))
+          (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2015&koulutuksen_alkamiskausi=s"))
                 status (-> response :status)
                 body (-> response :body)]
             (assert-access-log-write access-log-mock 200 nil)

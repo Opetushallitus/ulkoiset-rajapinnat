@@ -58,7 +58,7 @@
                     fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
                     write-access-log access-log-mock]
         (try
-          (let [response (client/get (api-call "/api/vastaanotto-for-haku/INVALID_HAKU?vuosi=2017&kausi=s"))]
+          (let [response (client/get (api-call "/api/vastaanotto-for-haku/INVALID_HAKU?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=s"))]
             (is (= false true)))
           (catch Exception e
             (assert-access-log-write access-log-mock 404 "Haku INVALID_HAKU not found")
@@ -74,7 +74,7 @@
                     fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
                     write-access-log access-log-mock]
         (try
-          (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))]
+          (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=s"))]
             (is (= false true)))
           (catch Exception e
             (assert-access-log-write access-log-mock 500 "Unexpected response status 404 from url http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126")
@@ -89,7 +89,7 @@
                     http/post (fn [url options transform] (mock-http url options transform))
                     fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
                     write-access-log access-log-mock]
-        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))
+        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=s"))
               status (-> response :status)
               body (-> (parse-json-body response))]
           (is (= status 200))
@@ -108,7 +108,7 @@
                     http/post (fn [url options transform] (mock-http url options transform :empty-avaimet))
                     fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
                     write-access-log access-log-mock]
-        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))
+        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=s"))
               status (-> response :status)
               body (-> (parse-json-body response))]
           (is (= status 200))
@@ -160,7 +160,7 @@
                   http/post (fn [url options transform] (mock-http-with-ise url options transform))
                   fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
       (try
-        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))]
+        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=s"))]
           (is (= false true)))
         (catch Exception e
           (do
@@ -170,7 +170,7 @@
                   http/get (fn [url options transform] (mock-http-no-vastaanotot url options transform))
                   http/post (fn [url options transform] (mock-http-no-vastaanotot url options transform))
                   fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
-      (try (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?vuosi=2017&kausi=s"))
+      (try (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=s"))
                  status (-> response :status)
                  body (-> (parse-json-body response))]
              (is (= status 200))
