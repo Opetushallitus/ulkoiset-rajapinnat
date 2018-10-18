@@ -61,10 +61,12 @@
   (let [p (promise-chan)
         options-with-ids (update-in options [:headers] assoc
                                     "Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
-                                    "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat")]
+                                    "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat")
+        start-time (System/currentTimeMillis)]
     (method url options-with-ids
       #(go
         (do (>! p (transform-response mapper %))
+          (log/info "Response came in" (- (System/currentTimeMillis) start-time) "ms from" url)
           (close! p))))
     p))
 
