@@ -145,10 +145,9 @@
       (assoc vastaanotto "hakutoiveet" hakutoiveet)))
   (if (empty? hakukohde-oidit) [] (filter #(not-empty (% "hakutoiveet")) (map trim-vastaanotto vastaanotot))))
 
-(defn vastaanotot-channel [haku-oid hakukohde-oidit]
+(defn vastaanotot-whole-haku-channel [haku-oid]
   (log/info (format "Haku %s haetaan vastaanotot..." haku-oid))
-  (let [mapper (comp (partial trim-streaming-response hakukohde-oidit) parse-json-body-stream)]
-    (get-as-channel (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid) {:as :stream :timeout 600000} mapper)))
+  (get-as-channel (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid) {:as :stream :timeout 600000} parse-json-body-stream))
 
 (defn fetch-kokeet-channel [haku-oid hakukohde-oidit]
   (log/info (format "Haku %s haetaan valintakokeet %d hakukohteelle..." haku-oid (count hakukohde-oidit)))
@@ -180,28 +179,35 @@
           valintaperusteet (<? (async-map-safe vector (map #(post %) partitions) []))]
       (apply merge valintaperusteet))))
 
+(defn- filter-vastaanotot [haun-hakukohdeoidit haun-vastaanotot haku-oid vuosi kausi]
+  (if (not-empty haun-hakukohdeoidit)
+    (trim-streaming-response haun-hakukohdeoidit haun-vastaanotot)
+    (throw (RuntimeException.
+             (format
+               "No hakukohde-oids found for haku %s with koulutuksen alkamisvuosi %s and koulutuksen alkamiskausi %s!"
+               haku-oid vuosi kausi)))))
+
+(defn- empty-object-channel []
+  (async/to-chan '({}) ))
+
 (defn vastaanotot-for-haku [haku-oid vuosi kausi request user channel log-to-access-log]
   (async/go
     (try
       (if (seq (<? (haku-for-haku-oid-channel haku-oid)))
-        (let [haun-hakukohteet (if-let [r (not-empty (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi)))]
-                                 r
-                                 (throw (RuntimeException. (format "No hakukohde-oids found for haku %s with vuosi %s and kausi %s!" haku-oid vuosi kausi))))
-              vastaanotot (<? (vastaanotot-channel haku-oid haun-hakukohteet))
+        (let [haun-hakukohdeoidit-ch (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi)
+              haun-vastaanotot-ch (vastaanotot-whole-haku-channel haku-oid)
+              vastaanotot (filter-vastaanotot (<? haun-hakukohdeoidit-ch) (<? haun-vastaanotot-ch) haku-oid vuosi kausi)
               hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
               hakemus-oidit (map #(% "hakemusOid") vastaanotot)
-              valintakokeet (if (empty? hakukohde-oidit) {} (<? (fetch-kokeet-channel haku-oid hakukohde-oidit)))
-              valintapisteet (if (empty? hakemus-oidit) {} (<? (fetch-valintapisteet-channel haku-oid hakemus-oidit request user)))
+              valintakokeet-ch (if (empty? hakukohde-oidit) (empty-object-channel) (fetch-kokeet-channel haku-oid hakukohde-oidit))
+              valintapisteet-ch (if (empty? hakemus-oidit) (empty-object-channel) (fetch-valintapisteet-channel haku-oid hakemus-oidit request user))
               oppijanumerot (map #(% "hakijaOid") vastaanotot)
-              kielikokeet (if (empty? oppijanumerot) {} (<? (fetch-ammatilliset-kielikokeet-channel haku-oid oppijanumerot)))]
+              kielikokeet-ch (if (empty? oppijanumerot) (empty-object-channel) (fetch-ammatilliset-kielikokeet-channel haku-oid oppijanumerot))]
           (log/info (format "Haku %s hakijoita %d kpl" haku-oid (count hakemus-oidit)))
           (log/info (format "Haku %s hakukohteita %d kpl" haku-oid (count hakukohde-oidit)))
           (log/info (format "Haku %s hakemuksia %d kpl" haku-oid (count hakemus-oidit)))
-          (log/info (format "Haku %s valintakokeet %d kpl" haku-oid (count valintakokeet)))
-          (log/info (format "Haku %s valintapisteitä %d kpl" haku-oid (count valintapisteet)))
-          (log/info (format "Haku %s kielikokeita %d kpl" haku-oid (count kielikokeet)))
-          (let [build-vastaanotto (vastaanotto-builder valintakokeet valintapisteet kielikokeet)
-                json (to-json (map build-vastaanotto vastaanotot))]
+          (let [build-vastaanotto (vastaanotto-builder (<? valintakokeet-ch) (<? valintapisteet-ch) (<? kielikokeet-ch))
+                json (to-json (pmap build-vastaanotto vastaanotot))]
             (log-to-access-log 200 nil)
             (-> channel
                 (status 200)
