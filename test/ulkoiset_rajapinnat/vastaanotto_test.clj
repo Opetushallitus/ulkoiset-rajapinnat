@@ -89,7 +89,7 @@
                     http/post (fn [url options transform] (mock-http url options transform))
                     fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
                     write-access-log access-log-mock]
-        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=s"))
+        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2018&koulutuksen_alkamiskausi=k"))
               status (-> response :status)
               body (-> (parse-json-body response))]
           (is (= status 200))
@@ -108,7 +108,7 @@
                     http/post (fn [url options transform] (mock-http url options transform :empty-avaimet))
                     fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
                     write-access-log access-log-mock]
-        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=s"))
+        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2018&koulutuksen_alkamiskausi=k"))
               status (-> response :status)
               body (-> (parse-json-body response))]
           (is (= status 200))
@@ -170,7 +170,7 @@
                   http/get (fn [url options transform] (mock-http-no-vastaanotot url options transform))
                   http/post (fn [url options transform] (mock-http-no-vastaanotot url options transform))
                   fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
-      (try (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=s"))
+      (try (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2018&koulutuksen_alkamiskausi=k"))
                  status (-> response :status)
                  body (-> (parse-json-body response))]
              (is (= status 200))

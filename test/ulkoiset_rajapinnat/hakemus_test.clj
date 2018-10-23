@@ -123,7 +123,7 @@
                   http/get (fn [url options transform] (mock-http url options transform))
                   http/post (fn [url options transform] (mock-http url options transform))
                   fetch-jsessionid-channel (mock-channel-fn "FAKEJSESSIONID")]
-      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
+      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2018&koulutuksen_alkamiskausi=kausi_s"))
             status (-> response :status)
             body (-> (parse-json-body response))]
         (is (= status 200))
