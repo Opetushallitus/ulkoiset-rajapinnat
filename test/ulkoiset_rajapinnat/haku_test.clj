@@ -46,7 +46,7 @@
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/haunkohdejoukontarkenne/1" (response 200 koodisto-haunkohdejoukontarkenne-json)
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kausi/1" (response 200 koodisto-kausi-json)
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1" (response 200 koodisto-kieli-json)
-    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/find?TILA=JULKAISTU&HAKUVUOSI=2017" (response 200 tarjonta-haut-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/findByAlkamisvuosi/2017" (response 200 tarjonta-haut-json)
     (response 404 "[]")))
 
 (deftest haku-test

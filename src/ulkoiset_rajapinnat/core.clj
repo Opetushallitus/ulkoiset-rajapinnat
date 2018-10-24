@@ -34,15 +34,15 @@
       (GET "/healthcheck" []
         :summary "Health check API"
         (access-log (ok "OK")))
-      (GET "/haku-for-year/:vuosi" [vuosi ticket]
-        :summary "Haut vuodella"
+      (GET "/haku-for-year/:koulutuksen_alkamisvuosi" [koulutuksen_alkamisvuosi ticket]
+        :summary "Haut koulutuksen alkamisvuodella"
         :query-params [ticket :- String]
         :responses {200 {:schema [Haku]}}
-        (log/info (str "Got incoming request to /haku-for-year/" vuosi))
+        (log/info (str "Got incoming request to /haku-for-year/" koulutuksen_alkamisvuosi))
         (access-log-with-ticket-check-with-channel
           ticket
-          (partial audit audit-logger (str "Haut vuodella " vuosi))
-          (partial haku-resource vuosi)))
+          (partial audit audit-logger (str "Haut koulutuksen alkamisvuodella " koulutuksen_alkamisvuosi))
+          (partial haku-resource koulutuksen_alkamisvuosi)))
       (GET "/hakukohde-for-haku/:haku-oid" [haku-oid palauta-null-arvot ticket]
         :summary "Hakukohteet haku OID:lla"
         :query-params [ticket :- String]
