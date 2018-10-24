@@ -12,7 +12,8 @@
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [ulkoiset-rajapinnat.utils.async_safe :refer :all]
             [org.httpkit.server :refer :all]
-            [org.httpkit.timer :refer :all]))
+            [org.httpkit.timer :refer :all])
+  (:import (java.time Duration)))
 
 (s/defschema Vastaanotto
   {:henkilo_oid                  s/Str
@@ -35,6 +36,7 @@
 
 (def oppijat-batch-size 5000)
 (def valintapisteet-batch-size 30000)
+(def valinta-tulos-service-timeout-millis (.toMillis (. Duration ofMinutes 30)))
 
 (defn vastaanotto-builder [kokeet valintapisteet kielikokeet]
   (defn- hyvaksytty-ensikertalaisen-hakijaryhmasta [hakijaryhmat]
@@ -147,7 +149,7 @@
 
 (defn vastaanotot-whole-haku-channel [haku-oid]
   (log/info (format "Haku %s haetaan vastaanotot..." haku-oid))
-  (get-as-channel (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid) {:as :stream :timeout 600000} parse-json-body-stream))
+  (get-as-channel (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid) {:as :stream :timeout valinta-tulos-service-timeout-millis} parse-json-body-stream))
 
 (defn fetch-kokeet-channel [haku-oid hakukohde-oidit]
   (log/info (format "Haku %s haetaan valintakokeet %d hakukohteelle..." haku-oid (count hakukohde-oidit)))
