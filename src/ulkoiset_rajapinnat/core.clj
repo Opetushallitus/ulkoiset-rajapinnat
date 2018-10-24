@@ -16,7 +16,8 @@
         [ulkoiset-rajapinnat.valintaperusteet :refer [Valintaperusteet valintaperusteet-resource]]
         [ulkoiset-rajapinnat.utils.config :refer [config init-config]]
         [org.httpkit.server :refer :all]
-        [clojure.tools.logging :as log])
+        [clojure.tools.logging :as log]
+        [clojure.tools.reader.edn :as edn])
   (:gen-class))
 
 (defn api-opintopolku-routes [audit-logger]
@@ -92,6 +93,11 @@
            ticket
           (partial audit audit-logger (str "Hakukohteet valintaperusteista"))
           (partial valintaperusteet-resource))))
+    (context (str (-> @config :server :base-url) "") []
+      (GET "/buildversion.txt" []
+        :summary "Build fingerprint"
+        (let [build-props (edn/read-string (slurp (clojure.java.io/resource "buildversion.edn")))]
+          (access-log (ok build-props)))))
     (ANY "/*" []
       :summary "Not found page"
       (access-log (not-found "Page not found")))))

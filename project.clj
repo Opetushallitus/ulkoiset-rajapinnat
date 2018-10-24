@@ -45,7 +45,11 @@
   :plugins [[lein-resource "14.10.2"]
             [lein-autoreload "0.1.1"]
             [com.jakemccrary/lein-test-refresh "0.21.1"]
-            [lein-deploy-artifacts "0.1.0"]]
+            [lein-deploy-artifacts "0.1.0"]
+            [me.arrdem/lein-git-version "2.0.8"]]
+
+  :git-version {:version-file      "target/classes/buildversion.edn"
+                :version-file-keys [:ref :version :branch]}
 
   :profiles {:uberjar {:prep-tasks ["compile" "resource"]}
              :plugins [[lein-ring "0.11.0"]]
