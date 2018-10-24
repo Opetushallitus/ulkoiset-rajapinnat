@@ -49,7 +49,7 @@
             [me.arrdem/lein-git-version "2.0.8"]]
 
   :git-version {:version-file      "target/classes/buildversion.edn"
-                :version-file-keys [:ref :version :branch]}
+                :version-file-keys [:ref :version :branch :message]}
 
   :profiles {:uberjar {:prep-tasks ["compile" "resource"]}
              :plugins [[lein-ring "0.11.0"]]
