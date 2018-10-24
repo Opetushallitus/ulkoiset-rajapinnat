@@ -90,13 +90,17 @@
          "osallistui_kielikokeeseen"                  kielikokeeseen-osallistuminen})))
 
   (fn [vastaanotto]
-    (let [hakemus-oid (vastaanotto "hakemusOid")
-          hakija-oid (vastaanotto "hakijaOid")
-          hakemuksen-pisteet (valintapisteet hakemus-oid)
-          hakijan-kielikokeet (kielikokeet hakija-oid)
-          build-hakutoive (hakutoive-builder kokeet hakemuksen-pisteet hakijan-kielikokeet)]
-      {"henkilo_oid" hakija-oid
-       "hakutoiveet" (map build-hakutoive (vastaanotto "hakutoiveet"))})))
+    (try
+      (let [hakemus-oid (vastaanotto "hakemusOid")
+                hakija-oid (vastaanotto "hakijaOid")
+                hakemuksen-pisteet (valintapisteet hakemus-oid)
+                hakijan-kielikokeet (kielikokeet hakija-oid)
+                build-hakutoive (hakutoive-builder kokeet hakemuksen-pisteet hakijan-kielikokeet)]
+            {"henkilo_oid" hakija-oid
+             "hakutoiveet" (map build-hakutoive (vastaanotto "hakutoiveet"))})
+      (catch Exception e
+        (log/error (format "Virhe muodostettaessa vastaanottotietoa vastaanotosta %s" vastaanotto) e)
+        (throw e)))))
 
 (defn find-valintakokeet [valintaperusteet]
   (defn- transform-dto [dto]
