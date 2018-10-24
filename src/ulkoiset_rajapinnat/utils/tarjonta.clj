@@ -84,6 +84,8 @@
        (str/starts-with? (get haku "koulutuksenAlkamiskausiUri") (to-kausi-uri-prefix kausi))))
 
 (defn- hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan-yhteishaulle [yhteishaku vuosi kausi]
+  (log/info "Haku" (get yhteishaku "oid") "(" (get-in yhteishaku ["nimi" "kieli_fi"])
+            ") on yhteishaku, joten sen alkamiskausikohtaisten hakukohteiden listaus on helppoa.")
   (if (has-koulutuksen-alkamiskausi yhteishaku vuosi kausi)
     (get yhteishaku "hakukohdeOids")
     []))
