@@ -178,8 +178,8 @@
           mapper (comp find-kielikokeet parse-json-body-stream)
           post (fn [x] (post-json-as-channel url x mapper jsession-id))
           partitions (partition oppijat-batch-size oppijat-batch-size nil kaikki-oppijanumerot)
-          valintaperusteet (<? (async-map-safe vector (map #(post %) partitions) []))]
-      (apply merge valintaperusteet))))
+          kielikokeet (<? (async-map-safe vector (map #(post %) partitions) []))]
+      (apply merge kielikokeet))))
 
 (defn- filter-vastaanotot [haun-hakukohdeoidit haun-vastaanotot haku-oid vuosi kausi]
   (if (not-empty haun-hakukohdeoidit)
