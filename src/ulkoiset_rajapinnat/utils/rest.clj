@@ -92,8 +92,8 @@
   (post-as-channel url nil {:form-params form} mapper))
 
 (defn post-json-options
-  ([] {:as :stream :timeout 200000 :headers {"Content-Type" mime-application-json}})
-  ([jsession-id] {:as :stream :timeout 200000 :headers {"Content-Type" mime-application-json "Cookie" (str "JSESSIONID=" jsession-id)}}))
+  ([] {:as :stream :timeout 400000 :headers {"Content-Type" mime-application-json}})
+  ([jsession-id] {:as :stream :timeout 400000 :headers {"Content-Type" mime-application-json "Cookie" (str "JSESSIONID=" jsession-id)}}))
 
 (defn post-json-as-channel
   ([url data mapper]
