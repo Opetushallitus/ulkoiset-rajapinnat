@@ -43,7 +43,7 @@
 
    (s/optional-key :hakijan_koulusivistyskieli)                                s/Str
    (s/optional-key :pohjakoulutus_2aste)                                       s/Str
-   (s/optional-key :pohjakoulutus_kk)                                          s/Str
+   (s/optional-key :pohjakoulutus_kk)                                          [s/Str]
    (s/optional-key :lahtokoulun_organisaatio_oid)                              s/Str
    (s/optional-key :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa) s/Str
 
@@ -90,17 +90,17 @@
      :hakijan_kotikunta    (get henkilotiedot "kotikunta")
      :hakijan_kansalaisuus (get henkilotiedot "kansalaisuus")}))
 
-(defn koulutustausta-from-hakemus [pohjakoulutuskkodw document]
+(defn koulutustausta-from-hakemus [pohjakoulutus-koodit document]
   (let [koulutustausta (get-in document ["answers" "koulutustausta"])
         koulusivistyskieli (remove nil? [(get koulutustausta "lukion_kieli")
                                          (get koulutustausta "perusopetuksen_kieli")])
         lahtokoulun_organisaatio_oid (get koulutustausta "lahtokoulu")
         pohjakoulutus_2aste (get koulutustausta "POHJAKOULUTUS")
-        pohjakoulutus_kk (first (filter #(contains? koulutustausta %) pohjakoulutuskkodw))
+        pohjakoulutus_kk (filter #(contains? koulutustausta %) (vals pohjakoulutus-koodit))
         ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa (get koulutustausta "pohjakoulutus_ulk_suoritusmaa")]
     {:hakijan_koulusivistyskieli                                (first koulusivistyskieli)
      :pohjakoulutus_2aste                                       pohjakoulutus_2aste
-     :pohjakoulutus_kk                                          pohjakoulutus_kk
+     :pohjakoulutus_kk                                          (if (seq pohjakoulutus_kk) pohjakoulutus_kk nil)
      :lahtokoulun_organisaatio_oid                              lahtokoulun_organisaatio_oid
      :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa}))
 
@@ -125,7 +125,7 @@
      :perusopetuksen_opetuskieli opetuskieli
      :lahtokoulun_oppilaitos_koodi oppilaitoskoodi}))
 
-(defn convert-ataru-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo oppija hakemus]
+(defn convert-ataru-hakemus [pohjakoulutus-koodit palauta-null-arvot? henkilo oppija hakemus]
   (let [data (core-merge
                (oppija-data-from-henkilo henkilo)
                {:hakemus_oid      (get hakemus "hakemus_oid")
@@ -137,12 +137,12 @@
       data
       (remove-nils data))))
 
-(defn convert-hakemus [pohjakoulutuskkodw palauta-null-arvot? henkilo oppija document is-toisen-asteen-haku? organisaatiot]
+(defn convert-hakemus [pohjakoulutus-koodit palauta-null-arvot? henkilo oppija document is-toisen-asteen-haku? organisaatiot]
   (let [data (core-merge
                (hakutoiveet-from-hakemus document)
                (oppija-data-from-henkilo henkilo)
                (henkilotiedot-from-hakemus document)
-               (koulutustausta-from-hakemus pohjakoulutuskkodw document)
+               (koulutustausta-from-hakemus pohjakoulutus-koodit document)
                (if is-toisen-asteen-haku? (koulutustausta-from-oppija oppija organisaatiot) {})
                {:hakemus_oid      (get document "oid")
                 :henkilo_oid      (get document "personOid")
@@ -174,12 +174,12 @@
   (map #(get % "henkilo_oid") batch))
 
 
-(defn haku-app-adapter [pohjakoulutuskkodw palauta-null-arvot?]
+(defn haku-app-adapter [pohjakoulutus-koodit palauta-null-arvot?]
   (fn [batch] [(map #(get % "personOid") batch)
                batch
                (fn [henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot]
                  (convert-hakemus
-                   pohjakoulutuskkodw
+                   pohjakoulutus-koodit
                    palauta-null-arvot?
                    (get henkilo-by-oid (get hakemus "personOid"))
                    (get oppijat-by-oid (get hakemus "personOid"))
@@ -187,12 +187,12 @@
                    is-toisen-asteen-haku?
                    organisaatiot))]))
 
-(defn ataru-adapter [pohjakoulutuskkodw palauta-null-arvot?]
+(defn ataru-adapter [pohjakoulutus-koodit palauta-null-arvot?]
   (fn [batch] [(document-batch-to-henkilo-oid-list batch)
                batch
                (fn [henkilo-by-oid oppijat-by-oid hakemus _ _]
                  (convert-ataru-hakemus
-                   pohjakoulutuskkodw
+                   pohjakoulutus-koodit
                    palauta-null-arvot?
                    (get henkilo-by-oid (get hakemus "henkilo_oid"))
                    (get oppijat-by-oid (get hakemus "henkilo_oid")) hakemus))]))
@@ -212,16 +212,16 @@
                  counter (atom 0)
                  is-first-written (atom false)
                  hakukohde-oids-for-hakukausi (<? (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi haku))
-                 pohjakoulutuskkodw (<? (koodisto-as-channel "pohjakoulutuskkodw"))
+                 pohjakoulutus-koodit (<? (koodisto-as-channel "pohjakoulutuskklomake"))
                  is-haku-with-ensikertalaisuus? (is-haku-with-ensikertalaisuus haku)
                  is-toisen-asteen-haku? (is-toinen-aste haku)
                  ataru-channel (fetch-hakemukset-from-ataru haku-oid size-of-henkilo-batch-from-onr-at-once
-                                                            (ataru-adapter pohjakoulutuskkodw palauta-null-arvot?))
+                                                            (ataru-adapter pohjakoulutus-koodit palauta-null-arvot?))
                  haku-app-channel (if (empty? hakukohde-oids-for-hakukausi)
                                     (go [])
                                     (fetch-hakemukset-from-haku-app-as-streaming-channel
                                       haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
-                                      (haku-app-adapter pohjakoulutuskkodw palauta-null-arvot?)))
+                                      (haku-app-adapter pohjakoulutus-koodit palauta-null-arvot?)))
                  close-channel (fn []
                                  (do
                                    (close-and-drain! haku-app-channel)

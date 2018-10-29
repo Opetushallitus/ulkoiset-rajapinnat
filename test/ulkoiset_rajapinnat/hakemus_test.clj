@@ -31,6 +31,9 @@
   (fn [& varargs]
     (go response)))
 
+(def hakemus-2aste-json (resource "test/resources/hakemus/hakemus-2aste.json"))
+(def hakemus-kk-json (resource "test/resources/hakemus/hakemus-kk.json"))
+
 (deftest hakemus-test
   (with-redefs [haku-for-haku-oid-channel (mock-channel-fn {"oid", "1.2.3.4.5"})
                 hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
@@ -65,12 +68,36 @@
               status (-> response :status)
               body (response :body)]
           (is (= status 200))
-          (is (= (count body) 1)))))))
+          (is (= (count body) 1)))))
+
+    (testing "When haku-app gives 2aste hakemus, the result will have the 2aste pohjakoulutus field!"
+      (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
+                    fetch-hakemukset-from-haku-app-as-streaming-channel (fn [x y z mapper] (go (mapper (parse-string hakemus-2aste-json))))]
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231")
+                                   {:as :json})
+              status (-> response :status)
+              hakemus (first (response :body))]
+          (is (= status 200))
+          (is (some? hakemus))
+          (is (= "2" (hakemus :pohjakoulutus_2aste)))
+          (is (nil? (hakemus :pohjakoulutus_kk))))))
+
+    (testing "When haku-app gives KK hakemus, the result will have the KK pohjakoulutus field!"
+      (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
+                    fetch-hakemukset-from-haku-app-as-streaming-channel (fn [x y z mapper] (go (mapper (parse-string hakemus-kk-json))))
+                    koodisto-as-channel (mock-channel-fn {"koodi1" "pohjakoulutus_amt", "koodi2" "dummy_value", "koodi3" "pohjakoulutus_kk"})]
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231")
+                                   {:as :json})
+              status (-> response :status)
+              hakemus (first (response :body))]
+          (is (= status 200))
+          (is (some? hakemus))
+          (is (= #{"pohjakoulutus_amt" "pohjakoulutus_kk"} (set (hakemus :pohjakoulutus_kk))))
+          (is (nil? (hakemus :pohjakoulutus_2aste))))))))
 
 (def haku-json (resource "test/resources/hakemus/haku.json"))
 (def haku-ataru-deep-json (resource "test/resources/hakemus/haku-ataru-deep.json"))
 (def tilastokeskus-json (resource "test/resources/hakemus/tilastokeskus.json"))
-(def hakemus-json (resource "test/resources/hakemus/hakemus.json"))
 (def henkilot-json (resource "test/resources/hakemus/henkilot.json"))
 (def oppijat-json (resource "test/resources/hakemus/oppijat.json"))
 (def organisaatio-json (resource "test/resources/hakemus/organisaatio.json"))
@@ -79,7 +106,7 @@
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
   (case url
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/pohjakoulutuskkodw/1" (response 200 "[]")
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/pohjakoulutuskklomake/1" (response 200 "[]")
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.999999" (response 200 haku-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
     "http://fake.virkailija.opintopolku.fi/oppijanumerorekisteri-service/henkilo/henkilotByHenkiloOidList" (response 200 henkilot-json)
@@ -87,10 +114,10 @@
     (response 404 "[]")))
 
 (deftest lahtokoulu-test
-  (testing "Fetch lähtökoulu from Sure"
+  (testing "Fetch lähtökoulu from Sure 2. aste"
     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   fetch-hakemukset-from-ataru (mock-mapped [])
-                  fetch-hakemukset-from-haku-app-as-streaming-channel (fn [x y z mapper] (go (mapper (parse-string hakemus-json))))
+                  fetch-hakemukset-from-haku-app-as-streaming-channel (fn [x y z mapper] (go (mapper (parse-string hakemus-2aste-json))))
                   fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
                   fetch-service-ticket-channel (mock-channel-fn "FAKEST")
                   http/get (fn [url options transform] (mock-http url options transform))
@@ -101,7 +128,7 @@
             body (-> (parse-json-body response))]
         (is (= status 200))
         (log/info (to-json body true))
-        (def expected (parse-string (resource "test/resources/hakemus/result.json")))
+        (def expected (parse-string (resource "test/resources/hakemus/result-2aste.json")))
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference)))))
 
@@ -133,8 +160,7 @@
         (log/info (to-json body true))
         (def expected (parse-string (resource "test/resources/hakemus/result-ataru.json")))
         (def difference (diff expected body))
-        (is (= [nil nil expected] difference) difference)
-        ))))
+        (is (= [nil nil expected] difference) difference)))))
 
 
 (defn mock-not-found-http [url options transform]

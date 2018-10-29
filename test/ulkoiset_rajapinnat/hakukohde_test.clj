@@ -130,8 +130,5 @@
           (log/info (to-json body true))
           (def expected (parse-string (resource "test/resources/hakukohde/result.json")))
           (def difference (diff expected body))
-          (is (= [nil nil expected] difference) difference)
-          (assert-access-log-write access-log-mock 200 nil)))))
-
-
-  )
+          (is (= [nil nil expected] difference))
+          (assert-access-log-write access-log-mock 200 nil))))))
