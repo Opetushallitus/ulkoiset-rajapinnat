@@ -225,7 +225,7 @@
           (log-to-access-log 404 message)))
       (catch Exception e
         (do
-          (log/error (format "Virhe haettaessa vastaanottoja haulle %s!" haku-oid), e)
+          (log/error e (format "Virhe haettaessa vastaanottoja haulle %s!" haku-oid))
           (log-to-access-log 500 (.getMessage e))
           ((exception-response channel) e))))))
 
