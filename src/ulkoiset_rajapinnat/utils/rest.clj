@@ -29,7 +29,7 @@
     (try
       (parse-string (response :body))
       (catch Exception e
-        (log/error e "Failed to read JSON!" (get-in response [:opts :url]))
+        (log/error "Failed to read JSON!" (get-in response [:opts :url]) e)
         (throw e)))
     (handle-unexpected-response response)))
 
@@ -38,7 +38,7 @@
     (try
       (doall (parse-stream (new java.io.InputStreamReader (response :body))))
       (catch Exception e
-        (log/error e "Failed to read JSON! Url = " (get-in response [:opts :url]))
+        (log/error "Failed to read JSON! Url = " (get-in response [:opts :url]) e)
         (throw e)))
     (handle-unexpected-response response)))
 
@@ -118,7 +118,7 @@
 (defn exception-response [channel]
   (fn [exception]
     (do
-      (log/error exception "Internal server error!")
+      (log/error "Internal server error!" exception)
       (-> channel
           (status 500)
           (body (to-json {:error (.getMessage exception)}))
