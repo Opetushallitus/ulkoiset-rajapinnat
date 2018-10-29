@@ -73,7 +73,7 @@
     (testing "When haku-app gives 2aste hakemus, the result will have the 2aste pohjakoulutus field!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
                     fetch-hakemukset-from-haku-app-as-streaming-channel (fn [x y z mapper] (go (mapper (parse-string hakemus-2aste-json))))]
-        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231")
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s%231")
                                    {:as :json})
               status (-> response :status)
               hakemus (first (response :body))]
@@ -86,7 +86,7 @@
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
                     fetch-hakemukset-from-haku-app-as-streaming-channel (fn [x y z mapper] (go (mapper (parse-string hakemus-kk-json))))
                     koodisto-as-channel (mock-channel-fn {"koodi1" "pohjakoulutus_amt", "koodi2" "dummy_value", "koodi3" "pohjakoulutus_kk"})]
-        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?vuosi=2017&kausi=kausi_s%231")
+        (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s%231")
                                    {:as :json})
               status (-> response :status)
               hakemus (first (response :body))]
