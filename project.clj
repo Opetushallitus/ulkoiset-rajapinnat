@@ -9,7 +9,7 @@
                  ["oph-snapshots" "https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local"]
                  ["ext-snapshots" "https://artifactory.opintopolku.fi/artifactory/ext-snapshot-local"]]
   :dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
-                 [org.clojure/clojure "1.8.0"]
+                 [org.clojure/clojure "1.9.0"]
                  [org.clojure/core.async "0.3.443"]
                  [fi.vm.sade/auditlogger "8.0.0-SNAPSHOT"]
                  [environ "1.1.0"]
