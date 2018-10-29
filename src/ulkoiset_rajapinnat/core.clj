@@ -102,7 +102,14 @@
       :summary "Not found page"
       (access-log (not-found "Page not found")))))
 
+(defn- initialise-uncaught-exception-handler []
+  (Thread/setDefaultUncaughtExceptionHandler
+    (reify Thread$UncaughtExceptionHandler
+      (uncaughtException [_ thread ex]
+        (log/error ex "Uncaught exception on" (.getName thread))))))
+
 (defn start-server [args]
+  (initialise-uncaught-exception-handler)
   (init-config args)
   (let [port (-> @config :server :port)]
 
