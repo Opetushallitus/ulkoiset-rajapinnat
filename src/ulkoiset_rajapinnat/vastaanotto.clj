@@ -99,8 +99,9 @@
             {"henkilo_oid" hakija-oid
              "hakutoiveet" (map build-hakutoive (vastaanotto "hakutoiveet"))})
       (catch Exception e
-        (log/error (format "Virhe muodostettaessa vastaanottotietoa vastaanotosta %s" vastaanotto) e)
-        (throw e)))))
+        (do
+          (log/error (format "Virhe muodostettaessa vastaanottotietoa vastaanotosta %s" vastaanotto) e)
+          (throw e))))))
 
 (defn find-valintakokeet [valintaperusteet]
   (defn- transform-dto [dto]
