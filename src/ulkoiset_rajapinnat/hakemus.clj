@@ -178,14 +178,19 @@
   (fn [batch] [(map #(get % "personOid") batch)
                batch
                (fn [henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot]
-                 (convert-hakemus
-                   pohjakoulutus-koodit
-                   palauta-null-arvot?
-                   (get henkilo-by-oid (get hakemus "personOid"))
-                   (get oppijat-by-oid (get hakemus "personOid"))
-                   hakemus
-                   is-toisen-asteen-haku?
-                   organisaatiot))]))
+                 (try
+                   (convert-hakemus
+                     pohjakoulutus-koodit
+                     palauta-null-arvot?
+                     (get henkilo-by-oid (get hakemus "personOid"))
+                     (get oppijat-by-oid (get hakemus "personOid"))
+                     hakemus
+                     is-toisen-asteen-haku?
+                     organisaatiot)
+                   (catch Exception e
+                     (do
+                       (log/error e "Problem when converting hakemus " hakemus)
+                       (throw e)))))]))
 
 (defn ataru-adapter [pohjakoulutus-koodit palauta-null-arvot?]
   (fn [batch] [(document-batch-to-henkilo-oid-list batch)

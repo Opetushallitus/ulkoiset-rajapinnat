@@ -1,5 +1,5 @@
 (ns ulkoiset-rajapinnat.utils.async_safe
-  (:require [clojure.core.async :as async :refer [to-chan map]]))
+  (:require [clojure.core.async :as async]))
 
 ; ordinary async/map gets stuck when sources are empty! Use this function instead.
 (defn async-map-safe [f sources default-value]

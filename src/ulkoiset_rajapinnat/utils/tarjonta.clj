@@ -52,6 +52,13 @@
       false)
     (throw (RuntimeException. "Can't check nil haku if it's toisen asteen haku!"))))
 
+(defn is-yhteishaku [haku]
+  (if haku
+    (if-let [hakutapa (haku "hakutapaUri")]
+      (str/starts-with? hakutapa "hakutapa_01#")
+      false)
+    (throw (RuntimeException. "Can't check nil haku if it's yhteishaku!"))))
+
 (defn is-jatkuva-haku [haku]
   (if-let [some-haku haku]
     (if-let [hakutapa (haku "hakutapaUri")]
@@ -72,18 +79,34 @@
       kausi-uri-prefix-syksy
       (throw (IllegalArgumentException. (str "Unknown kausi param: " kausi))))))
 
+(defn- has-koulutuksen-alkamiskausi [haku vuosi kausi]
+  (and (= (str (get haku "koulutuksenAlkamisVuosi")) vuosi)
+       (str/starts-with? (get haku "koulutuksenAlkamiskausiUri") (to-kausi-uri-prefix kausi))))
+
+(defn- hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan-yhteishaulle [yhteishaku vuosi kausi]
+  (log/info "Haku" (get yhteishaku "oid") "(" (get-in yhteishaku ["nimi" "kieli_fi"])
+            ") on yhteishaku, joten sen alkamiskausikohtaisten hakukohteiden listaus on helppoa.")
+  (if (has-koulutuksen-alkamiskausi yhteishaku vuosi kausi)
+    (get yhteishaku "hakukohdeOids")
+    []))
+
+(defn- has-koulutuksen-alkamiskausi? [alkamisvuosi alkamiskausi hakukohde]
+  (let [kausi-uri-prefix (to-kausi-uri-prefix alkamiskausi)]
+    (if-let [alkamiskausiUri (get hakukohde "koulutuksenAlkamiskausiUri")]
+      (if-let [alkamisVuosi (get hakukohde "koulutuksenAlkamisVuosi")]
+        (and (= (str alkamisVuosi) alkamisvuosi) (str/starts-with? alkamiskausiUri kausi-uri-prefix))
+        false)
+      false)))
+
 (defn hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan
   ([haku-oid vuosi kausi] (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-oid vuosi kausi nil))
   ([haku-oid vuosi kausi valmis-haku]
    (when (not (is-valid-year vuosi))
      (throw (IllegalArgumentException. (str "Invalid vuosi: " vuosi))))
-   (go-try (let [kausi-uri-prefix (to-kausi-uri-prefix kausi)
-                 haku (if (nil? valmis-haku) (<? (haku-for-haku-oid-channel haku-oid)) valmis-haku)
-                 hakukohde-oids (get haku "hakukohdeOids")
-                 hakukohteiden-koulutusten-alkamiskaudet (<? (fetch-tilastoskeskus-hakukohde-channel hakukohde-oids))
-                 koulutuksen-alkamiskausi? (fn [x] (if-let [alkamiskausiUri (get x "koulutuksenAlkamiskausiUri")]
-                                                     (if-let [alkamisVuosi (get x "koulutuksenAlkamisVuosi")]
-                                                       (and (= (str alkamisVuosi) vuosi) (str/starts-with? alkamiskausiUri kausi-uri-prefix))
-                                                       false)
-                                                     false))]
-             (map #(get % "hakukohdeOid") (filter koulutuksen-alkamiskausi? hakukohteiden-koulutusten-alkamiskaudet))))))
+   (go-try (let [haku (if (nil? valmis-haku) (<? (haku-for-haku-oid-channel haku-oid)) valmis-haku)
+                 hakukohde-oids (get haku "hakukohdeOids")]
+             (if (is-yhteishaku haku)
+               (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan-yhteishaulle haku vuosi kausi)
+               (let [hakukohteiden-koulutusten-alkamiskaudet (<? (fetch-tilastoskeskus-hakukohde-channel hakukohde-oids))
+                     koulutuksen-alkamiskausi? (partial has-koulutuksen-alkamiskausi? vuosi kausi)]
+                 (map #(get % "hakukohdeOid") (filter koulutuksen-alkamiskausi? hakukohteiden-koulutusten-alkamiskaudet))))))))

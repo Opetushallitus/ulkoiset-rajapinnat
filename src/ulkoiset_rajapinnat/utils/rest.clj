@@ -61,10 +61,12 @@
   (let [p (promise-chan)
         options-with-ids (update-in options [:headers] assoc
                                     "Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
-                                    "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat")]
+                                    "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat")
+        start-time (System/currentTimeMillis)]
     (method url options-with-ids
       #(go
         (do (>! p (transform-response mapper %))
+          (log/info "Response came in" (- (System/currentTimeMillis) start-time) "ms from" url)
           (close! p))))
     p))
 
@@ -90,8 +92,8 @@
   (post-as-channel url nil {:form-params form} mapper))
 
 (defn post-json-options
-  ([] {:as :stream :timeout 200000 :headers {"Content-Type" mime-application-json}})
-  ([jsession-id] {:as :stream :timeout 200000 :headers {"Content-Type" mime-application-json "Cookie" (str "JSESSIONID=" jsession-id)}}))
+  ([] {:as :stream :timeout 400000 :headers {"Content-Type" mime-application-json}})
+  ([jsession-id] {:as :stream :timeout 400000 :headers {"Content-Type" mime-application-json "Cookie" (str "JSESSIONID=" jsession-id)}}))
 
 (defn post-json-as-channel
   ([url data mapper]

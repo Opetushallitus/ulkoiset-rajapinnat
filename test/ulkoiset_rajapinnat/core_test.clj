@@ -13,6 +13,15 @@
           status (-> response :status)]
       (is (= status 200)))))
 
+(deftest buildversion-text
+  (testing "Health check API"
+    (let [response (client/get (api-call "/buildversion.txt"))
+          status (-> response :status)
+          body (-> response :body)]
+      (is (= status 200))
+      (is (re-find #"ref" body))
+      (is (re-find #"branch" body)))))
+
 (deftest unexpected-response-test
   (testing "Not 200 status code"
     (try

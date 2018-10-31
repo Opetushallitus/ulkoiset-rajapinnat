@@ -2,6 +2,7 @@
   "hakukohteen_nimi" : {
     "fi" : "Kuvataiteilija (ylempi AMK), Kuvataide, Imatra, lisähaku"
   },
+  "koulutuksen_alkamisvuosi": 2017,
   "organisaatiot" : [ {
     "organisaation_oid" : "1.2.246.562.10.82958623314",
     "organisaation_kuntakoodi" : "153",
@@ -10,6 +11,7 @@
       "en" : "Ankkalinna University of Applied Sciences"
     }
   } ],
+  "koulutuksen_alkamiskausi": "k",
   "koulutuksen_opetuskieli" : [ "FI" ],
   "hakukohteen_oid" : "1.2.246.562.20.573444383210",
   "hakijalle_ilmoitetut_aloituspaikat" : 3,
@@ -20,6 +22,7 @@
   "hakukohteen_nimi" : {
     "fi" : "Agrologi (AMK), monimuotototeutus, lisähaku"
   },
+  "koulutuksen_alkamisvuosi": 2017,
   "organisaatiot" : [ {
     "organisaation_oid" : "1.2.246.562.10.72590401013",
     "organisaation_kuntakoodi" : "145",
@@ -27,6 +30,7 @@
       "fi" : "Ankkalinnan yliopisto"
     }
   } ],
+  "koulutuksen_alkamiskausi": "k",
   "koulutuksen_opetuskieli" : [ "FI" ],
   "hakukohteen_oid" : "1.2.246.562.20.22971087097",
   "ensikertalaisten_aloituspaikat" : 0,

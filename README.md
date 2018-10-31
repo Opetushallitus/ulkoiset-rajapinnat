@@ -9,6 +9,10 @@ or
 
 `lein run ulkoisetrajapinnat-properties=../my.edn`
 
+or run in REPL
+
+`(ulkoiset-rajapinnat.core/-main "ulkoisetrajapinnat-properties=my.edn")`
+
 ## CAS with Node.js Example
 
 `npm install --save cheerio request`

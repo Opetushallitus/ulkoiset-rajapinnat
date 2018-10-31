@@ -28,6 +28,8 @@
    (s/optional-key :hakukohteen_nimi)                                   {:fi s/Str :en s/Str :sv s/Str}
    (s/optional-key :koulutuksen_opetuskieli)                            [s/Str]
    (s/optional-key :koulutuksen_koulutustyyppi)                         s/Str
+   (s/optional-key :koulutuksen_alkamisvuosi)                           s/Int
+   (s/optional-key :koulutuksen_alkamiskausi)                           s/Str
    (s/optional-key :hakukohteen_koulutuskoodit)                         [s/Str]
    (s/optional-key :hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit) [s/Str]
    (s/optional-key :hakukohteen_koodi)                                  s/Str
@@ -53,18 +55,21 @@
                                  organisaatiot
                                  koulutukset
                                  hakukohde]
-  (merge
-    {"organisaatiot"                                      (map transform-organisaatio organisaatiot)
-     "hakukohteen_nimi"                                   (hakukohde-tulos "hakukohdeNimi")
-     "hakukohteen_koodi"                                  (strip-type-and-version-from-tarjonta-koodisto-uri (hakukohde "koodistoNimi"))
-     "hakukohteen_oid"                                    (hakukohde-tulos "hakukohdeOid")
-     "koulutuksen_koulutustyyppi"                         (if-let [k (first koulutukset)] (if-let [t ((first (second k)) "koulutustyyppiUri")] (koulutustyyppi t)))
-     "koulutuksen_opetuskieli"                            (map #(kieli %) (hakukohde-tulos "opetuskielet"))
-     "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit" (seq sisaltyvat-koulutuskoodit)
-     "pohjakoulutusvaatimus"                              (get-in hakukohde ["pohjakoulutusvaatimus" "fi"])
-     "hakijalle_ilmoitetut_aloituspaikat"                 (hakukohde "aloituspaikat")
-     "valintojen_aloituspaikat"                           (hakukohde "valintojenAloituspaikat")
-     "ensikertalaisten_aloituspaikat"                     (hakukohde "ensikertalaistenAloituspaikat")}))
+      (let [first-koulutus (if-let [k (first koulutukset)] (first (second k)))]
+           (merge
+             {"organisaatiot"                                      (map transform-organisaatio organisaatiot)
+              "hakukohteen_nimi"                                   (hakukohde-tulos "hakukohdeNimi")
+              "hakukohteen_koodi"                                  (strip-type-and-version-from-tarjonta-koodisto-uri (hakukohde "koodistoNimi"))
+              "hakukohteen_oid"                                    (hakukohde-tulos "hakukohdeOid")
+              "koulutuksen_koulutustyyppi"                         (if (some? first-koulutus) (if-let [uri (first-koulutus "koulutustyyppiUri")] (koulutustyyppi uri)))
+              "koulutuksen_alkamisvuosi"                           (if (some? first-koulutus) (first-koulutus "vuosi"))
+              "koulutuksen_alkamiskausi"                           (if (some? first-koulutus) (strip-type-and-version-from-tarjonta-koodisto-uri (first-koulutus "kausiUri")))
+              "koulutuksen_opetuskieli"                            (map #(kieli %) (hakukohde-tulos "opetuskielet"))
+              "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit" (seq sisaltyvat-koulutuskoodit)
+              "pohjakoulutusvaatimus"                              (get-in hakukohde ["pohjakoulutusvaatimus" "fi"])
+              "hakijalle_ilmoitetut_aloituspaikat"                 (hakukohde "aloituspaikat")
+              "valintojen_aloituspaikat"                           (hakukohde "valintojenAloituspaikat")
+              "ensikertalaisten_aloituspaikat"                     (hakukohde "ensikertalaistenAloituspaikat")})))
 
 (defn result-to-hakukohdes [result]
   (mapcat #(% "tulokset") ((result "result") "tulokset")))
