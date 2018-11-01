@@ -116,7 +116,20 @@
           (log/info (to-json body true))
           (def expected (parse-string (resource "test/resources/vastaanotto/result-when-empty-avaimet.json")))
           (def difference (diff expected body))
-          (is (= [nil nil expected] difference) difference))))))
+          (is (= [nil nil expected] difference) difference)))))
+
+  (testing "Fetch vastaanotot correctly also when hakutoiveen valintatapajonot is empty"
+    (let [access-log-mock (pico/mock mock-write-access-log)]
+      (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                    http/get (fn [url options transform] (mock-http url options transform))
+                    http/post (fn [url options transform] (mock-http url options transform))
+                    fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))
+                    write-access-log access-log-mock
+                    vastaanotot-json (resource "test/resources/vastaanotto/streaming-empty-valintatapajonot.json")]
+        (let [response (client/get (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126?koulutuksen_alkamisvuosi=2018&koulutuksen_alkamiskausi=k"))
+              status (-> response :status)]
+          (is (= status 200))
+          (assert-access-log-write access-log-mock 200 nil))))))
 
 (deftest vts-response-trim-test
   (testing "Trim streaming response"

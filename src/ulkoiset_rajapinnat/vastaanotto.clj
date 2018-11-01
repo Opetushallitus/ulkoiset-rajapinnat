@@ -64,7 +64,7 @@
       (try
         (let [hakutoive-oid (hakutoive "hakukohdeOid")
                     hakutoiveen-kokeet (get hakutoiveiden-kokeet hakutoive-oid)
-                    valintatapajono (first (hakutoive "hakutoiveenValintatapajonot"))
+                    valintatapajono (or (first (hakutoive "hakutoiveenValintatapajonot")) {})
                     kielikokeiden-tunnisteet (map #(get % :tunniste) (filter #(get % :kielikoe) hakutoiveen-kokeet))
                     valintakokeiden-tunnisteet (map #(get % :tunniste) (filter #(get % :valintakoe) hakutoiveen-kokeet))
                     osallistuminen (osallistuminen-checker hakemuksen-valintapisteet)]
@@ -77,7 +77,7 @@
 
                 {"hakukohde_oid"                              hakutoive-oid
                  "valinnan_tila"                              (valintatapajono "tila")
-                 "valinnan_tilan_lisatieto"                   ((valintatapajono "tilanKuvaukset") "FI")
+                 "valinnan_tilan_lisatieto"                   ((or (valintatapajono "tilanKuvaukset") {}) "FI")
                  "valintatapajono"                            (valintatapajono "valintatapajonoOid")
                  "hakijan_lopullinen_jonosija"                (valintatapajono "jonosija")
                  "hakijan_jonosijan_tarkenne"                 (valintatapajono "tasasijaJonosija")
