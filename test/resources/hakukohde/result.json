@@ -5,6 +5,8 @@
   "koulutuksen_alkamisvuosi": 2017,
   "organisaatiot" : [ {
     "organisaation_oid" : "1.2.246.562.10.82958623314",
+    "koulutustoimijan_ytunnus": "100200",
+    "oppilaitos_koodi": "00000",
     "organisaation_kuntakoodi" : "153",
     "organisaation_nimi" : {
       "fi" : "Ankkalinnan ammattikorkeakoulu",
@@ -26,6 +28,8 @@
   "organisaatiot" : [ {
     "organisaation_oid" : "1.2.246.562.10.72590401013",
     "organisaation_kuntakoodi" : "145",
+    "koulutustoimijan_ytunnus": "100200",
+    "oppilaitos_koodi": "00000",
     "organisaation_nimi" : {
       "fi" : "Ankkalinnan yliopisto"
     }

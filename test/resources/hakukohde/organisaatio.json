@@ -231,7 +231,9 @@
     "maaUri": "maatjavaltiot1_fin",
     "toimipistekoodi": "0247213",
     "version": 38,
-    "status": "AKTIIVINEN"
+    "status": "AKTIIVINEN",
+    "ytunnus": "100200",
+    "oppilaitosKoodi": "00000"
   },
   {
     "yhteishaunKoulukoodi": "1231",
@@ -476,6 +478,8 @@
     "maaUri": "maatjavaltiot1_fin",
     "toimipistekoodi": "0260903",
     "version": 49,
-    "status": "AKTIIVINEN"
+    "status": "AKTIIVINEN",
+    "ytunnus": "100200",
+    "oppilaitosKoodi": "00000"
   }
 ]

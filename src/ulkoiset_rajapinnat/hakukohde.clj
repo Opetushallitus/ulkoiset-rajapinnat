@@ -96,6 +96,23 @@
         mapper (comp handle-koulutus-result parse-json-body-stream (partial log-fetch "koulutukset" start-time))]
     (get-as-channel (resolve-url :tarjonta-service.koulutus-search-by-haku-oid haku-oid) {:as :stream} mapper)))
 
+(defn get-all-parent-oids [organisaatiot]
+  (let [parent-oids-seqs (if (empty? organisaatiot) {} (map #(let [parentOidPath (get % "parentOidPath")
+                                                                   parent-oids (remove str/blank? (str/split parentOidPath #"\|"))]
+                                                               parent-oids) organisaatiot))]
+    (flatten parent-oids-seqs)))
+
+(defn enrich-org-with-parents [organisaatio all-parent-orgs]
+  (let [parentOidPath (get organisaatio "parentOidPath")
+        parent-oids (set (remove str/blank? (str/split parentOidPath #"\|")))
+        relevant-parent-orgs (filter #(contains? parent-oids (get % "oid")) all-parent-orgs) ; from the fetched datas use only the parents of this org
+        relevant-orgs (concat [organisaatio] relevant-parent-orgs) ; check both the org itself and its parents
+        ytunnuses (map #(get % "ytunnus") relevant-orgs)
+        ytunnus (first (remove nil? ytunnuses))
+        oppilaitos_koodis (map #(get % "oppilaitosKoodi") relevant-orgs)
+        oppilaitos_koodi (first (remove nil? oppilaitos_koodis))]
+    (assoc (assoc organisaatio "ytunnus" ytunnus) "oppilaitosKoodi" oppilaitos_koodi)))
+
 (defn hakukohde-resource [haku-oid palauta-null-arvot? request user channel log-to-access-log]
   (async/go
     (try
@@ -113,7 +130,10 @@
               koulutuskoodi-mapper (fn [k] {(get k "hakukohdeOid") (map #(get % "koulutuskoodi") (get k "koulutusLaajuusarvos"))})
               sisaltyvat-koulutukset-by-oid (apply merge (map koulutuskoodi-mapper sisaltyvat-koulutukset))
               organisaatiot (<? (fetch-organisations-in-batch-channel all-organisaatio-oids))
-              organisaatiot-by-oid (group-by #(% "oid") (flatten organisaatiot))]
+              all-parent-org-oids (get-all-parent-oids organisaatiot)
+              all-parent-orgs (<? (fetch-organisations-in-batch-channel all-parent-org-oids)) ; cannot use <? in nested function so fetch all at once
+              organisaatiot-enriched (map #(enrich-org-with-parents % all-parent-orgs) organisaatiot)
+              organisaatiot-by-oid (group-by #(% "oid") organisaatiot-enriched)]
           (let [hakukohde-converter (partial transform-hakukohde-tulos kieli koulutustyyppi)
                 converted-hakukohdes (map #(let [hk-koulutukset (select-keys koulutus-by-oid (set (% "koulutusOids")))
                                                  hk-organisaatiot (select-keys organisaatiot-by-oid (% "organisaatioOids"))
