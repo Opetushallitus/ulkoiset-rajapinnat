@@ -77,7 +77,7 @@
 
                 {"hakukohde_oid"                              hakutoive-oid
                  "valinnan_tila"                              (valintatapajono "tila")
-                 "valinnan_tilan_lisatieto"                   ((or (valintatapajono "tilanKuvaukset") {}) "FI")
+                 "valinnan_tilan_lisatieto"                   (get-in valintatapajono ["tilanKuvaukset" "FI"])
                  "valintatapajono"                            (valintatapajono "valintatapajonoOid")
                  "hakijan_lopullinen_jonosija"                (valintatapajono "jonosija")
                  "hakijan_jonosijan_tarkenne"                 (valintatapajono "tasasijaJonosija")
