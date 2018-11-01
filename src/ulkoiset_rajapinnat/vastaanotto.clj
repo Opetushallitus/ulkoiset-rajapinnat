@@ -61,33 +61,38 @@
   (defn- hakutoive-builder [hakutoiveiden-kokeet hakemuksen-valintapisteet hakijan-kielikokeet]
 
     (fn [hakutoive]
-      (let [hakutoive-oid (hakutoive "hakukohdeOid")
-            hakutoiveen-kokeet (get hakutoiveiden-kokeet hakutoive-oid)
-            valintatapajono (first (hakutoive "hakutoiveenValintatapajonot"))
-            kielikokeiden-tunnisteet (map #(get % :tunniste) (filter #(get % :kielikoe) hakutoiveen-kokeet))
-            valintakokeiden-tunnisteet (map #(get % :tunniste) (filter #(get % :valintakoe) hakutoiveen-kokeet))
-            osallistuminen (osallistuminen-checker hakemuksen-valintapisteet)]
+      (try
+        (let [hakutoive-oid (hakutoive "hakukohdeOid")
+                    hakutoiveen-kokeet (get hakutoiveiden-kokeet hakutoive-oid)
+                    valintatapajono (first (hakutoive "hakutoiveenValintatapajonot"))
+                    kielikokeiden-tunnisteet (map #(get % :tunniste) (filter #(get % :kielikoe) hakutoiveen-kokeet))
+                    valintakokeiden-tunnisteet (map #(get % :tunniste) (filter #(get % :valintakoe) hakutoiveen-kokeet))
+                    osallistuminen (osallistuminen-checker hakemuksen-valintapisteet)]
 
-        (def kielikokeeseen-osallistuminen
-          (let [muuKielikoeOsallistuminen (osallistuminen kielikokeiden-tunnisteet)
-                ammatillinenKielikoeOsallistuminen (ammatilliseen-kielikokeeseen-osallistuminen hakijan-kielikokeet)]
-            (if (or muuKielikoeOsallistuminen ammatillinenKielikoeOsallistuminen) true
-                                                                                  (if (or (false? muuKielikoeOsallistuminen) (false? ammatillinenKielikoeOsallistuminen)) false nil))))
+                (def kielikokeeseen-osallistuminen
+                  (let [muuKielikoeOsallistuminen (osallistuminen kielikokeiden-tunnisteet)
+                        ammatillinenKielikoeOsallistuminen (ammatilliseen-kielikokeeseen-osallistuminen hakijan-kielikokeet)]
+                    (if (or muuKielikoeOsallistuminen ammatillinenKielikoeOsallistuminen) true
+                                                                                          (if (or (false? muuKielikoeOsallistuminen) (false? ammatillinenKielikoeOsallistuminen)) false nil))))
 
-        {"hakukohde_oid"                              hakutoive-oid
-         "valinnan_tila"                              (valintatapajono "tila")
-         "valinnan_tilan_lisatieto"                   ((valintatapajono "tilanKuvaukset") "FI")
-         "valintatapajono"                            (valintatapajono "valintatapajonoOid")
-         "hakijan_lopullinen_jonosija"                (valintatapajono "jonosija")
-         "hakijan_jonosijan_tarkenne"                 (valintatapajono "tasasijaJonosija")
-         "yhteispisteet"                              (valintatapajono "pisteet")
-         "ilmoittautumisen_tila"                      (valintatapajono "ilmoittautumisTila")
-         "vastaanoton_tila"                           (hakutoive "vastaanottotieto")
-         "alin_hyvaksytty_pistemaara"                 (valintatapajono "alinHyvaksyttyPistemaara")
-         "hyvaksytty_harkinnanvaraisesti"             (valintatapajono "hyvaksyttyHarkinnanvaraisesti")
-         "hyvaksytty_ensikertalaisten_hakijaryhmasta" (hyvaksytty-ensikertalaisen-hakijaryhmasta (hakutoive "hakijaryhmat"))
-         "osallistui_paasykokeeseen"                  (osallistuminen valintakokeiden-tunnisteet)
-         "osallistui_kielikokeeseen"                  kielikokeeseen-osallistuminen})))
+                {"hakukohde_oid"                              hakutoive-oid
+                 "valinnan_tila"                              (valintatapajono "tila")
+                 "valinnan_tilan_lisatieto"                   ((valintatapajono "tilanKuvaukset") "FI")
+                 "valintatapajono"                            (valintatapajono "valintatapajonoOid")
+                 "hakijan_lopullinen_jonosija"                (valintatapajono "jonosija")
+                 "hakijan_jonosijan_tarkenne"                 (valintatapajono "tasasijaJonosija")
+                 "yhteispisteet"                              (valintatapajono "pisteet")
+                 "ilmoittautumisen_tila"                      (valintatapajono "ilmoittautumisTila")
+                 "vastaanoton_tila"                           (hakutoive "vastaanottotieto")
+                 "alin_hyvaksytty_pistemaara"                 (valintatapajono "alinHyvaksyttyPistemaara")
+                 "hyvaksytty_harkinnanvaraisesti"             (valintatapajono "hyvaksyttyHarkinnanvaraisesti")
+                 "hyvaksytty_ensikertalaisten_hakijaryhmasta" (hyvaksytty-ensikertalaisen-hakijaryhmasta (hakutoive "hakijaryhmat"))
+                 "osallistui_paasykokeeseen"                  (osallistuminen valintakokeiden-tunnisteet)
+                 "osallistui_kielikokeeseen"                  kielikokeeseen-osallistuminen})
+        (catch Exception e
+          (do
+            (log/error e (format "Virhe käsiteltäessä hakutoivetta %s" hakutoive))
+            (throw e))))))
 
   (fn [vastaanotto]
     (try
