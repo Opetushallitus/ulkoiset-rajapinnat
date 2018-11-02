@@ -31,6 +31,35 @@
         "luokkataso": "9",
         "henkiloOid": "1.2.1.2.1.2"
       }
+    },
+    {
+      "id": "abcdefgh-7dff-4db0-b698-a4f44vdca319",
+      "oppilaitosOid": "1.2.246.562.10.97471750527",
+      "luokkataso": "12",
+      "luokka": "Massiivisen edistynyt opetus",
+      "henkiloOid": "1.2.1.2.1.2",
+      "alkuPaiva": "2016-07-31T21:00:00.000Z",
+      "loppuPaiva": "2019-05-31T21:00:00.000Z",
+      "source": "1.2.246.562.24.79238701160",
+      "core": {
+        "oppilaitosOid": "1.2.246.562.10.97471750527",
+        "luokkataso": "12",
+        "henkiloOid": "1.2.1.2.1.2"
+      }
+    },
+    {
+      "id": "abcdefgh-7dff-4db0-b698-a4f44vdca319",
+      "oppilaitosOid": "1.2.246.562.10.97471750527",
+      "luokkataso": "9",
+      "luokka": "Rikkinäinen tieto ilman loppupäivää",
+      "henkiloOid": "1.2.1.2.1.2",
+      "alkuPaiva": "2016-07-31T21:00:00.000Z",
+      "source": "1.2.246.562.24.79238701160",
+      "core": {
+        "oppilaitosOid": "1.2.246.562.10.97471750527",
+        "luokkataso": "9",
+        "henkiloOid": "1.2.1.2.1.2"
+      }
     }
   ],
   "suoritukset": [
@@ -85,6 +114,48 @@
         "myontaja": "1.2.246.562.10.97471750527",
         "tila": "VALMIS",
         "valmistuminen": "03.06.2017",
+        "yksilollistaminen": "Ei",
+        "suoritusKieli": "EN",
+        "id": "b86219f1-4f61-453e-b997-45bfbc07a3dd",
+        "lahdeArvot": { }
+      },
+      "arvosanat": [
+        {
+          "id": "48931245-c105-4029-bfa3-a789eed3efd0",
+          "suoritus": "b86219f1-4f61-453e-b997-45bfbc07a3dd",
+          "arvio": {
+            "arvosana": "7",
+            "asteikko": "4-10"
+          },
+          "aine": "AI",
+          "source": "1.2.246.562.24.79238701160",
+          "lahdeArvot": { },
+          "valinnainen": false,
+          "lisatieto": "FI"
+        },
+        {
+          "id": "88d5f87f-fb11-41ad-a029-e275c8897c64",
+          "suoritus": "b86219f1-4f61-453e-b997-45bfbc07a3dd",
+          "arvio": {
+            "arvosana": "6",
+            "asteikko": "4-10"
+          },
+          "aine": "FY",
+          "source": "1.2.246.562.24.79238701160",
+          "lahdeArvot": { },
+          "valinnainen": false
+        }
+      ]
+    },
+    {
+      "suoritus": {
+        "henkiloOid": "1.2.1.2.1.2",
+        "source": "1.2.246.562.24.79238701160",
+        "vahvistettu": true,
+        "komo": "1.2.246.562.13.62959769647",
+        "myontaja": "1.2.246.562.10.97471750527",
+        "tila": "VALMIS",
+        "valmistuminen": "03.06.2019",
         "yksilollistaminen": "Ei",
         "suoritusKieli": "EN",
         "id": "b86219f1-4f61-453e-b997-45bfbc07a3dd",

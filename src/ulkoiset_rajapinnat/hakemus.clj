@@ -104,10 +104,13 @@
      :lahtokoulun_organisaatio_oid                              lahtokoulun_organisaatio_oid
      :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa}))
 
-(defn koulutustausta-from-oppija [oppija organisaatiot]
+
+(defn koulutustausta-from-oppija [oppija organisaatiot vuosi]
+  (defn- cut-by-year [lp] ;Käytetään vain sellaisia opiskelu- ja suoritustietoja, jotka ovat valmistuneet parametrina anettuna koulutuksen alkamisvuonna tai aiemmin.
+    (<= (t/year lp) (Integer/parseInt vuosi)))
   (defn- parse-loppuPaiva [o]
     (if-let [loppuPaiva (get o "loppuPaiva")] (f/parse opiskelu-date-formatter loppuPaiva)
-                                              (f/parse opiskelu-date-formatter "1970-01-01T21:00:00.000Z")))
+                                              (f/parse opiskelu-date-formatter "2100-01-01T21:00:00.000Z")))
   (defn- parse-valmistuminen [s] (f/parse valmistuminen-date-formatter (get s "valmistuminen")))
   (defn- find-latest [coll parser] (last (sort #(compare (parser %1) (parser %2)) coll)))
   (defn- find-latest-opiskelu [opiskelut] (find-latest opiskelut parse-loppuPaiva))
@@ -115,10 +118,12 @@
 
   (let [opiskelut (flatten (map #(get % "opiskelu") oppija))
         suoritukset (map #(get % "suoritus") (flatten (map #(get % "suoritukset") oppija)))
-        latest-opiskelu (find-latest-opiskelu opiskelut)
+        opiskelut-filtered (filter #(cut-by-year (parse-loppuPaiva %1)) opiskelut)
+        suoritukset-filtered (filter #(cut-by-year (parse-valmistuminen %1)) suoritukset)
+        latest-opiskelu (find-latest-opiskelu opiskelut-filtered)
         luokka (get latest-opiskelu "luokka")
         oppilaitos (get latest-opiskelu "oppilaitosOid")
-        latest-suoritus (find-latest-suoritus (filter #(= oppilaitos (get % "myontaja")) suoritukset))
+        latest-suoritus (find-latest-suoritus (filter #(= oppilaitos (get % "myontaja")) suoritukset-filtered))
         paattovuosi (if latest-suoritus (t/year (parse-valmistuminen latest-suoritus)) nil)
         opetuskieli (if latest-suoritus (get latest-suoritus "suoritusKieli") nil)
         oppilaitoskoodi (get-value-if-not-nil "oppilaitosKoodi" (find-first-matching "oid" oppilaitos organisaatiot))]
@@ -139,13 +144,13 @@
       data
       (remove-nils data))))
 
-(defn convert-hakemus [pohjakoulutus-koodit palauta-null-arvot? henkilo oppija document is-toisen-asteen-haku? organisaatiot]
+(defn convert-hakemus [pohjakoulutus-koodit palauta-null-arvot? henkilo oppija document is-toisen-asteen-haku? organisaatiot vuosi]
   (let [data (core-merge
                (hakutoiveet-from-hakemus document)
                (oppija-data-from-henkilo henkilo)
                (henkilotiedot-from-hakemus document)
                (koulutustausta-from-hakemus pohjakoulutus-koodit document)
-               (if is-toisen-asteen-haku? (koulutustausta-from-oppija oppija organisaatiot) {})
+               (if is-toisen-asteen-haku? (koulutustausta-from-oppija oppija organisaatiot vuosi) {})
                {:hakemus_oid      (get document "oid")
                 :henkilo_oid      (get document "personOid")
                 :haku_oid         (get document "applicationSystemId")
@@ -176,7 +181,7 @@
   (map #(get % "henkilo_oid") batch))
 
 
-(defn haku-app-adapter [pohjakoulutus-koodit palauta-null-arvot?]
+(defn haku-app-adapter [pohjakoulutus-koodit palauta-null-arvot? vuosi]
   (fn [batch] [(map #(get % "personOid") batch)
                batch
                (fn [henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot]
@@ -188,7 +193,8 @@
                      (get oppijat-by-oid (get hakemus "personOid"))
                      hakemus
                      is-toisen-asteen-haku?
-                     organisaatiot)
+                     organisaatiot
+                     vuosi)
                    (catch Exception e
                      (do
                        (log/error e "Problem when converting hakemus " hakemus)
@@ -228,7 +234,7 @@
                                     (go [])
                                     (fetch-hakemukset-from-haku-app-as-streaming-channel
                                       haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
-                                      (haku-app-adapter pohjakoulutus-koodit palauta-null-arvot?)))
+                                      (haku-app-adapter pohjakoulutus-koodit palauta-null-arvot? vuosi)))
                  close-channel (fn []
                                  (do
                                    (close-and-drain! haku-app-channel)
