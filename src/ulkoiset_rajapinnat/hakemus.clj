@@ -105,7 +105,9 @@
      :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa}))
 
 (defn koulutustausta-from-oppija [oppija organisaatiot]
-  (defn- parse-loppuPaiva [o] (f/parse opiskelu-date-formatter (get o "loppuPaiva")))
+  (defn- parse-loppuPaiva [o]
+    (if-let [loppuPaiva (get o "loppuPaiva")] (f/parse opiskelu-date-formatter loppuPaiva)
+                                              (f/parse opiskelu-date-formatter "1970-01-01T21:00:00.000Z")))
   (defn- parse-valmistuminen [s] (f/parse valmistuminen-date-formatter (get s "valmistuminen")))
   (defn- find-latest [coll parser] (last (sort #(compare (parser %1) (parser %2)) coll)))
   (defn- find-latest-opiskelu [opiskelut] (find-latest opiskelut parse-loppuPaiva))
