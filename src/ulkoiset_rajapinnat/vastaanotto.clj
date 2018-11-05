@@ -8,7 +8,7 @@
             [ulkoiset-rajapinnat.utils.tarjonta :refer [hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-for-haku-oid-channel]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
-            [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel get-as-channel status body-and-close exception-response to-json parse-json-body-stream body]]
+            [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel get-as-channel status body-and-close exception-response to-json parse-json-body-stream body parse-json-request]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [ulkoiset-rajapinnat.utils.async_safe :refer :all]
             [org.httpkit.server :refer :all]
@@ -235,6 +235,44 @@
           (log-to-access-log 500 (.getMessage e))
           ((exception-response channel) e))))))
 
-(defn vastaanotto-resource [haku-oid vuosi kausi request user channel log-to-access-log]
-  (vastaanotot-for-haku haku-oid vuosi kausi request user channel log-to-access-log)
-  (schedule-task (* 1000 60 60 12) (close channel)))
+;; Simplistic implementation where the whole vastaanotto data is fetched.
+;; This could be further optimised by only fetching vastaanotto data for given hakukohde oids from valint-tulos-service.
+(defn vastaanotot-for-haku-and-hakukohdeoids [haku-oid hakukohde-oids request user channel log-to-access-log]
+  (async/go
+    (try
+      (if (seq (<? (haku-for-haku-oid-channel haku-oid)))
+        (let [haun-vastaanotot-ch (vastaanotot-whole-haku-channel haku-oid)
+              vastaanotot (filter-vastaanotot hakukohde-oids (<? haun-vastaanotot-ch) haku-oid "N/A" "N/A")
+              vastaanottojen-hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
+              hakemus-oidit (map #(% "hakemusOid") vastaanotot)
+              valintakokeet-ch (if (empty? vastaanottojen-hakukohde-oidit) (empty-object-channel) (fetch-kokeet-channel haku-oid vastaanottojen-hakukohde-oidit))
+              valintapisteet-ch (if (empty? hakemus-oidit) (empty-object-channel) (fetch-valintapisteet-channel haku-oid hakemus-oidit request user))
+              oppijanumerot (map #(% "hakijaOid") vastaanotot)
+              kielikokeet-ch (if (empty? oppijanumerot) (empty-object-channel) (fetch-ammatilliset-kielikokeet-channel haku-oid oppijanumerot))]
+          (log/info (format "Haku %s hakijoita %d kpl %d hakukohteeseen, joissa tuloksia" haku-oid (count hakemus-oidit) (count vastaanottojen-hakukohde-oidit)))
+          (log/info (format "Haku %s hakukohteita, joissa tuloksia %d kpl" haku-oid (count vastaanottojen-hakukohde-oidit)))
+          (log/info (format "Haku %s hakemuksia %d kpl %d hakukohteeseen, joissa tuloksia" haku-oid (count hakemus-oidit) (count vastaanottojen-hakukohde-oidit)))
+          (let [build-vastaanotto (vastaanotto-builder (<? valintakokeet-ch) (<? valintapisteet-ch) (<? kielikokeet-ch))
+                json (to-json (pmap build-vastaanotto vastaanotot))]
+            (log-to-access-log 200 nil)
+            (-> channel
+                (status 200)
+                (body-and-close json))))
+        (let [message (format "Haku %s not found" haku-oid)]
+          (status channel 404)
+          (body channel (to-json {:error message}))
+          (close channel)
+          (log-to-access-log 404 message)))
+      (catch Exception e
+        (do
+          (log/error (format "Virhe haettaessa vastaanottoja haun %s %d hakukohteelle!" haku-oid (count hakukohde-oids)), e)
+          (log-to-access-log 500 (.getMessage e))
+          ((exception-response channel) e))))))
+
+(defn vastaanotto-resource
+  ([haku-oid vuosi kausi request user channel log-to-access-log]
+   (vastaanotot-for-haku haku-oid vuosi kausi request user channel log-to-access-log)
+   (schedule-task (* 1000 60 60 12) (close channel)))
+  ([haku-oid request user channel log-to-access-log]
+   (vastaanotot-for-haku-and-hakukohdeoids haku-oid (parse-json-request request) request user channel log-to-access-log)
+   (schedule-task (* 1000 60 60 12) (close channel))))

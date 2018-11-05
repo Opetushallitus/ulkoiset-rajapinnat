@@ -63,6 +63,16 @@
            ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
           (partial vastaanotto-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi)))
+      (POST "/vastaanotto-for-haku/:haku-oid" [haku-oid ticket]
+              :summary "Vastaanotot haku OID:lla tietyille hakukohteille"
+              :query-params [ticket :- String]
+              :body [body (describe [s/Str] "hakukohteiden oidit JSON-taulukossa")]
+              :responses {200 {:schema [Vastaanotto]}}
+              (log/info (str "Got incoming request to /vastaanotto-for-haku/" haku-oid))
+              (access-log-with-ticket-check-with-channel
+                 ticket
+                (partial audit audit-logger (str "Vastaanotot haku OID:lla ja hakukohdeoideilla" haku-oid))
+                (partial vastaanotto-resource haku-oid)))
       (GET "/hakemus-for-haku/:haku-oid" [haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot ticket] ; hakuoid + kaudet
         :summary "Hakemukset haku OID:lla"
         :query-params [ticket :- String
