@@ -96,10 +96,12 @@
         mapper (comp handle-koulutus-result parse-json-body-stream (partial log-fetch "koulutukset" start-time))]
     (get-as-channel (resolve-url :tarjonta-service.koulutus-search-by-haku-oid haku-oid) {:as :stream} mapper)))
 
+(defn- find-parent-oids [organisaatio]
+  (let [parentOidPath (get organisaatio "parentOidPath")]
+    (remove str/blank? (str/split parentOidPath #"\|"))))
+
 (defn get-all-parent-oids [organisaatiot]
-  (let [parent-oids-seqs (if (empty? organisaatiot) {} (map #(let [parentOidPath (get % "parentOidPath")
-                                                                   parent-oids (remove str/blank? (str/split parentOidPath #"\|"))]
-                                                               parent-oids) organisaatiot))]
+  (let [parent-oids-seqs (if (empty? organisaatiot) {} (map find-parent-oids organisaatiot))]
     (flatten parent-oids-seqs)))
 
 (defn enrich-org-with-parents [organisaatio all-parent-orgs]
