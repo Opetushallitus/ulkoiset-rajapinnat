@@ -1,10 +1,7 @@
 (ns ulkoiset-rajapinnat.utils.read_stream
-  (:require [clojure.string :as str]
-            [full.async :refer :all]
+  (:require [full.async :refer :all]
             [cheshire.core :refer :all]
-            [clojure.core.async :refer [chan promise-chan >! >!! go put! close! alts! timeout <!]]
-            [clojure.tools.logging :as log]
-            [clojure.core.async :as async])
+            [clojure.core.async :refer [>! go close!]])
   (:import (com.fasterxml.jackson.databind ObjectMapper)
            (com.fasterxml.jackson.core JsonFactory JsonToken)))
 
@@ -32,8 +29,7 @@
                   (throw (RuntimeException. "Channel was closed before reading stream completed!"))))))
           (when-let [last-batch (drain-to-vector)]
             (>! channel last-batch))))
-      (catch Exception e (do (>!! channel e)
-                             (throw e)))
+      (catch Exception e (>! channel e))
       (finally
         (if (instance? java.io.InputStream input-stream)
           (.close input-stream))
