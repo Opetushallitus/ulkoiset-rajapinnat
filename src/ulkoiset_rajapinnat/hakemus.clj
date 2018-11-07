@@ -248,28 +248,27 @@
                  oppija-service-ticket-channel (fetch-hakurekisteri-service-ticket-channel)]
              (try
                (core-loop [channels [ataru-channel haku-app-channel]]
-                 (let [[v ch] (alts? channels)]
-                   (if (not (vector? v))
-                     (let [new-channels (remove #{ch} channels)]
-                       (if (not (empty? new-channels))
-                         (recur new-channels)))
-                     (let [[henkilo-oids batch mapper] v
-                           oppijat (if (or is-haku-with-ensikertalaisuus? is-toisen-asteen-haku?)
-                                     (<? (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel haku-oid henkilo-oids is-haku-with-ensikertalaisuus? oppija-service-ticket-channel)) nil)
-                           jsessionid (<? (onr-sessionid-channel))
-                           henkilot (<? (fetch-henkilot-channel jsessionid henkilo-oids))
-                           oppijat-by-oid (group-by #(get % "oppijanumero") oppijat)
-                           henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)
-                           organisaatiot (if is-toisen-asteen-haku? (let [oppilaitos-oids (flatten (map #(get % "oppilaitosOid") (flatten (map #(get % "opiskelu") oppijat))))]
-                                                                      (<? (fetch-organisations-in-batch-channel oppilaitos-oids))) nil)]
-                       (doseq [hakemus batch]
-                         (write-object-to-channel
-                           is-first-written
-                           (mapper henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot)
-                           channel))
-                       (let [bs (int (count batch))]
-                         (swap! counter (partial + bs)))
-                       (recur channels)))))
+                 (when (not-empty channels)
+                   (let [[v ch] (alts? channels)]
+                     (if (not (vector? v))
+                       (recur (remove #{ch} channels))
+                       (let [[henkilo-oids batch mapper] v
+                             oppijat (if (or is-haku-with-ensikertalaisuus? is-toisen-asteen-haku?)
+                                       (<? (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel haku-oid henkilo-oids is-haku-with-ensikertalaisuus? oppija-service-ticket-channel)) nil)
+                             jsessionid (<? (onr-sessionid-channel))
+                             henkilot (<? (fetch-henkilot-channel jsessionid henkilo-oids))
+                             oppijat-by-oid (group-by #(get % "oppijanumero") oppijat)
+                             henkilo-by-oid (group-by #(get % "oidHenkilo") henkilot)
+                             organisaatiot (if is-toisen-asteen-haku? (let [oppilaitos-oids (flatten (map #(get % "oppilaitosOid") (flatten (map #(get % "opiskelu") oppijat))))]
+                                                                        (<? (fetch-organisations-in-batch-channel oppilaitos-oids))) nil)]
+                         (doseq [hakemus batch]
+                           (write-object-to-channel
+                             is-first-written
+                             (mapper henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot)
+                             channel))
+                         (let [bs (int (count batch))]
+                           (swap! counter (partial + bs)))
+                         (recur channels))))))
                (log-to-access-log 200 nil)
                (log/info "Returned successfully" @counter "'hakemusta' from Haku-App and Ataru! Took" (- (System/currentTimeMillis) start-time) "ms!")
                (catch Throwable e
