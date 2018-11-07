@@ -27,6 +27,7 @@
         channel (chan 1)]
     (go
       (try
+        (log/info "Start reading 'haku-app'...")
         (let [st (<? service-ticket-channel)
               response (let [url (resolve-url :haku-app.streaming-listfull)]
                          (log/info (str "POST -> " url))
@@ -36,7 +37,8 @@
                                            :body    (to-json query)}))
               body-stream (response :body)]
           (read-json-stream-to-channel body-stream channel batch-size result-mapper))
-        (finally
-          (log/info "Done reading 'haku-app'!")
+        (catch Exception e
+          (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
+          (>! channel e)
           (close! channel))))
     channel))
