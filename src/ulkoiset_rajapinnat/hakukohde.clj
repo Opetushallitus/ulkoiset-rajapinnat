@@ -98,7 +98,11 @@
 
 (defn- find-parent-oids [organisaatio]
   (let [parentOidPath (get organisaatio "parentOidPath")]
-    (remove str/blank? (str/split parentOidPath #"\|"))))
+    (try
+      (remove str/blank? (str/split parentOidPath #"\|"))
+      (catch Exception e
+        (log/error e (format "Problem when finding parent oids of %s" (pr-str (get organisaatio "oid"))))
+        (throw e)))))
 
 (defn get-all-parent-oids [organisaatiot]
   (let [parent-oids-seqs (if (empty? organisaatiot) {} (map find-parent-oids organisaatiot))]

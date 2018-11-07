@@ -28,4 +28,4 @@
                               (throw (new RuntimeException "Can only fetch 1000 orgs at once!")))
                             (post-json-as-channel url x mapper)))
              organisaatiot (<? (async-map-safe vector (map #(post %) partitions) []))]
-         (apply merge organisaatiot))))))
+         (apply concat organisaatiot))))))

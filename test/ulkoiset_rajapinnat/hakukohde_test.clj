@@ -131,4 +131,24 @@
           (def expected (parse-string (resource "test/resources/hakukohde/result.json")))
           (def difference (diff expected body))
           (is (= [nil nil expected] difference))
-          (assert-access-log-write access-log-mock 200 nil))))))
+          (assert-access-log-write access-log-mock 200 nil)))))
+
+  (testing "Fetch hakukohde needing to batch organisations"
+      (let [access-log-mock (pico/mock mock-write-access-log)]
+        (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                      oppijat-batch-size 2
+                      valintapisteet-batch-size 2
+                      http/get (fn [url options transform] (mock-http url options transform))
+                      http/post (fn [url options transform] (mock-http url options transform))
+                      fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))
+                      write-access-log access-log-mock
+                      ulkoiset-rajapinnat.organisaatio/organisaatio-batch-size 1]
+          (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.29.25191045126"))
+                status (-> response :status)
+                body (-> (parse-json-body response))]
+            (is (= status 200))
+            (log/info (to-json body true))
+            (def expected (parse-string (resource "test/resources/hakukohde/result.json")))
+            (def difference (diff expected body))
+            (is (= [nil nil expected] difference))
+            (assert-access-log-write access-log-mock 200 nil))))))
