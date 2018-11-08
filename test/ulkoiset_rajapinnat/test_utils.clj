@@ -1,5 +1,5 @@
 (ns ulkoiset-rajapinnat.test_utils
-  (:require [clojure.core.async :refer [promise-chan put! >!! close! go]]
+  (:require [clojure.core.async :refer [promise-chan put! >! close! go]]
             [clojure.test :refer [is]]
             [clj-log4j2.core :as log]
             [ulkoiset-rajapinnat.utils.access :refer [write-access-log]]
@@ -17,11 +17,12 @@
 
 (defn mock-channel [result]
   (let [p (promise-chan)]
-    (try
-      (>!! p result)
-      (catch Exception e (>!! p e))
-      (finally
-        (close! p)))
+    (go
+      (try
+        (>! p result)
+        (catch Exception e (>! p e))
+        (finally
+          (close! p))))
     p))
 
 (def default-write-access-log write-access-log)
