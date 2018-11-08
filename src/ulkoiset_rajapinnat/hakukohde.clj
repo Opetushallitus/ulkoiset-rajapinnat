@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
             [schema.core :as s]
-            [ulkoiset-rajapinnat.utils.tarjonta :refer [fetch-tilastoskeskus-hakukohde-channel haku-for-haku-oid-channel]]
+            [ulkoiset-rajapinnat.utils.tarjonta :refer [fetch-hakukohteet-channel haku-for-haku-oid-channel]]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch-channel]]
             [ulkoiset-rajapinnat.utils.rest :refer [post-as-channel get-as-channel status body body-and-close exception-response parse-json-body-stream to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-type-and-version-from-tarjonta-koodisto-uri]]
@@ -132,7 +132,7 @@
               hakukohde-by-oid (group-by #(% "oid") hakukohde)
               koulutukset (<? (fetch-koulutukset-channel haku-oid))
               koulutus-by-oid (group-by #(% "oid") koulutukset)
-              sisaltyvat-koulutukset (<? (fetch-tilastoskeskus-hakukohde-channel all-hakukohde-oids))
+              sisaltyvat-koulutukset (<? (fetch-hakukohteet-channel all-hakukohde-oids))
               koulutuskoodi-mapper (fn [k] {(get k "hakukohdeOid") (map #(get % "koulutuskoodi") (get k "koulutusLaajuusarvos"))})
               sisaltyvat-koulutukset-by-oid (apply merge (map koulutuskoodi-mapper sisaltyvat-koulutukset))
               organisaatiot (<? (fetch-organisations-in-batch-channel all-organisaatio-oids))

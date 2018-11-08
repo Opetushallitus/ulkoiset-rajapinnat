@@ -26,7 +26,7 @@
 (def avaimet-empty-json (resource "test/resources/vastaanotto/avaimet-empty.json"))
 (def oppijat-json (resource "test/resources/vastaanotto/oppijat.json"))
 (def haku-json (resource "test/resources/vastaanotto/haku.json"))
-(def tilastokeskus-json (resource "test/resources/vastaanotto/tilastokeskus.json"))
+(def tilastokeskus-json (resource "test/resources/vastaanotto/hakukohteet.json"))
 
 (defn oppijat-chunk [oppijanumerot]
   (to-json (filter (fn [x] (some #(= (get x "oppijanumero") %) (parse-string oppijanumerot))) (parse-string oppijat-json))))

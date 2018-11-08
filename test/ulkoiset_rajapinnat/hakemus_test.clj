@@ -97,7 +97,7 @@
 
 (def haku-json (resource "test/resources/hakemus/haku.json"))
 (def haku-ataru-deep-json (resource "test/resources/hakemus/haku-ataru-deep.json"))
-(def tilastokeskus-json (resource "test/resources/hakemus/tilastokeskus.json"))
+(def hakukohteet-json (resource "test/resources/hakemus/hakukohteet.json"))
 (def henkilot-json (resource "test/resources/hakemus/henkilot.json"))
 (def oppijat-json (resource "test/resources/hakemus/oppijat.json"))
 (def organisaatio-json (resource "test/resources/hakemus/organisaatio.json"))
@@ -108,7 +108,7 @@
   (case url
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/pohjakoulutuskklomake/1" (response 200 "[]")
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.999999" (response 200 haku-json)
-    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 hakukohteet-json)
     "http://fake.virkailija.opintopolku.fi/oppijanumerorekisteri-service/henkilo/henkilotByHenkiloOidList" (response 200 henkilot-json)
     "http://fake.virkailija.opintopolku.fi/organisaatio-service/rest/organisaatio/v3/findbyoids" (response 200 organisaatio-json)
     (response 404 "[]")))
@@ -170,7 +170,7 @@
   (case url
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.999999" (response 200 haku-ataru-deep-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/ABC" (response 200 "{}")
-    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 hakukohteet-json)
     (response 404 "[]")))
 
 (deftest valid-and-invalid-requests-deep-test
@@ -228,7 +228,7 @@
             (is (= status 200))
             (is (= "[]" body))))))
     (testing "Hakukohde data is retrieved correctly with partitioning from tarjonta"
-        (with-redefs [ulkoiset-rajapinnat.utils.tarjonta/tilastokeskus-batch-size 2
+        (with-redefs [ulkoiset-rajapinnat.utils.tarjonta/hakukohde-batch-size 2
                       hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
                       check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                       fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")

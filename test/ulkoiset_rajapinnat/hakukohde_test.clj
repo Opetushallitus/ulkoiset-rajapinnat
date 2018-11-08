@@ -28,7 +28,7 @@
 (def koulutus-empty-json (resource "test/resources/hakukohde/koulutus-empty.json"))
 (def kieli-json (resource "test/resources/hakukohde/kieli.json"))
 (def organisaatio-json (resource "test/resources/hakukohde/organisaatio.json"))
-(def tilastokeskus-json (resource "test/resources/hakukohde/tilastokeskus.json"))
+(def tilastokeskus-json (resource "test/resources/hakukohde/hakukohteet.json"))
 
 (defn mock-http [url options transform]
   (log/info (str "Mocking url " url))

@@ -14,12 +14,12 @@
                                                          haku
                                                          {})))))
 
-(def tilastokeskus-batch-size 500)
+(def hakukohde-batch-size 500)
 
-(defn fetch-tilastoskeskus-hakukohde-channel [hakukohde-oids]
-  (log/info "Fetching 'tilastokeskus' data from tarjonta for " (if (nil? hakukohde-oids) 0 (count hakukohde-oids)) " hakukohde!")
+(defn fetch-hakukohteet-channel [hakukohde-oids]
+  (log/info "Fetching hakukohde data from tarjonta tilastokeskus endpoint for " (if (nil? hakukohde-oids) 0 (count hakukohde-oids)) " hakukohde!")
   (go-try (let [url (resolve-url :tarjonta-service.tilastokeskus)
-                partitions (partition tilastokeskus-batch-size tilastokeskus-batch-size nil hakukohde-oids)
+                partitions (partition hakukohde-batch-size hakukohde-batch-size nil hakukohde-oids)
                 post (fn [x] (post-json-as-channel url x parse-json-body-stream))
                 hakukohteet (<? (async-map-safe vector (map #(post %) partitions) []))]
                (apply merge hakukohteet))))
@@ -87,6 +87,6 @@
                  hakukohde-oids (get haku "hakukohdeOids")]
              (if (is-yhteishaku haku)
                (hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan-yhteishaulle haku vuosi kausi)
-               (let [hakukohteiden-koulutusten-alkamiskaudet (<? (fetch-tilastoskeskus-hakukohde-channel hakukohde-oids))
+               (let [hakukohteet (<? (fetch-hakukohteet-channel hakukohde-oids))
                      koulutuksen-alkamiskausi? (partial has-koulutuksen-alkamiskausi? vuosi kausi)]
-                 (map #(get % "hakukohdeOid") (filter koulutuksen-alkamiskausi? hakukohteiden-koulutusten-alkamiskaudet))))))))
+                 (map #(get % "hakukohdeOid") (filter koulutuksen-alkamiskausi? hakukohteet))))))))
