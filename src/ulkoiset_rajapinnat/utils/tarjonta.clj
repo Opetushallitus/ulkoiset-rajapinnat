@@ -8,18 +8,6 @@
             [ulkoiset-rajapinnat.utils.rest :refer :all]
             [ulkoiset-rajapinnat.utils.async_safe :refer :all]))
 
-(defn- filter-only-haku [haku-oid]
-  (fn [response]
-    (let [data ((parse-json-body-stream response) "result")
-          data-with-haku-and-hakukohde (map #(select-keys % ["oid" "hakukohdeOids"]) data)]
-      (mapcat #(% "hakukohdeOids") (filter #(= haku-oid (% "oid")) data-with-haku-and-hakukohde)))))
-
-(defn hakukohde-oids-for-kausi-and-vuosi-channel [haku-oid kausi vuosi]
-  (if (not (every? some? [kausi vuosi haku-oid]))
-    (throw (RuntimeException. "Haku-oid, kausi and vuosi are mandatory parameters!")))
-  (let [url (resolve-url :tarjonta-service.haku-find-by-hakuvuosi-and-hakukausi vuosi kausi)]
-    (get-as-channel url { :as :stream } (filter-only-haku haku-oid))))
-
 (defn haku-for-haku-oid-channel [haku-oid]
   (let [url (resolve-url :tarjonta-service.haku haku-oid)]
     (get-as-channel url { :as :stream } (fn [response] (if-let [haku ((parse-json-body-stream response) "result")]
@@ -37,16 +25,15 @@
                (apply merge hakukohteet))))
 
 (defn is-haku-with-ensikertalaisuus [haku]
-  (if-let [some-haku haku]
+  (if haku
     (let [korkeakoulu? (if-let [kuri (haku "kohdejoukkoUri")] (str/starts-with? kuri "haunkohdejoukko_12#") false)
           kohdejoukontarkenne? (some? (haku "kohdejoukonTarkenne"))
-          yhteis-tai-erillishaku? (if-let [hakutapa (haku "hakutapaUri")] (or (str/starts-with? hakutapa "hakutapa_01#") (str/starts-with? hakutapa "hakutapa_02#")) false)
-          jatkuva-haku? (if-let [hakutapa (haku "hakutapaUri")] (str/starts-with? hakutapa "hakutapa_03#") false)]
+          yhteis-tai-erillishaku? (if-let [hakutapa (haku "hakutapaUri")] (or (str/starts-with? hakutapa "hakutapa_01#") (str/starts-with? hakutapa "hakutapa_02#")) false)]
       (and korkeakoulu? yhteis-tai-erillishaku? (not kohdejoukontarkenne?)))
     (throw (RuntimeException. "Can't check nil haku if it's jatkuva haku!"))))
 
 (defn is-toinen-aste [haku]
-  (if-let [some-haku haku]
+  (if haku
     (if-let [kuri (haku "kohdejoukkoUri")]
       (or (str/starts-with? kuri "haunkohdejoukko_11#") (str/starts-with? kuri "haunkohdejoukko_17#") (str/starts-with? kuri "haunkohdejoukko_20#"))
       false)
@@ -58,13 +45,6 @@
       (str/starts-with? hakutapa "hakutapa_01#")
       false)
     (throw (RuntimeException. "Can't check nil haku if it's yhteishaku!"))))
-
-(defn is-jatkuva-haku [haku]
-  (if-let [some-haku haku]
-    (if-let [hakutapa (haku "hakutapaUri")]
-      (str/starts-with? hakutapa "hakutapa_03#")
-      false)
-    (throw (RuntimeException. "Can't check nil haku if it's jatkuva haku!"))))
 
 (def kausi-uri-prefix-kevat "kausi_k")
 (def kausi-uri-prefix-syksy "kausi_s")
