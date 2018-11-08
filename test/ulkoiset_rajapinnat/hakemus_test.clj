@@ -226,4 +226,24 @@
                 body (-> response :body)]
             (assert-access-log-write access-log-mock 200 nil)
             (is (= status 200))
-            (is (= "[]" body))))))))
+            (is (= "[]" body))))))
+    (testing "Hakukohde data is retrieved correctly with partitioning from tarjonta"
+        (with-redefs [ulkoiset-rajapinnat.utils.tarjonta/tilastokeskus-batch-size 2
+                      hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
+                      check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                      fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
+                      fetch-service-ticket-channel (mock-channel-fn "FAKEST")
+                      fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
+                      fetch-henkilot-channel (mock-channel-fn [])
+                      koodisto-as-channel (mock-channel-fn {})
+                      fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
+                      http/get (fn [url options transform] (mock-ataru-http url options transform))
+                      http/post (fn [url options transform] (mock-ataru-http url options transform))]
+          (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
+                status (-> response :status)
+                body (-> (parse-json-body response))]
+            (is (= status 200))
+            (log/info (to-json body true))
+            (def expected (parse-string (resource "test/resources/hakemus/result-ataru.json")))
+            (def difference (diff expected body))
+            (is (= [nil nil expected] difference) difference))))))
