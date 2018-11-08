@@ -20,9 +20,7 @@
     (go
       (try
         (>! p result)
-        (catch Exception e (>! p e))
-        (finally
-          (close! p))))
+        (catch Exception e (>! p e))))
     p))
 
 (def default-write-access-log write-access-log)
