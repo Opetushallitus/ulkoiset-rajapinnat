@@ -235,14 +235,23 @@
           (log-to-access-log 500 (.getMessage e))
           ((exception-response channel) e))))))
 
+(defonce vts-cached-results (atom {}))
+
+(defonce vts-cache-size-limit 2)
+
+(defn- store-to-vts-cache [haku-oid vts-result]
+  ((if (> (count @vts-cached-results) vts-cache-size-limit)
+     (reset! vts-cached-results {haku-oid vts-result})
+     (swap! vts-cached-results assoc haku-oid vts-result)) haku-oid))
+
 ;; Simplistic implementation where the whole vastaanotto data is fetched.
 ;; This could be further optimised by only fetching vastaanotto data for given hakukohde oids from valint-tulos-service.
 (defn vastaanotot-for-haku-and-hakukohdeoids [haku-oid hakukohde-oids request user channel log-to-access-log]
   (async/go
     (try
       (if (seq (<? (haku-for-haku-oid-channel haku-oid)))
-        (let [haun-vastaanotot-ch (vastaanotot-whole-haku-channel haku-oid)
-              vastaanotot (filter-vastaanotot hakukohde-oids (<? haun-vastaanotot-ch) haku-oid "N/A" "N/A")
+        (let [haun-vastaanotot (or (@vts-cached-results haku-oid) (store-to-vts-cache haku-oid (<? (vastaanotot-whole-haku-channel haku-oid))))
+              vastaanotot (filter-vastaanotot hakukohde-oids haun-vastaanotot haku-oid "N/A" "N/A")
               vastaanottojen-hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
               hakemus-oidit (map #(% "hakemusOid") vastaanotot)
               valintakokeet-ch (if (empty? vastaanottojen-hakukohde-oidit) (empty-object-channel) (fetch-kokeet-channel haku-oid vastaanottojen-hakukohde-oidit))
