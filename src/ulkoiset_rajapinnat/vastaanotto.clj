@@ -239,6 +239,14 @@
 
 (defonce vts-cache-size-limit 2)
 
+(defn- find-from-vts-cache [haku-oid]
+  (let [stored-results (@vts-cached-results haku-oid)]
+    (if stored-results
+      (do
+        (log/info "Found cached VTS results of" haku-oid ", returning them")
+        stored-results)
+      nil)))
+
 (defn- store-to-vts-cache [haku-oid vts-result]
   ((if (> (count @vts-cached-results) vts-cache-size-limit)
      (reset! vts-cached-results {haku-oid vts-result})
@@ -250,7 +258,7 @@
   (async/go
     (try
       (if (seq (<? (haku-for-haku-oid-channel haku-oid)))
-        (let [haun-vastaanotot (or (@vts-cached-results haku-oid) (store-to-vts-cache haku-oid (<? (vastaanotot-whole-haku-channel haku-oid))))
+        (let [haun-vastaanotot (or (find-from-vts-cache haku-oid) (store-to-vts-cache haku-oid (<? (vastaanotot-whole-haku-channel haku-oid))))
               vastaanotot (filter-vastaanotot hakukohde-oids haun-vastaanotot haku-oid "N/A" "N/A")
               vastaanottojen-hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
               hakemus-oidit (map #(% "hakemusOid") vastaanotot)
