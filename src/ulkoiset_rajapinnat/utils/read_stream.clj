@@ -11,9 +11,10 @@
       (let [mapper (ObjectMapper.)
             parser (-> (doto (JsonFactory.)
                          (.setCodec mapper))
-                       (.createParser (clojure.java.io/reader input-stream)))]
-        (case (.nextToken parser)
-          (JsonToken/START_ARRAY))
+                       (.createParser (clojure.java.io/reader input-stream)))
+            first-token (.nextToken parser)]
+        (when-not (= JsonToken/START_ARRAY first-token)
+          (throw (RuntimeException. (format "Expected JSON stream to start with %s but was %s" JsonToken/START_ARRAY (.nextToken parser)))))
         (let [batch (java.util.ArrayList. batch-size)
               drain-to-vector (fn []
                                 (let [v (vec (.toArray batch))]
