@@ -48,6 +48,9 @@
      "organisaation_kuntakoodi" (str/replace (organisaatio "kotipaikkaUri") "kunta_" "")
      "organisaation_nimi"       (organisaatio "nimi")}))
 
+(defn koulutus-to-koulutuskoodi  [koulutus]
+  (strip-type-and-version-from-tarjonta-koodisto-uri (koulutus "koulutuskoodi")))
+
 (defn transform-hakukohde-tulos [kieli
                                  koulutustyyppi
                                  hakukohde-tulos
@@ -65,6 +68,7 @@
               "koulutuksen_alkamisvuosi"                           (if (some? first-koulutus) (first-koulutus "vuosi"))
               "koulutuksen_alkamiskausi"                           (if (some? first-koulutus) (strip-type-and-version-from-tarjonta-koodisto-uri (first-koulutus "kausiUri")))
               "koulutuksen_opetuskieli"                            (map #(kieli %) (hakukohde-tulos "opetuskielet"))
+              "hakukohteen_koulutuskoodit"                         (map #(koulutus-to-koulutuskoodi (first (.getValue %))) koulutukset)
               "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit" (seq sisaltyvat-koulutuskoodit)
               "pohjakoulutusvaatimus"                              (get-in hakukohde ["pohjakoulutusvaatimus" "fi"])
               "hakijalle_ilmoitetut_aloituspaikat"                 (hakukohde "aloituspaikat")
