@@ -10,10 +10,15 @@
             [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request parse-request-headers]]
             [ring.util.http-response :refer [unauthorized bad-request internal-server-error]]
             [ulkoiset-rajapinnat.utils.ldap :refer :all]
+            [ulkoiset-rajapinnat.utils.kayttooikeus :refer [fetch-user-from-kayttooikeus-service]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.cas_validator :refer :all]
             [ulkoiset-rajapinnat.utils.config :refer [config]]
             [org.httpkit.server :refer :all]))
+
+(def root-organization-oid "1.2.246.562.10.00000000001")
+(def ulkoiset-rajapinnat-app-name "ULKOISETRAJAPINNAT")
+(def read-access-name "READ")
 
 (def ^{:private true} logger (impl/get-logger (impl/find-factory) "ACCESS"))
 (comment
@@ -52,9 +57,25 @@
          service (str host-virkailija "/ulkoiset-rajapinnat")
          username (<? (validate-service-ticket service ticket))
          ldap-user (fetch-user-from-ldap username)
+         kayttooikeus-user (<? (fetch-user-from-kayttooikeus-service username))
+         root-org-permissions (-> kayttooikeus-user "organisaatiot" root-organization-oid)
          roles (ldap-user :roles)]
+     (if (some #((and
+                   (= ulkoiset-rajapinnat-app-name (% "palvelu"))
+                   (= read-access-name (% "oikeus"))))
+               root-org-permissions)
+       kayttooikeus-user
+       (do
+         (log/error "User" username "is missing required access" read-access-name
+                    "for application" ulkoiset-rajapinnat-app-name ". Whole user data:" kayttooikeus-user)
+         (RuntimeException. "Required roles missing!")))
+
      (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
-       ldap-user
+       (do
+         (println "XXX GOT kayttooikeus-user" (<? kayttooikeus-user))
+         ldap-user
+         )
+
        (do
          (log/error "User" username "is missing role APP_ULKOISETRAJAPINNAT_READ!")
          (RuntimeException. "Required roles missing!"))))))
