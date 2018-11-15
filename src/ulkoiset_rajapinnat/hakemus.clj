@@ -62,10 +62,9 @@
          (map second))))
 
 (defn convert-hakutoive [document priority]
-  (let [hakutoiveet (get-in document ["answers" "hakutoiveet"])
-        get-endswith #(.get hakutoiveet (str "preference" priority %))]
-    {:hakukohde_oid             (get-endswith "-Koulutus-id")
-     :harkinnanvarainen_valinta (get-endswith "-discretionary-follow-up")
+  (let [hakutoiveet (get-in document ["answers" "hakutoiveet"])]
+    {:hakukohde_oid             (get hakutoiveet (str "preference" priority "-Koulutus-id"))
+     :harkinnanvarainen_valinta (get hakutoiveet (str "preference" priority "-discretionary-follow-up"))
      :sija                      priority}))
 
 (defn oppija-data-from-henkilo [henkilo-opt]
