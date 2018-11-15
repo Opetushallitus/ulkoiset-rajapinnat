@@ -81,7 +81,9 @@
 
 (defn hakutoiveet-from-hakemus [document]
   (let [priorities (find-existing-hakutoive-priorities-of-hakemus document)]
-    {:hakutoiveet (map (partial convert-hakutoive document) priorities)}))
+    {:hakutoiveet (->> priorities
+                       (map (partial convert-hakutoive document))
+                       (sort-by :sija))}))
 
 (defn henkilotiedot-from-hakemus [document]
   (let [henkilotiedot (get-in document ["answers" "henkilotiedot"])]
