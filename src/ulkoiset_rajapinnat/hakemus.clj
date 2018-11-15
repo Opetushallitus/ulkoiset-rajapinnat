@@ -53,21 +53,20 @@
                                                                                 (s/optional-key :sija)                      s/Str
                                                                                 }})
 
-(defn collect-preference-keys-by-sija [document]
-  (let [ht (get-in document ["answers" "hakutoiveet"])
-        preference-keys (filter not-empty (map #(re-matches #"preference(\d)-(.*)" %) (keys ht)))]
-    (group-by second preference-keys)))
+(defn find-existing-hakutoive-priorities-of-hakemus [document]
+  (let [hakutoiveet (get-in document ["answers" "hakutoiveet"])]
+    (->> hakutoiveet
+         (filter #(not (str/blank? (val %))))
+         (map #(re-matches #"preference(\d)-Koulutus-id" (key %)))
+         (filter not-empty)
+         (map second))))
 
-(defn find-ends-with [s endswith]
-  (first (filter #(str/ends-with? % endswith) s)))
-
-(defn convert-hakutoive [document preferences]
+(defn convert-hakutoive [document priority]
   (let [hakutoiveet (get-in document ["answers" "hakutoiveet"])
-        pref-keys (set (map first (.getValue preferences)))
-        get-endswith #(get hakutoiveet (find-ends-with pref-keys %))]
+        get-endswith #(.get hakutoiveet (str "preference" priority %))]
     {:hakukohde_oid             (get-endswith "-Koulutus-id")
      :harkinnanvarainen_valinta (get-endswith "-discretionary-follow-up")
-     :sija                      (.getKey preferences)}))
+     :sija                      priority}))
 
 (defn oppija-data-from-henkilo [henkilo-opt]
   (if-let [henkilo (first henkilo-opt)]
@@ -81,8 +80,8 @@
     {}))
 
 (defn hakutoiveet-from-hakemus [document]
-  (let [pref-keys-by-sija (collect-preference-keys-by-sija document)]
-    {:hakutoiveet (map (partial convert-hakutoive document) pref-keys-by-sija)}))
+  (let [priorities (find-existing-hakutoive-priorities-of-hakemus document)]
+    {:hakutoiveet (map (partial convert-hakutoive document) priorities)}))
 
 (defn henkilotiedot-from-hakemus [document]
   (let [henkilotiedot (get-in document ["answers" "henkilotiedot"])]
