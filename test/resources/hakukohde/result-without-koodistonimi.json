@@ -1,0 +1,45 @@
+[ {
+  "hakukohteen_nimi" : {
+    "fi" : "Kuvataiteilija (ylempi AMK), Kuvataide, Imatra, lisähaku"
+  },
+  "koulutuksen_alkamisvuosi": 2017,
+  "organisaatiot" : [ {
+    "organisaation_oid" : "1.2.246.562.10.82958623314",
+    "koulutustoimijan_ytunnus": "100200",
+    "oppilaitos_koodi": "00000",
+    "organisaation_kuntakoodi" : "153",
+    "organisaation_nimi" : {
+      "fi" : "Ankkalinnan ammattikorkeakoulu",
+      "en" : "Ankkalinna University of Applied Sciences"
+    }
+  } ],
+  "koulutuksen_alkamiskausi": "k",
+  "koulutuksen_opetuskieli" : [ "FI" ],
+  "hakukohteen_oid" : "1.2.246.562.20.573444383210",
+  "hakukohteen_koulutuskoodit" : [ "721301" ],
+  "hakijalle_ilmoitetut_aloituspaikat" : 3,
+  "valintojen_aloituspaikat" : 0,
+  "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": ["371101"]
+}, {
+  "hakukohteen_nimi" : {
+    "fi" : "Agrologi (AMK), monimuotototeutus, lisähaku"
+  },
+  "koulutuksen_alkamisvuosi": 2017,
+  "organisaatiot" : [ {
+    "organisaation_oid" : "1.2.246.562.10.72590401013",
+    "organisaation_kuntakoodi" : "145",
+    "koulutustoimijan_ytunnus": "100200",
+    "oppilaitos_koodi": "00000",
+    "organisaation_nimi" : {
+      "fi" : "Ankkalinnan yliopisto"
+    }
+  } ],
+  "koulutuksen_alkamiskausi": "k",
+  "koulutuksen_opetuskieli" : [ "FI" ],
+  "hakukohteen_oid" : "1.2.246.562.20.22971087097",
+  "ensikertalaisten_aloituspaikat" : 0,
+  "hakukohteen_koulutuskoodit" : [ "661101" ],
+  "hakijalle_ilmoitetut_aloituspaikat" : 10,
+  "valintojen_aloituspaikat" : 0,
+  "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": ["751501", "655501"]
+} ]

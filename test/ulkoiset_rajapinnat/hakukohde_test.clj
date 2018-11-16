@@ -22,6 +22,7 @@
 (def koulutustyyppi-json (resource "test/resources/hakukohde/koulutustyyppi.json"))
 (def hakukohde-json (resource "test/resources/hakukohde/hakukohde.json"))
 (def hakukohde-empty-json (resource "test/resources/hakukohde/hakukohde-empty.json"))
+(def hakukohde-without-koodistonimi-json (resource "test/resources/hakukohde/hakukohde-without-koodistonimi.json"))
 (def hakukohde-tulos-json (resource "test/resources/hakukohde/hakukohde-tulos.json"))
 (def hakukohde-tulos-empty-json (resource "test/resources/hakukohde/hakukohde-tulos-empty.json"))
 (def koulutus-json (resource "test/resources/hakukohde/koulutus.json"))
@@ -36,13 +37,17 @@
   (case url
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 "{\"result\": \"dummy\"}")
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.9999009999" (response 200 "{\"result\": \"dummy\"}")
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.28.8888008888" (response 200 "{\"result\": \"dummy\"}")
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1" (response 200 hakukohde-tulos-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.9999009999/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1" (response 200 hakukohde-tulos-empty-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.28.8888008888/hakukohdeTulos?hakukohdeTilas=JULKAISTU&count=-1" (response 200 hakukohde-tulos-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.29.25191045126" (response 200 koulutus-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.29.9999009999" (response 200 koulutus-empty-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.28.8888008888" (response 200 koulutus-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.29.25191045126&tila=JULKAISTU" (response 200 hakukohde-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.29.9999009999&tila=JULKAISTU" (response 200 hakukohde-empty-json)
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.28.8888008888&tila=JULKAISTU" (response 200 hakukohde-without-koodistonimi-json)
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1" (response 200 kieli-json)
     "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/koulutustyyppi/1" (response 200 koulutustyyppi-json)
     "http://fake.virkailija.opintopolku.fi/organisaatio-service/rest/organisaatio/v3/findbyoids" (response 200 organisaatio-json)
@@ -149,6 +154,25 @@
             (is (= status 200))
             (log/info (to-json body true))
             (def expected (parse-string (resource "test/resources/hakukohde/result.json")))
+            (def difference (diff expected body))
+            (is (= [nil nil expected] difference))
+            (assert-access-log-write access-log-mock 200 nil)))))
+
+  (testing "Fetch hakukohde without koodistonimi"
+      (let [access-log-mock (pico/mock mock-write-access-log)]
+        (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                      oppijat-batch-size 2
+                      valintapisteet-batch-size 2
+                      http/get (fn [url options transform] (mock-http url options transform))
+                      http/post (fn [url options transform] (mock-http url options transform))
+                      fetch-jsessionid-channel (fn [a b c d] (mock-channel "FAKEJSESSIONID"))
+                      write-access-log access-log-mock]
+          (let [response (client/get (api-call "/api/hakukohde-for-haku/1.2.246.562.28.8888008888"))
+                status (-> response :status)
+                body (-> (parse-json-body response))]
+            (is (= status 200))
+            (log/info (to-json body true))
+            (def expected (parse-string (resource "test/resources/hakukohde/result-without-koodistonimi.json")))
             (def difference (diff expected body))
             (is (= [nil nil expected] difference))
             (assert-access-log-write access-log-mock 200 nil))))))

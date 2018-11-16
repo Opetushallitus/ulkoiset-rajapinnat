@@ -51,6 +51,9 @@
 (defn koulutus-to-koulutuskoodi  [koulutus]
   (strip-type-and-version-from-tarjonta-koodisto-uri (koulutus "koulutuskoodi")))
 
+(defn- looks-like-koodi? [x]
+  (and x (str/index-of x "_")))
+
 (defn transform-hakukohde-tulos [kieli
                                  koulutustyyppi
                                  hakukohde-tulos
@@ -62,7 +65,9 @@
            (merge
              {"organisaatiot"                                      (map transform-organisaatio organisaatiot)
               "hakukohteen_nimi"                                   (hakukohde-tulos "hakukohdeNimi")
-              "hakukohteen_koodi"                                  (strip-type-and-version-from-tarjonta-koodisto-uri (hakukohde "koodistoNimi"))
+              "hakukohteen_koodi"                                  (if (looks-like-koodi? (hakukohde "koodistoNimi"))
+                                                                     (strip-type-and-version-from-tarjonta-koodisto-uri (hakukohde "koodistoNimi"))
+                                                                     nil)
               "hakukohteen_oid"                                    (hakukohde-tulos "hakukohdeOid")
               "koulutuksen_koulutustyyppi"                         (if (some? first-koulutus) (if-let [uri (first-koulutus "koulutustyyppiUri")] (koulutustyyppi uri)))
               "koulutuksen_alkamisvuosi"                           (if (some? first-koulutus) (first-koulutus "vuosi"))

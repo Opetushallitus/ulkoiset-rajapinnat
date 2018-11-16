@@ -1,0 +1,103 @@
+{
+  "accessRights": { },
+  "result": {
+    "tulokset": [
+      {
+        "oid": "1.2.246.562.10.82958623314",
+        "version": 0,
+        "nimi": {
+          "fi": "Ankkalinnan ammattikorkeakoulu",
+          "en": "Ankkalinna University of Applied Sciences"
+        },
+        "tulokset": [
+          {
+            "oid": "1.2.246.562.20.573444383210",
+            "nimi": {
+              "fi": "Kuvataiteilija (ylempi AMK), Kuvataide"
+            },
+            "kausi": {
+              "fi": "Kevät",
+              "sv": "Vår",
+              "en": "Spring"
+            },
+            "vuosi": 2017,
+            "tila": "JULKAISTU",
+            "koulutusasteTyyppi": "KORKEAKOULUTUS",
+            "toteutustyyppiEnum": "KORKEAKOULUTUS",
+            "pohjakoulutusvaatimus": { },
+            "koulutusmoduuliTyyppi": "TUTKINTO",
+            "opetuskielet": [
+              "kieli_fi"
+            ],
+            "hakutapa": {
+              "fi": "Yhteishaku",
+              "sv": "Gemensam ansökan",
+              "en": "Yhteishaku"
+            },
+            "hakuaikaString": "2016-11-28 08\":00 - 2016-12-20 15\":00",
+            "hakuaikaRyhma": "(2016-11-28 08\":00 - 2016-12-22 15\":00)",
+            "aloituspaikat": 3,
+            "valintojenAloituspaikat": 0,
+            "hakuOid": "1.2.246.562.29.28768955933",
+            "koodistoNimi": "Musiikkilinja",
+            "ryhmaliitokset": [
+              {
+                "ryhmaOid": "1.2.246.562.28.50642185083"
+              }
+            ],
+            "koulutuslaji": { }
+          }
+        ]
+      },
+      {
+        "oid": "1.2.246.562.10.72590401013",
+        "version": 0,
+        "nimi": {
+          "fi": "Ankkalinnan yliopisto"
+        },
+        "tulokset": [
+          {
+            "oid": "1.2.246.562.20.22971087097",
+            "nimi": {
+              "fi": "Agrologi (AMK), monimuotototeutus, lisähaku"
+            },
+            "kausi": {
+              "fi": "Kevät",
+              "sv": "Vår",
+              "en": "Spring"
+            },
+            "vuosi": 2017,
+            "tila": "JULKAISTU",
+            "koulutusasteTyyppi": "KORKEAKOULUTUS",
+            "toteutustyyppiEnum": "KORKEAKOULUTUS",
+            "pohjakoulutusvaatimus": { },
+            "koulutusmoduuliTyyppi": "TUTKINTO",
+            "opetuskielet": [
+              "kieli_fi"
+            ],
+            "hakutapa": {
+              "fi": "Yhteishaku",
+              "sv": "Gemensam ansökan",
+              "en": "Yhteishaku"
+            },
+            "hakuaikaString": "2016-11-28 08\":00 - 2016-12-02 15\":00",
+            "hakuaikaRyhma": "(2016-11-28 08\":00 - 2016-12-22 15\":00)",
+            "aloituspaikat": 10,
+            "valintojenAloituspaikat": 0,
+            "hakuOid": "1.2.246.562.29.28768955933",
+            "koodistoNimi": "Jotain, mikä ei ole koodi",
+            "ryhmaliitokset": [
+              {
+                "ryhmaOid": "1.2.246.562.28.24712637358"
+              }
+            ],
+            "ensikertalaistenAloituspaikat": 0,
+            "koulutuslaji": { }
+          }
+        ]
+      }
+    ],
+    "tuloksia": 2
+  },
+  "status": "OK"
+}
