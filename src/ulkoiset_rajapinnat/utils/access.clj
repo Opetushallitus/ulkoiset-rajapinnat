@@ -37,7 +37,7 @@
    (write-access-log start-time response-code request nil))
 
   ([start-time response-code request error-message]
-   (.info logger (to-json (parse-request-headers request response-code start-time error-message)))))
+   (.info logger (to-json (parse-request-headers request (str response-code) start-time error-message)))))
 
 (defn access-log
   ([response]
