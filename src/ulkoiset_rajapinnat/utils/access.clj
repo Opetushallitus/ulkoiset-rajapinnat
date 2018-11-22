@@ -109,7 +109,7 @@
 
 (defn access-log-with-ticket-check-with-channel [ticket audit-log operation]
   (fn [request]
-    (if-let [some-ticket ticket]
+    (if ticket
       (let [start-time (System/currentTimeMillis)
             log-when-closed-by-client (fn [status] (when (not= status :server-close)
                                                      (write-access-log start-time (format "Closed by client (%s)" status) request)))
