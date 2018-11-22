@@ -1,7 +1,5 @@
 (ns ulkoiset-rajapinnat.utils.access
-  (:require [clojure.string :as str]
-            [clojure.tools.logging :as log]
-            [clj-time.core :as t]
+  (:require [clojure.tools.logging :as log]
             [full.async :refer :all]
             [clojure.core.async :refer [to-chan]]
             [ulkoiset-rajapinnat.utils.rest :refer [status body to-json]]
@@ -9,11 +7,15 @@
             [clojure.tools.logging.impl :as impl]
             [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request parse-request-headers]]
             [ring.util.http-response :refer [unauthorized bad-request internal-server-error]]
-            [ulkoiset-rajapinnat.utils.ldap :refer :all]
+            [ulkoiset-rajapinnat.utils.kayttooikeus :refer [fetch-user-from-kayttooikeus-service]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.cas_validator :refer :all]
             [ulkoiset-rajapinnat.utils.config :refer [config]]
             [org.httpkit.server :refer :all]))
+
+(def root-organization-oid "1.2.246.562.10.00000000001")
+(def ulkoiset-rajapinnat-app-name "ULKOISETRAJAPINNAT")
+(def read-access-name "READ")
 
 (def ^{:private true} logger (impl/get-logger (impl/find-factory) "ACCESS"))
 (comment
@@ -46,17 +48,26 @@
      (write-access-log start-time (str (response :status)) request)
      response)))
 
+(defn find-root-organisation-permissions [kayttooikeus-user]
+  (let [all-orgs (:organisaatiot kayttooikeus-user)
+        root-org (first (filter #(= (get % "organisaatioOid") root-organization-oid) all-orgs))]
+    (get root-org "kayttooikeudet")))
+
 (defn- do-real-authentication-and-authorisation-check [ticket]
   (go-try
    (let [host-virkailija (resolve-url :cas-client.host)
          service (str host-virkailija "/ulkoiset-rajapinnat")
          username (<? (validate-service-ticket service ticket))
-         ldap-user (fetch-user-from-ldap username)
-         roles (ldap-user :roles)]
-     (if (clojure.set/subset? #{"APP_ULKOISETRAJAPINNAT_READ"} roles)
-       ldap-user
+         kayttooikeus-user (<? (fetch-user-from-kayttooikeus-service username))
+         root-org-permissions (find-root-organisation-permissions kayttooikeus-user)]
+     (if (some #(and
+                  (= ulkoiset-rajapinnat-app-name (% "palvelu"))
+                  (= read-access-name (% "oikeus")))
+               root-org-permissions)
+       kayttooikeus-user
        (do
-         (log/error "User" username "is missing role APP_ULKOISETRAJAPINNAT_READ!")
+         (log/error "User" username "is missing required access" read-access-name
+                    "for application" ulkoiset-rajapinnat-app-name ". Whole user data:" kayttooikeus-user)
          (RuntimeException. "Required roles missing!"))))))
 
 (defn check-ticket-is-valid-and-user-has-required-roles [ticket]

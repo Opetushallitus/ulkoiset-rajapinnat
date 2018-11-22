@@ -4,11 +4,6 @@
         :host-virkailija "https://{{host_virkailija}}"
         :host-virkailija-internal "{{host_alb}}"
  }
- :ldap {:host "{{host_ldap}}"
-        :port 389
-        :password "{{ldap_manager_password}}"
-        :binddn "{{ldap_manager_userdn}}"
-        :basedn "ou=People,dc=opintopolku,dc=fi"}
  :server {:port {{palvelu_portti}}
           :base-url "/ulkoiset-rajapinnat"}
  :enable-dangerous-magic-ticket-access {{ ulkoiset_rajapinnat_enable_dangerous_magic_ticket_access | default('false') }}
