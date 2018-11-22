@@ -54,7 +54,9 @@
         t
         (RuntimeException.
           (format "Transformer returned nil for response (status = %s): Url = %s" (response :status) (get-in response [:opts :url]))))
-      (catch Exception e e))
+      (catch Exception e
+        (log/error e (format "Could not transform response '%s'" response))
+        e))
     response))
 
 (defn- call-as-channel [method url options mapper]
