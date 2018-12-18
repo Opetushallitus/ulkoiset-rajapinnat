@@ -1,6 +1,5 @@
 (ns ulkoiset-rajapinnat.vastaanotto
   (:require [full.async :refer :all]
-            [clojure.string :as str]
             [clojure.tools.logging :as log]
             [schema.core :as s]
             [clojure.core.async :as async]
@@ -161,6 +160,13 @@
   (log/info (format "Haku %s haetaan vastaanotot..." haku-oid))
   (get-as-channel (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid) {:as :stream :timeout valinta-tulos-service-timeout-millis} parse-json-body-stream))
 
+(defn vastaanotot-of-hakukohdeoids-channel [haku-oid hakukohde-oids]
+  (log/info (format "Haku %s haetaan vastaanotot %d hakukohteelle..." haku-oid (count hakukohde-oids)))
+  (post-json-as-channel
+    (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid)
+    hakukohde-oids
+    parse-json-body-stream))
+
 (defn fetch-kokeet-channel [haku-oid hakukohde-oidit]
   (log/info (format "Haku %s haetaan valintakokeet %d hakukohteelle..." haku-oid (count hakukohde-oidit)))
   (go-try
@@ -235,31 +241,11 @@
           (log-to-access-log 500 (.getMessage e))
           ((exception-response channel) e))))))
 
-(defonce vts-cached-results (atom {}))
-
-(defonce vts-cache-size-limit 2)
-
-(defn- find-from-vts-cache [haku-oid]
-  (let [stored-results (@vts-cached-results haku-oid)]
-    (if stored-results
-      (do
-        (log/info "Found cached VTS results of" haku-oid ", returning them")
-        stored-results)
-      nil)))
-
-(defn- store-to-vts-cache [haku-oid vts-result]
-  ((if (> (count @vts-cached-results) vts-cache-size-limit)
-     (reset! vts-cached-results {haku-oid vts-result})
-     (swap! vts-cached-results assoc haku-oid vts-result)) haku-oid))
-
-;; Simplistic implementation where the whole vastaanotto data is fetched.
-;; This could be further optimised by only fetching vastaanotto data for given hakukohde oids from valint-tulos-service.
 (defn vastaanotot-for-haku-and-hakukohdeoids [haku-oid hakukohde-oids request user channel log-to-access-log]
   (async/go
     (try
       (if (seq (<? (haku-for-haku-oid-channel haku-oid)))
-        (let [haun-vastaanotot (or (find-from-vts-cache haku-oid) (store-to-vts-cache haku-oid (<? (vastaanotot-whole-haku-channel haku-oid))))
-              vastaanotot (filter-vastaanotot hakukohde-oids haun-vastaanotot haku-oid "N/A" "N/A")
+        (let [vastaanotot (<? (vastaanotot-of-hakukohdeoids-channel haku-oid hakukohde-oids))
               vastaanottojen-hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
               hakemus-oidit (map #(% "hakemusOid") vastaanotot)
               valintakokeet-ch (if (empty? vastaanottojen-hakukohde-oidit) (empty-object-channel) (fetch-kokeet-channel haku-oid vastaanottojen-hakukohde-oidit))
