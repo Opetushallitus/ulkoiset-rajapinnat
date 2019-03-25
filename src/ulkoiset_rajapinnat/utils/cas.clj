@@ -53,7 +53,7 @@
 
 (defn ^:private parse-jsessionid
   ([response]
-   (parse-jsessionid response #"JSESSIONID=(\w*);"))
+   (parse-jsessionid response #"JSESSIONID=([\w\._-]*);"))
   ([response regex]
    (if-let [sid (nth (re-find regex ((response :headers) :set-cookie)) 1)]
      sid
