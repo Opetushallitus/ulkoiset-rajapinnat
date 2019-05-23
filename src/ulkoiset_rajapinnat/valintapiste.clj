@@ -14,7 +14,7 @@
   (if (or (nil? haku-oid) (nil? hakukohde-oid))
     (go [])
     (try
-      (go (let [jsession-id (<? (fetch-jsessionid-channel "/valintapiste-service"))
+      (go (let [jsession-id "-"
                 person-oid (user :personOid)
                 inet-address (remote-addr-from-request request)
                 user-agent (user-agent-from-request request)
