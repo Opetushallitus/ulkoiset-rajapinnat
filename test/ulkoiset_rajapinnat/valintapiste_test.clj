@@ -24,7 +24,7 @@
 (defn mock-http [url options transform]
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
-  (if (str/starts-with? url "http://fake.internal.virkailija.opintopolku.fi/valintapiste-service/api/haku/1.2.3.1111/hakukohde/1.2.3.444?sessionId=FAKEJSESSIONID&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
+  (if (str/starts-with? url "http://fake.internal.virkailija.opintopolku.fi/valintapiste-service/api/haku/1.2.3.1111/hakukohde/1.2.3.444?sessionId=-&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
     (response 200 pistetiedot-json)
     (response 404 "[]")))
 
