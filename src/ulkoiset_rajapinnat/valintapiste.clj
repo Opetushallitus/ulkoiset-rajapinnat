@@ -8,7 +8,22 @@
             [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json get-as-channel status body body-and-close exception-response parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
-            [org.httpkit.timer :refer :all]))
+            [org.httpkit.timer :refer :all]
+            [schema.core :as s]))
+
+(s/defschema Pistetieto
+             {;:aikaleima s/Str
+              :tunniste              s/Str
+              (s/optional-key :arvo) s/Any
+              :osallistuminen        (s/enum "EI_OSALLISTUNUT" "OSALLISTUI" "EI_VAADITA" "MERKITSEMATTA")
+              :tallettaja            s/Str})
+
+(s/defschema PistetietoWrapper
+             {:hakemusOID                 s/Str
+              (s/optional-key :sukunimi)  s/Str
+              (s/optional-key :etunimet)  s/Str
+              (s/optional-key :oppijaOID) s/Str
+              :pisteet                    [Pistetieto]})
 
 (defn fetch-valintapisteet [haku-oid hakukohde-oid request user channel log-to-access-log]
   (if (or (nil? haku-oid) (nil? hakukohde-oid))
