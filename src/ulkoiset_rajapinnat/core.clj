@@ -14,7 +14,7 @@
         [ulkoiset-rajapinnat.hakemus :refer [Hakemus hakemus-resource]]
         [ulkoiset-rajapinnat.vastaanotto :refer [Vastaanotto vastaanotto-resource]]
         [ulkoiset-rajapinnat.valintaperusteet :refer [Valintaperusteet valintaperusteet-resource]]
-        [ulkoiset-rajapinnat.valintapiste :refer [fetch-valintapisteet]]
+        [ulkoiset-rajapinnat.valintapiste :refer [PistetietoWrapper fetch-valintapisteet]]
         [ulkoiset-rajapinnat.utils.config :refer [config init-config]]
         [org.httpkit.server :refer :all]
         [clojure.tools.logging :as log]
@@ -107,7 +107,7 @@
       (GET "/valintapiste/haku/:haku-oid/hakukohde/:hakukohde-oid" [haku-oid hakukohde-oid ticket]
         :summary "Hakukohteen valintapisteet"
         :query-params [ticket :- String]
-        :responses {200 {:schema [Valintaperusteet]}}
+        :responses {200 {:schema [PistetietoWrapper]}}
         (log/info (str "Got incoming request to /valintapiste/haku/" haku-oid "/hakukohde-oid/" hakukohde-oid))
         (access-log-with-ticket-check-with-channel
           ticket
