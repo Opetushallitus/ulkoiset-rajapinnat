@@ -44,6 +44,7 @@
           (catch Exception e
             (do
               (log/error (format "Virhe hakiessa valintapisteitä " haku-oid " " hakukohde-oid) e)
+              (log-to-access-log 500 (.getMessage e))
               (-> channel
                   (status 500)
                   (body (to-json {:error (.getMessage e)}))
