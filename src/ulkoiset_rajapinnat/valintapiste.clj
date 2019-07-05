@@ -5,7 +5,7 @@
             [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
-            [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json get-as-channel status body body-and-close exception-response parse-json-body to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json get-as-channel post-as-channel status body body-and-close exception-response parse-json-body to-json parse-json-request post-json-options]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
@@ -25,7 +25,7 @@
               (s/optional-key :oppijaOID) s/Str
               :pisteet                    [Pistetieto]})
 
-(defn fetch-valintapisteet [haku-oid hakukohde-oid request user channel log-to-access-log]
+(defn fetch-valintapisteet-for-hakukohde [haku-oid hakukohde-oid request user channel log-to-access-log]
   (if (or (nil? haku-oid) (nil? hakukohde-oid))
     (go [])
     (go (try
@@ -51,4 +51,32 @@
                   (close))))
           ))))
 
-
+(defn fetch-valintapisteet-for-hakemus-oids [request user channel log-to-access-log]
+  (let [hakemus-oids (vec (parse-json-request request))
+        foo (log/info (str "Haetaan hakemus-oidit hakemuksille " hakemus-oids))]
+    (if (nil? hakemus-oids)
+      (go [])
+      (go (try
+            (let [jsession-id "-"
+                  person-oid (user :personOid)
+                  inet-address (remote-addr-from-request request)
+                  user-agent (user-agent-from-request request)
+                  url (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids jsession-id person-oid inet-address user-agent)
+                  start-time (System/currentTimeMillis)
+                  json (to-json hakemus-oids)
+                  foo (log/info (str "Post JSON body" json))
+                  response (<? (post-as-channel url json (post-json-options jsession-id) nil))
+                  status-code (response :status)]
+              (-> channel
+                  (status status-code)
+                  (body-and-close (response :body)))
+              (log-to-access-log status-code nil))
+            (catch Exception e
+              (do
+                (log/error "Virhe hakiessa valintapisteitä hakemuksille " e)
+                (log-to-access-log 500 (.getMessage e))
+                (-> channel
+                    (status 500)
+                    (body (to-json {:error (.getMessage e)}))
+                    (close))))
+            )))))
