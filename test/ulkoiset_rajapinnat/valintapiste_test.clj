@@ -11,7 +11,6 @@
             [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json post-json-as-channel]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.fixture :refer :all]
-            [ulkoiset-rajapinnat.valintapiste :refer [fetch-valintapisteet]]
             [picomock.core :as pico]
             [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write]]
             [clojure.string :as str]))
@@ -30,7 +29,7 @@
 
 (deftest valintapisteet-api-test
 
-  (testing "valintapisteet -> not found"
+  (testing "valintapisteet hakukohteelle -> not found"
     (let [access-log-mock (pico/mock mock-write-access-log)]
       (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                     http/get (fn [url options transform] (mock-http url options transform))
@@ -44,7 +43,7 @@
                            (is (= true))))]
           (assert-access-log-write access-log-mock 404 nil)))))
 
-  (testing "valintapisteet -> found"
+  (testing "valintapisteet hakukohteelle -> found"
     (let [access-log-mock (pico/mock mock-write-access-log)]
       (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                     http/get (fn [url options transform] (mock-http url options transform))

@@ -14,7 +14,7 @@
         [ulkoiset-rajapinnat.hakemus :refer [Hakemus hakemus-resource]]
         [ulkoiset-rajapinnat.vastaanotto :refer [Vastaanotto vastaanotto-resource]]
         [ulkoiset-rajapinnat.valintaperusteet :refer [Valintaperusteet valintaperusteet-resource]]
-        [ulkoiset-rajapinnat.valintapiste :refer [PistetietoWrapper fetch-valintapisteet]]
+        [ulkoiset-rajapinnat.valintapiste :refer [PistetietoWrapper fetch-valintapisteet-for-hakukohde fetch-valintapisteet-for-hakemus-oids]]
         [ulkoiset-rajapinnat.utils.config :refer [config init-config]]
         [org.httpkit.server :refer :all]
         [clojure.tools.logging :as log]
@@ -112,7 +112,17 @@
         (access-log-with-ticket-check-with-channel
           ticket
           (partial audit audit-logger (str "Valintapisteet haulle " haku-oid "hakukohteelle" hakukohde-oid))
-          (partial fetch-valintapisteet haku-oid hakukohde-oid))))
+          (partial fetch-valintapisteet-for-hakukohde haku-oid hakukohde-oid)))
+      (POST "/valintapiste/pisteet-with-hakemusoids" [hakemus-oids ticket]
+        :summary "Hakemusten pistetiedot. Hakemusten maksimimäärä on 32767 kpl."
+        :query-params [ticket :- String]
+        :body [body (describe [s/Str] "hakemusten oidit JSON-taulukossa")]
+        :responses {200 {:schema [PistetietoWrapper]}}
+        (log/info (str "Got incoming request to /valintapiste/pisteet-with-hakemusoids" body))
+        (access-log-with-ticket-check-with-channel
+          ticket
+          (partial audit audit-logger (str "Valintapisteet hakemuksille"))
+          (partial fetch-valintapisteet-for-hakemus-oids))))
     (context (str (-> @config :server :base-url) "") []
       (GET "/buildversion.txt" []
         :summary "Build fingerprint"
