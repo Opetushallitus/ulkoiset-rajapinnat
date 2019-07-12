@@ -22,7 +22,6 @@
              {:hakemusOID                 s/Str
               (s/optional-key :sukunimi)  s/Str
               (s/optional-key :etunimet)  s/Str
-              (s/optional-key :oppijaOID) s/Str
               :pisteet                    [Pistetieto]})
 
 (defn fetch-valintapisteet-for-hakukohde [haku-oid hakukohde-oid request user channel log-to-access-log]
