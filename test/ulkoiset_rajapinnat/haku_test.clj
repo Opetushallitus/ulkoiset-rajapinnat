@@ -40,12 +40,12 @@
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
   (case url
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/hakutapa/1" (response 200 koodisto-hakutapa-json)
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/hakutyyppi/1" (response 200 koodisto-hakutyyppi-json)
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/haunkohdejoukko/1" (response 200 koodisto-haunkohdejoukko-json)
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/haunkohdejoukontarkenne/1" (response 200 koodisto-haunkohdejoukontarkenne-json)
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kausi/1" (response 200 koodisto-kausi-json)
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1" (response 200 koodisto-kieli-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/hakutapa/0" (response 200 koodisto-hakutapa-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/hakutyyppi/0" (response 200 koodisto-hakutyyppi-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/haunkohdejoukko/0" (response 200 koodisto-haunkohdejoukko-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/haunkohdejoukontarkenne/0" (response 200 koodisto-haunkohdejoukontarkenne-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kausi/0" (response 200 koodisto-kausi-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/0" (response 200 koodisto-kieli-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/findByAlkamisvuosi/2017" (response 200 tarjonta-haut-json)
     (response 404 "[]")))
 
@@ -71,7 +71,7 @@
             (let [response (client/get (api-call "/api/haku-for-year/2017"))]
               (is (= false true) "should not reach this line"))
             (catch Exception e
-              (assert-access-log-write access-log-mock 500 "Unexpected error from url http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1")
+              (assert-access-log-write access-log-mock 500 "Unexpected error from url http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/0")
               (is (= 500 ((ex-data e) :status)))
               (is (re-find #"Unexpected error" ((ex-data e) :body))))))))
 
