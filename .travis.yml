@@ -1,5 +1,10 @@
 sudo: required
+
 language: clojure
+
+jdk:
+  - openjdk8
+
 services:
   - docker
 
