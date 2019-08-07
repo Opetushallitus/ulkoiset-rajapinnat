@@ -48,8 +48,8 @@
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.29.25191045126&tila=JULKAISTU" (response 200 hakukohde-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.29.9999009999&tila=JULKAISTU" (response 200 hakukohde-empty-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.28.8888008888&tila=JULKAISTU" (response 200 hakukohde-without-koodistonimi-json)
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1" (response 200 kieli-json)
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/koulutustyyppi/1" (response 200 koulutustyyppi-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/0" (response 200 kieli-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/koulutustyyppi/0" (response 200 koulutustyyppi-json)
     "http://fake.virkailija.opintopolku.fi/organisaatio-service/rest/organisaatio/v3/findbyoids" (response 200 organisaatio-json)
     (response 404 "[]")))
 
@@ -62,8 +62,8 @@
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/koulutus/search?hakuOid=1.2.246.562.29.25191045126" (response 200 koulutus-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 500 tilastokeskus-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/hakukohde/search?hakuOid=1.2.246.562.29.25191045126&tila=JULKAISTU" (response 200 hakukohde-json)
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/1" (response 200 kieli-json)
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/koulutustyyppi/1" (response 200 koulutustyyppi-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/kieli/0" (response 200 kieli-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/koulutustyyppi/0" (response 200 koulutustyyppi-json)
     "http://fake.virkailija.opintopolku.fi/organisaatio-service/rest/organisaatio/v3/findbyoids" (response 200 organisaatio-json)
     (response 404 "[]")))
 
