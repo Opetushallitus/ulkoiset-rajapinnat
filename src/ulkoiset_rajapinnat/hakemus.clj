@@ -139,7 +139,9 @@
                 :henkilo_oid      (get hakemus "henkilo_oid")
                 :haku_oid         (get hakemus "haku_oid")
                 :ensikertalaisuus (if-let [o (first oppija)] (get o "ensikertalainen") nil)
-                :hakutoiveet      (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))})]
+                :hakutoiveet      (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))
+                :hakijan_asuinmaa         (get hakemus "asuinmaa")
+                :hakijan_kotikunta        (get hakemus "kotikunta")})]
     (if palauta-null-arvot?
       data
       (remove-nils data))))
