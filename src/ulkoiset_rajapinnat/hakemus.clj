@@ -39,7 +39,7 @@
 
    (s/optional-key :hakijan_asuinmaa)                                          s/Str
    (s/optional-key :hakijan_kotikunta)                                         s/Str
-   (s/optional-key :hakijan_kansalaisuus)                                      s/Str
+   (s/optional-key :hakijan_kansalaisuudet)                                    [s/Str]
 
    (s/optional-key :hakijan_koulusivistyskieli)                                s/Str
    (s/optional-key :pohjakoulutus_2aste)                                       s/Str
@@ -69,13 +69,15 @@
 
 (defn oppija-data-from-henkilo [henkilo-opt]
   (if-let [henkilo (first henkilo-opt)]
-    {:yksiloity       (get henkilo "yksiloity")
-     :henkilotunnus   (get henkilo "hetu")
-     :syntyma_aika    (get henkilo "syntymaaika")
-     :etunimet        (get henkilo "etunimet")
-     :sukunimi        (get henkilo "sukunimi")
-     :sukupuoli_koodi (get henkilo "sukupuoli")
-     :aidinkieli      (get henkilo "aidinkieli")}
+    (let [kansalaisuusKoodit (get henkilo "kansalaisuus")]
+      {:yksiloity              (get henkilo "yksiloity")
+       :henkilotunnus          (get henkilo "hetu")
+       :syntyma_aika           (get henkilo "syntymaaika")
+       :etunimet               (get henkilo "etunimet")
+       :sukunimi               (get henkilo "sukunimi")
+       :sukupuoli_koodi        (get henkilo "sukupuoli")
+       :aidinkieli             (get henkilo "aidinkieli")
+       :hakijan_kansalaisuudet (map #(get % "kansalaisuusKoodi") kansalaisuusKoodit)})
     {}))
 
 (defn hakutoiveet-from-hakemus [document]
