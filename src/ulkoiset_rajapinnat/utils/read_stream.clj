@@ -1,7 +1,8 @@
 (ns ulkoiset-rajapinnat.utils.read_stream
   (:require [full.async :refer :all]
             [cheshire.core :refer :all]
-            [clojure.core.async :refer [>! go close!]])
+            [clojure.core.async :refer [>! go close!]]
+            [clojure.tools.logging :as log])
   (:import (com.fasterxml.jackson.databind ObjectMapper)
            (com.fasterxml.jackson.core JsonFactory JsonToken)))
 
@@ -33,5 +34,13 @@
       (catch Exception e (>! channel e))
       (finally
         (if (instance? java.io.InputStream input-stream)
-          (.close input-stream))
+          (try
+            (log/info "Closing input stream")
+            (.close input-stream)
+            (catch Exception e
+              (log/error (format "Exception when closing input stream" , e))
+              (>! channel e)
+              ))
+          )
+        (log/info "Closed input stream")
         (close! channel)))))
