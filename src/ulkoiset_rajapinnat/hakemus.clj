@@ -168,7 +168,7 @@
           (status channel 200)
           (body channel (str "[" json)))
         (body channel (str "," json))))
-    (throw (RuntimeException. "Client closed channel so no point writing!"))))
+    (throw (RuntimeException. (format "Client closed channel %s so no point writing! obj was %s" channel obj)))))
 
 (defn drain! [atom]
   (core-loop [oldval @atom]
