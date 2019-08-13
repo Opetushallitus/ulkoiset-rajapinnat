@@ -90,7 +90,7 @@
   (let [henkilotiedot (get-in document ["answers" "henkilotiedot"])]
     {:hakijan_asuinmaa     (get henkilotiedot "asuinmaa")
      :hakijan_kotikunta    (get henkilotiedot "kotikunta")
-     :hakijan_kansalaisuus (get henkilotiedot "kansalaisuus")}))
+     :hakijan_kansalaisuudet (get henkilotiedot "kansalaisuus")}))
 
 (defn koulutustausta-from-hakemus [pohjakoulutus-koodit document]
   (let [koulutustausta (get-in document ["answers" "koulutustausta"])

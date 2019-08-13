@@ -1,10 +1,9 @@
 [ {
-  "hakijan_kansalaisuudet" : [ ],
+  "hakijan_kansalaisuudet" : "CHE",
   "etunimet" : "Sirpa-Liisa Testi",
   "sukunimi" : "Kosonen-Testi",
   "henkilo_oid" : "1.2.1.2.1.2",
   "hakemus_oid" : "1.2.3.4.999",
-  "hakijan_kansalaisuus" : "CHE",
   "hakemus_tila" : "ACTIVE",
   "haku_oid" : "1.2.246.562.29.999999",
   "syntyma_aika" : "1990-01-01",
