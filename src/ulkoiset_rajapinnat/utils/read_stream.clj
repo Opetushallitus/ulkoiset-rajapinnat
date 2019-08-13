@@ -31,16 +31,20 @@
                   (throw (RuntimeException. "Channel was closed before reading stream completed!"))))))
           (when-let [last-batch (drain-to-vector)]
             (>! channel last-batch))))
-      (catch Exception e (>! channel e))
+      (catch Exception e
+        (log/error "Exception when closing input stream" e)
+        (>! channel e))
       (finally
         (if (instance? java.io.InputStream input-stream)
           (try
             (log/info "Closing input stream")
             (.close input-stream)
+            (log/info "Closed input stream")
             (catch Exception e
-              (log/error (format "Exception when closing input stream" , e))
+              (log/error "Exception when closing input stream" e)
               (>! channel e)
               ))
           )
-        (log/info "Closed input stream")
-        (close! channel)))))
+        (log/info "Closing channel")
+        (close! channel)
+        (log/info "Closed channel")))))
