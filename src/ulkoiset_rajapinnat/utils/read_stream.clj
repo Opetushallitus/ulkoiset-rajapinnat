@@ -32,7 +32,7 @@
           (when-let [last-batch (drain-to-vector)]
             (>! channel last-batch))))
       (catch Exception e
-        (log/error "Exception when closing input stream" e)
+        (log/error "Exception when reading stream" e)
         (>! channel e))
       (finally
         (if (instance? java.io.InputStream input-stream)
