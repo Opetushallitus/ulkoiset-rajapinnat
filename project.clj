@@ -15,7 +15,7 @@
                  [environ "1.1.0"]
                  [compojure "1.6.0"]
                  [clj-time "0.14.0"]
-                 [clj-http "3.9.0"]
+                 [clj-http "3.10.0"]
                  [org.clojure/data.xml "0.0.8"]
                  [fullcontact/full.async "1.0.0"]
                  [http-kit "2.2.0"]
