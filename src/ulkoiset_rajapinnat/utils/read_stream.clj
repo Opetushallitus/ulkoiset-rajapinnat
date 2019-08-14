@@ -14,6 +14,7 @@
                          (.setCodec mapper))
                        (.createParser (clojure.java.io/reader input-stream)))
             first-token (.nextToken parser)]
+        (log/info "Starting to read JSON stream")
         (when-not (= JsonToken/START_ARRAY first-token)
           (throw (RuntimeException. (format "Expected JSON stream to start with %s but was %s" JsonToken/START_ARRAY (.nextToken parser)))))
         (let [batch (java.util.ArrayList. batch-size)
@@ -21,6 +22,7 @@
                                 (let [v (vec (.toArray batch))]
                                   (.clear batch)
                                   (when (not-empty v)
+                                    (log/info (format "sending value %s to reuslt-mapper" v))
                                     (result-mapper v))))]
           (while (= (.nextToken parser) (JsonToken/START_OBJECT))
             (let [obj (-> mapper
@@ -30,6 +32,7 @@
                 (if (not (>! channel (drain-to-vector)))
                   (throw (RuntimeException. "Channel was closed before reading stream completed!"))))))
           (when-let [last-batch (drain-to-vector)]
+            (log/info "Last batch in stream")
             (>! channel last-batch))))
       (catch Exception e
         (log/error "Exception when reading stream" e)
