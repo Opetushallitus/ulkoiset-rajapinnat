@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.core.async :refer [<! close! go go-loop chan timeout >! alt! alts! promise-chan]]
             [clojure.tools.logging :as log]
-            [full.async :refer [<? engulf alts? go-try]]
+            [full.async :refer [<? <?? engulf alts? go-try]]
             [schema.core :as s]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch-channel]]
             [ulkoiset-rajapinnat.onr :refer :all]
@@ -10,7 +10,7 @@
             [ulkoiset-rajapinnat.utils.haku_app :refer :all]
             [ulkoiset-rajapinnat.oppija :refer :all]
             [ulkoiset-rajapinnat.utils.rest :refer [status body body-and-close exception-response to-json]]
-            [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel koodisto-converted-country-code-as-channel strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [org.httpkit.server :refer :all]
             [ulkoiset-rajapinnat.utils.ataru :refer [fetch-hakemukset-from-ataru]]
@@ -134,6 +134,10 @@
      :perusopetuksen_opetuskieli opetuskieli
      :lahtokoulun_oppilaitos_koodi oppilaitoskoodi}))
 
+(defn convert-maakoodi [maakoodi]
+    (get (first (<?? (koodisto-converted-country-code-as-channel maakoodi))) "koodiArvo")
+  )
+
 (defn convert-ataru-hakemus [pohjakoulutus-koodit palauta-null-arvot? henkilo oppija hakemus]
   (let [data (core-merge
                (oppija-data-from-henkilo henkilo)
@@ -142,7 +146,7 @@
                 :haku_oid         (get hakemus "haku_oid")
                 :ensikertalaisuus (if-let [o (first oppija)] (get o "ensikertalainen") nil)
                 :hakutoiveet      (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))
-                :hakijan_asuinmaa         (get hakemus "asuinmaa")
+                :hakijan_asuinmaa          (convert-maakoodi (get hakemus "asuinmaa"))
                 :hakijan_kotikunta        (get hakemus "kotikunta")})]
     (if palauta-null-arvot?
       data
