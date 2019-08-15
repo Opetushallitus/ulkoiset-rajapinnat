@@ -35,11 +35,10 @@
                               parse-json-body-stream)]
     (get-as-channel url options response-mapper)))
 
-(defn koodisto-converted-country-code-as-channel [country-code]
+(defn- koodisto-converted-country-code-as-channel [country-code]
   (let [start-time (System/currentTimeMillis)
         mapper (comp parse-json-body-stream (partial log-fetch "koodisto-maakoodi" start-time))]
-    (get-as-channel (resolve-url :koodisto-service.rinnasteinen (str "maatjavaltiot2_" country-code)) {:as :stream} mapper)
-    ))
+    (get-as-channel (resolve-url :koodisto-service.rinnasteinen (str "maatjavaltiot2_" country-code)) {:as :stream} mapper)))
 
 (defn fetch-maakoodi-from-koodisto [maakoodi]
   (try
@@ -48,3 +47,8 @@
       (do
         (log/error e "Fetching country code from koodisto failed for code: " maakoodi)
         maakoodi))))
+
+(defonce one-week (* 1000 60 60 24 7))
+
+(def fetch-maakoodi-from-koodisto-cache
+  (memo/ttl fetch-maakoodi-from-koodisto :ttl/threshold one-week))
