@@ -23,19 +23,24 @@
                                   (try
                                     (.clear batch)
                                     (when (not-empty v)
-                                      (log/info (format "sending value %s to reuslt-mapper" v))
+                                      (log/info (format "sending value %s to result-mapper" v))
                                       (result-mapper v))
                                     (catch Exception e
                                       (log/error "Exception in drain-to-vector" e)
                                       (throw e)))))]
           (try
+            (log/info "entering while loop")
             (while (= (.nextToken parser) (JsonToken/START_OBJECT))
+              (log/info "About to read value from parser")
               (let [obj (-> mapper
                             (.readValue parser java.util.HashMap))]
+                (log/info (format "Value read and mapped from parser: %s" obj))
                 (-> batch (.add obj))
+                (log/info (format "Added to batch obj %s" obj))
                 (if (= (count batch) batch-size)
                   (if (not (>! channel (drain-to-vector)))
-                    (throw (RuntimeException. "Channel was closed before reading stream completed!"))))))
+                    (throw (RuntimeException. "Channel was closed before reading stream completed!"))))
+                (log/info "looping again")))
             (catch Exception e
               (log/error "Exception in read-stream while loop" e)
               (throw e)))
