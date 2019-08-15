@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.core.async :as async]
             [clojure.tools.logging :as log]
-            [full.async :refer [<?]]
+            [full.async :refer [<? <??]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel parse-json-body-stream]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [org.httpkit.server :refer :all]
@@ -40,3 +40,11 @@
         mapper (comp parse-json-body-stream (partial log-fetch "koodisto-maakoodi" start-time))]
     (get-as-channel (resolve-url :koodisto-service.rinnasteinen (str "maatjavaltiot2_" country-code)) {:as :stream} mapper)
     ))
+
+(defn fetch-maakoodi-from-koodisto [maakoodi]
+  (try
+    (get (first (<?? (koodisto-converted-country-code-as-channel maakoodi))) "koodiArvo")
+    (catch Exception e
+      (do
+        (log/error e "Fetching country code from koodisto failed for code: " maakoodi)
+        maakoodi))))

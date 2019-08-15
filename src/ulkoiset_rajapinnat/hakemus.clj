@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.core.async :refer [<! close! go go-loop chan timeout >! alt! alts! promise-chan]]
             [clojure.tools.logging :as log]
-            [full.async :refer [<? <?? engulf alts? go-try]]
+            [full.async :refer [<? engulf alts? go-try]]
             [schema.core :as s]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch-channel]]
             [ulkoiset-rajapinnat.onr :refer :all]
@@ -10,7 +10,7 @@
             [ulkoiset-rajapinnat.utils.haku_app :refer :all]
             [ulkoiset-rajapinnat.oppija :refer :all]
             [ulkoiset-rajapinnat.utils.rest :refer [status body body-and-close exception-response to-json]]
-            [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel koodisto-converted-country-code-as-channel strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel fetch-maakoodi-from-koodisto strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [org.httpkit.server :refer :all]
             [ulkoiset-rajapinnat.utils.ataru :refer [fetch-hakemukset-from-ataru]]
@@ -67,14 +67,6 @@
      :harkinnanvarainen_valinta (get hakutoiveet (str "preference" priority "-discretionary-follow-up"))
      :sija                      priority}))
 
-(defn convert-maakoodi [maakoodi]
-  (try
-     (get (first (<?? (koodisto-converted-country-code-as-channel maakoodi))) "koodiArvo")
-     (catch Exception e
-       (do
-         (log/error e "Fetching country code from koodisto failed for code: " maakoodi)
-         maakoodi))))
-
 (defn oppija-data-from-henkilo [henkilo-opt]
   (if-let [henkilo (first henkilo-opt)]
     (let [kansalaisuusKoodit (get henkilo "kansalaisuus")]
@@ -85,7 +77,7 @@
        :sukunimi               (get henkilo "sukunimi")
        :sukupuoli_koodi        (get henkilo "sukupuoli")
        :aidinkieli             (get henkilo "aidinkieli")
-       :hakijan_kansalaisuudet (map convert-maakoodi (map #(get % "kansalaisuusKoodi") kansalaisuusKoodit))})
+       :hakijan_kansalaisuudet (map fetch-maakoodi-from-koodisto (map #(get % "kansalaisuusKoodi") kansalaisuusKoodit))})
     {}))
 
 (defn hakutoiveet-from-hakemus [document]
@@ -150,7 +142,7 @@
                 :haku_oid         (get hakemus "haku_oid")
                 :ensikertalaisuus (if-let [o (first oppija)] (get o "ensikertalainen") nil)
                 :hakutoiveet      (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))
-                :hakijan_asuinmaa          (convert-maakoodi (get hakemus "asuinmaa"))
+                :hakijan_asuinmaa          (fetch-maakoodi-from-koodisto (get hakemus "asuinmaa"))
                 :hakijan_kotikunta        (get hakemus "kotikunta")})]
     (if palauta-null-arvot?
       data
