@@ -20,16 +20,10 @@
         (let [batch (java.util.ArrayList. batch-size)
               drain-to-vector (fn []
                                 (let [v (vec (.toArray batch))]
-                                  (try
                                     (.clear batch)
                                     (when (not-empty v)
-                                      (log/info (format "sending value %s to result-mapper" v))
-                                      (result-mapper v))
-                                    (catch Exception e
-                                      (log/error "Exception in drain-to-vector" e)
-                                      (throw e)))))]
+                                      (result-mapper v))))]
           (try
-            (log/info "entering while loop")
             (while (= (.nextToken parser) (JsonToken/START_OBJECT))
               (log/info "About to read value from parser")
               (let [obj (-> mapper
@@ -44,12 +38,8 @@
             (catch Exception e
               (log/error "Exception in read-stream while loop" e)
               (throw e)))
-          (try
-            (when-let [last-batch (drain-to-vector)]
-              (>! channel last-batch))
-            (catch Exception e
-              (log/error "Exception in read-stream when-let" e)
-              (throw e)))))
+          (when-let [last-batch (drain-to-vector)]
+            (>! channel last-batch))))
       (catch Exception e
         (log/error "Exception when reading stream" e)
         (throw e))
@@ -58,12 +48,10 @@
           (try
             (log/info "Closing input stream")
             (.close input-stream)
-            (log/info "Closed input stream")
             (catch Exception e
               (log/error "Exception when closing input stream" e)
               (>! channel e)
               ))
           )
         (log/info "Closing channel")
-        (close! channel)
-        (log/info "Closed channel")))))
+        (close! channel)))))
