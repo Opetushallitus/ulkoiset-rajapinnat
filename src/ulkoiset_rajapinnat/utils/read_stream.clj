@@ -52,7 +52,7 @@
               (throw e)))))
       (catch Exception e
         (log/error "Exception when reading stream" e)
-        (>! channel e))
+        (throw e))
       (finally
         (if (instance? java.io.InputStream input-stream)
           (try
