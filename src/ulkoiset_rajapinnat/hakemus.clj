@@ -67,6 +67,14 @@
      :harkinnanvarainen_valinta (get hakutoiveet (str "preference" priority "-discretionary-follow-up"))
      :sija                      priority}))
 
+(defn convert-maakoodi [maakoodi]
+  (try
+     (get (first (<?? (koodisto-converted-country-code-as-channel maakoodi))) "koodiArvo")
+     (catch Exception e
+       (do
+         (log/error e "Fetching country code from koodisto failed for code: " maakoodi)
+         maakoodi))))
+
 (defn oppija-data-from-henkilo [henkilo-opt]
   (if-let [henkilo (first henkilo-opt)]
     (let [kansalaisuusKoodit (get henkilo "kansalaisuus")]
@@ -77,7 +85,7 @@
        :sukunimi               (get henkilo "sukunimi")
        :sukupuoli_koodi        (get henkilo "sukupuoli")
        :aidinkieli             (get henkilo "aidinkieli")
-       :hakijan_kansalaisuudet (map #(get % "kansalaisuusKoodi") kansalaisuusKoodit)})
+       :hakijan_kansalaisuudet (map convert-maakoodi (map #(get % "kansalaisuusKoodi") kansalaisuusKoodit))})
     {}))
 
 (defn hakutoiveet-from-hakemus [document]
@@ -133,10 +141,6 @@
      :perusopetuksen_paattovuosi paattovuosi
      :perusopetuksen_opetuskieli opetuskieli
      :lahtokoulun_oppilaitos_koodi oppilaitoskoodi}))
-
-(defn convert-maakoodi [maakoodi]
-    (get (first (<?? (koodisto-converted-country-code-as-channel maakoodi))) "koodiArvo")
-  )
 
 (defn convert-ataru-hakemus [pohjakoulutus-koodit palauta-null-arvot? henkilo oppija hakemus]
   (let [data (core-merge

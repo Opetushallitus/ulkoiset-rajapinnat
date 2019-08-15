@@ -101,6 +101,7 @@
 (def henkilot-json (resource "test/resources/hakemus/henkilot.json"))
 (def oppijat-json (resource "test/resources/hakemus/oppijat.json"))
 (def organisaatio-json (resource "test/resources/hakemus/organisaatio.json"))
+(def koodisto-maakoodi-json (resource "test/resources/hakemus/koodisto-maakoodi.json"))
 
 (defn mock-http [url options transform]
   (log/info (str "Mocking url " url))
@@ -139,6 +140,7 @@
   (case url
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.999999" (response 200 haku-ataru-deep-json)
     "http://fake.virkailija.opintopolku.fi/lomake-editori/api/external/tilastokeskus?hakuOid=1.2.246.562.29.999999" (response 200 ataru-json)
+    "http://fake.virkailija.opintopolku.fi/rest/json/relaatio/rinnasteinen/maatjavaltiot2_246" (response 200 koodisto-maakoodi-json)
     (response 404 "[]")))
 
 (deftest ataru-deep-test

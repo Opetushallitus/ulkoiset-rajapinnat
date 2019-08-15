@@ -1,0 +1,59 @@
+[
+  {
+    "koodiUri": "maatjavaltiot1_fin",
+    "resourceUri": "https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/maatjavaltiot1_fin",
+    "version": 0,
+    "versio": 2,
+    "koodisto": {
+      "koodistoUri": "maatjavaltiot1",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        2
+      ]
+    },
+    "koodiArvo": "FIN",
+    "paivitysPvm": 1547808986565,
+    "paivittajaOid": null,
+    "voimassaAlkuPvm": "1990-01-01",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Finland",
+        "kuvaus": "Finland",
+        "lyhytNimi": "FI",
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Finland",
+        "kuvaus": "Finland",
+        "lyhytNimi": "FI",
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Suomi",
+        "kuvaus": "Suomi",
+        "lyhytNimi": "FI",
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      }
+    ]
+  }
+]
