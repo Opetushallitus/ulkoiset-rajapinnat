@@ -32,7 +32,6 @@
                 (if (not (>! channel (drain-to-vector)))
                   (throw (RuntimeException. "Channel was closed before reading stream completed!"))))))
           (when-let [last-batch (drain-to-vector)]
-            (log/info "Last batch in stream")
             (>! channel last-batch))))
       (catch Exception e
         (log/error "Exception when reading stream" e)
