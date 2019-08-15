@@ -24,7 +24,7 @@
   [(koodisto "koodiUri") (koodisto "koodiArvo")])
 
 (defn- log-fetch [resource-name start-time response]
-  (log/info "Fetching '{}' ready with status {}! Took {}ms!" resource-name (response :status) (- (System/currentTimeMillis) start-time))
+  (log/debug "Fetching '{}' ready with status {}! Took {}ms!" resource-name (response :status) (- (System/currentTimeMillis) start-time))
   response)
 
 (defn koodisto-as-channel [koodisto]
