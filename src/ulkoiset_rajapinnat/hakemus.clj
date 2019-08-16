@@ -85,12 +85,16 @@
     {:hakutoiveet (->> priorities
                        (map (partial convert-hakutoive document))
                        (sort-by :sija))}))
+(defn yhdista [x y]
+  (if y
+    [x y]
+    [x]))
 
 (defn henkilotiedot-from-hakemus [document]
   (let [henkilotiedot (get-in document ["answers" "henkilotiedot"])]
     {:hakijan_asuinmaa     (get henkilotiedot "asuinmaa")
      :hakijan_kotikunta    (get henkilotiedot "kotikunta")
-     :hakijan_kansalaisuudet (get henkilotiedot "kansalaisuus")}))
+     :hakijan_kansalaisuudet (yhdista (get henkilotiedot "kansalaisuus") (get henkilotiedot "kaksoiskansalaisuus"))}))
 
 (defn koulutustausta-from-hakemus [pohjakoulutus-koodit document]
   (let [koulutustausta (get-in document ["answers" "koulutustausta"])

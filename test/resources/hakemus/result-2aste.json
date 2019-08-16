@@ -1,5 +1,5 @@
 [ {
-  "hakijan_kansalaisuudet" : "CHE",
+  "hakijan_kansalaisuudet" : ["CHE"],
   "etunimet" : "Sirpa-Liisa Testi",
   "sukunimi" : "Kosonen-Testi",
   "henkilo_oid" : "1.2.1.2.1.2",
