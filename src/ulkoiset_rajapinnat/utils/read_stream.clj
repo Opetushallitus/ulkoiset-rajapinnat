@@ -42,7 +42,7 @@
             (>! channel last-batch))))
       (catch Exception e
         (log/error "Exception when reading stream" e)
-        (throw e))
+        (>! channel e))
       (finally
         (if (instance? java.io.InputStream input-stream)
           (try
