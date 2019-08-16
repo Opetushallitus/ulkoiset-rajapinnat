@@ -31,6 +31,7 @@
                                                      "CasSecurityTicket" st
                                                      "Content-Type"      "application/json"}
                                            :as      :stream
+                                           :timeout 400000
                                            :body    (to-json query)}))
               body-stream (response :body)]
           (read-json-stream-to-channel body-stream channel batch-size result-mapper))
