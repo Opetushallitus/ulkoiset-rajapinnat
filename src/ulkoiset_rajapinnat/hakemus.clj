@@ -22,7 +22,7 @@
   (:refer-clojure :rename {merge core-merge
                            loop  core-loop}))
 
-(def size-of-henkilo-batch-from-onr-at-once 10)
+(def size-of-henkilo-batch-from-onr-at-once 500)
 
 (s/defschema Hakemus
   {:haku_oid                                                                   s/Str
