@@ -21,7 +21,7 @@
                  [http-kit "2.2.0"]
                  [prismatic/schema "1.1.7"]
                  [metosin/compojure-api "1.1.11"]
-                 [cheshire "5.8.0"]
+                 [cheshire "5.9.0"]
                  [org.mongodb/mongodb-driver-reactivestreams "1.6.0"]
                  [clj-soup/clojure-soup "0.1.3"]
                  ; Logging
