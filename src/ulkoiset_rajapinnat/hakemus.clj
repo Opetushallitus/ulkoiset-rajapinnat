@@ -22,7 +22,7 @@
   (:refer-clojure :rename {merge core-merge
                            loop  core-loop}))
 
-(def size-of-henkilo-batch-from-onr-at-once 75)
+(def size-of-henkilo-batch-from-onr-at-once 10)
 
 (s/defschema Hakemus
   {:haku_oid                                                                   s/Str
@@ -176,7 +176,7 @@
           (status channel 200)
           (body channel (str "[" json)))
         (body channel (str "," json))))
-    (throw (RuntimeException. "Client closed channel so no point writing!"))))
+    (throw (RuntimeException. (format "Client closed channel %s so no point writing! obj was %s" channel obj)))))
 
 (defn drain! [atom]
   (core-loop [oldval @atom]

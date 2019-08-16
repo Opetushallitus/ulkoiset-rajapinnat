@@ -27,9 +27,11 @@
         (let [st (<? service-ticket-channel)
               response (let [url (resolve-url :haku-app.streaming-listfull)]
                          (log/info (str "POST -> " url))
-                         (client/post url {:headers {"CasSecurityTicket" st
+                         (client/post url {:headers {"Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
+                                                     "CasSecurityTicket" st
                                                      "Content-Type"      "application/json"}
                                            :as      :stream
+                                           :timeout 400000
                                            :body    (to-json query)}))
               body-stream (response :body)]
           (read-json-stream-to-channel body-stream channel batch-size result-mapper))
