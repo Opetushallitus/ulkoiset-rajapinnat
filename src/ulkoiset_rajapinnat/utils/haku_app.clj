@@ -30,7 +30,7 @@
                          (client/post url {:headers {"Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
                                                      "CasSecurityTicket" st
                                                      "Content-Type"      "application/json"}
-                                           :as      :stream
+                                           :as      :reader
                                            :body    (to-json query)}))
               body-stream (response :body)]
           (read-json-stream-to-channel body-stream channel batch-size result-mapper))
