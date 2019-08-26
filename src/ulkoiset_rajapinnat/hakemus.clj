@@ -77,7 +77,7 @@
        :sukunimi               (get henkilo "sukunimi")
        :sukupuoli_koodi        (get henkilo "sukupuoli")
        :aidinkieli             (get henkilo "aidinkieli")
-       :hakijan_kansalaisuudet (map fetch-maakoodi-from-koodisto-cache (map #(get % "kansalaisuusKoodi") kansalaisuusKoodit))})
+       :hakijan_kansalaisuudet (mapv fetch-maakoodi-from-koodisto-cache (map #(get % "kansalaisuusKoodi") kansalaisuusKoodit))})
     {}))
 
 (defn hakutoiveet-from-hakemus [document]

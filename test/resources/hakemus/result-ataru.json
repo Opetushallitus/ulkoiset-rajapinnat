@@ -4,5 +4,7 @@
   "haku_oid" : "1.2.246.562.29.64078816267",
   "hakutoiveet" : [ {
     "hakukohde_oid" : "1.2.246.562.20.46063019841"
-  } ]
+  } ],
+  "hakijan_kotikunta" : "Helsinki",
+  "hakijan_asuinmaa" : "FIN"
 } ]
