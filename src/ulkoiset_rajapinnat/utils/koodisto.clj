@@ -42,11 +42,12 @@
 
 (defn fetch-maakoodi-from-koodisto [maakoodi]
   (try
-    (get (first (<?? (koodisto-converted-country-code-as-channel maakoodi))) "koodiArvo")
+    (get (some #(when (= "maatjavaltiot1" (get-in % ["koodisto" "koodistoUri"])) %)
+               (full.async/<?? (ulkoiset-rajapinnat.utils.koodisto/koodisto-converted-country-code-as-channel maakoodi))) "koodiArvo")
     (catch Exception e
       (do
-        (log/error e "Fetching country code from koodisto failed for code: " maakoodi)
-        maakoodi))))
+          (throw (new RuntimeException
+                      (str "Fetching country code from koodisto failed for code: " maakoodi " " e)))))))
 
 (defonce one-week (* 1000 60 60 24 7))
 
