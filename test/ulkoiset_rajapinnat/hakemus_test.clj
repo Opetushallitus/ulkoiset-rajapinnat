@@ -101,6 +101,7 @@
 (def henkilot-json (resource "test/resources/hakemus/henkilot.json"))
 (def oppijat-json (resource "test/resources/hakemus/oppijat.json"))
 (def organisaatio-json (resource "test/resources/hakemus/organisaatio.json"))
+(def koodisto-maakoodi-json (resource "test/resources/hakemus/koodisto-maakoodi.json"))
 
 (defn mock-http [url options transform]
   (log/info (str "Mocking url " url))
@@ -136,9 +137,11 @@
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
   (def ataru-json (resource "test/resources/hakemus/ataru.json"))
+  (def ataru-json-without-asuinmaa-and-kotikunta (resource "test/resources/hakemus/ataru-without-asuinmaa-and-kotikunta.json"))
   (case url
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.999999" (response 200 haku-ataru-deep-json)
     "http://fake.virkailija.opintopolku.fi/lomake-editori/api/external/tilastokeskus?hakuOid=1.2.246.562.29.999999" (response 200 ataru-json)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/json/relaatio/rinnasteinen/maatjavaltiot2_246" (response 200 koodisto-maakoodi-json)
     (response 404 "[]")))
 
 (deftest ataru-deep-test
@@ -162,6 +165,36 @@
         (def difference (diff expected body))
         (is (= [nil nil expected] difference) difference)))))
 
+(defn mock-ataru-http-without-asuinmaa-and-kotikunta [url options transform]
+  (log/info (str "Mocking url " url))
+  (def response (partial channel-response transform url))
+  (def ataru-json-without-asuinmaa-and-kotikunta (resource "test/resources/hakemus/ataru-without-asuinmaa-and-kotikunta.json"))
+  (case url
+    "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.999999" (response 200 haku-ataru-deep-json)
+    "http://fake.virkailija.opintopolku.fi/lomake-editori/api/external/tilastokeskus?hakuOid=1.2.246.562.29.999999" (response 200 ataru-json-without-asuinmaa-and-kotikunta)
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/json/relaatio/rinnasteinen/maatjavaltiot2_246" (response 200 koodisto-maakoodi-json)
+    (response 404 "[]")))
+
+(deftest ataru-deep-test-without-asuinmaa-and-kotikunta
+  (testing "Fetch from Ataru, using also the ataru-adapter. Missing asuinmaa and kotikunta"
+    (with-redefs [hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
+                  check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                  fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
+                  fetch-service-ticket-channel (mock-channel-fn "FAKEST")
+                  fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
+                  fetch-henkilot-channel (mock-channel-fn [])
+                  koodisto-as-channel (mock-channel-fn {})
+                  fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
+                  http/get (fn [url options transform] (mock-ataru-http-without-asuinmaa-and-kotikunta url options transform))
+                  http/post (fn [url options transform] (mock-ataru-http-without-asuinmaa-and-kotikunta url options transform))]
+      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
+            status (-> response :status)
+            body (-> (parse-json-body response))]
+        (is (= status 200))
+        (log/info (to-json body true))
+        (def expected (parse-string (resource "test/resources/hakemus/result-ataru-without-asuinmaa-and-kotikunta.json")))
+        (def difference (diff expected body))
+        (is (= [nil nil expected] difference) difference)))))
 
 (defn mock-not-found-http [url options transform]
   (log/info (str "Mocking url " url))

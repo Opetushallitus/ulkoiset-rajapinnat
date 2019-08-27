@@ -10,7 +10,7 @@
             [ulkoiset-rajapinnat.utils.haku_app :refer :all]
             [ulkoiset-rajapinnat.oppija :refer :all]
             [ulkoiset-rajapinnat.utils.rest :refer [status body body-and-close exception-response to-json]]
-            [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel fetch-maakoodi-from-koodisto-cache strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [org.httpkit.server :refer :all]
             [ulkoiset-rajapinnat.utils.ataru :refer [fetch-hakemukset-from-ataru]]
@@ -39,7 +39,7 @@
 
    (s/optional-key :hakijan_asuinmaa)                                          s/Str
    (s/optional-key :hakijan_kotikunta)                                         s/Str
-   (s/optional-key :hakijan_kansalaisuus)                                      s/Str
+   (s/optional-key :hakijan_kansalaisuudet)                                    [s/Str]
 
    (s/optional-key :hakijan_koulusivistyskieli)                                s/Str
    (s/optional-key :pohjakoulutus_2aste)                                       s/Str
@@ -69,13 +69,15 @@
 
 (defn oppija-data-from-henkilo [henkilo-opt]
   (if-let [henkilo (first henkilo-opt)]
-    {:yksiloity       (get henkilo "yksiloity")
-     :henkilotunnus   (get henkilo "hetu")
-     :syntyma_aika    (get henkilo "syntymaaika")
-     :etunimet        (get henkilo "etunimet")
-     :sukunimi        (get henkilo "sukunimi")
-     :sukupuoli_koodi (get henkilo "sukupuoli")
-     :aidinkieli      (get henkilo "aidinkieli")}
+    (let [kansalaisuusKoodit (get henkilo "kansalaisuus")]
+      {:yksiloity              (get henkilo "yksiloity")
+       :henkilotunnus          (get henkilo "hetu")
+       :syntyma_aika           (get henkilo "syntymaaika")
+       :etunimet               (get henkilo "etunimet")
+       :sukunimi               (get henkilo "sukunimi")
+       :sukupuoli_koodi        (get henkilo "sukupuoli")
+       :aidinkieli             (get henkilo "aidinkieli")
+       :hakijan_kansalaisuudet (mapv fetch-maakoodi-from-koodisto-cache (map #(get % "kansalaisuusKoodi") kansalaisuusKoodit))})
     {}))
 
 (defn hakutoiveet-from-hakemus [document]
@@ -83,12 +85,16 @@
     {:hakutoiveet (->> priorities
                        (map (partial convert-hakutoive document))
                        (sort-by :sija))}))
+(defn yhdista [x y]
+  (if y
+    [x y]
+    [x]))
 
 (defn henkilotiedot-from-hakemus [document]
   (let [henkilotiedot (get-in document ["answers" "henkilotiedot"])]
     {:hakijan_asuinmaa     (get henkilotiedot "asuinmaa")
      :hakijan_kotikunta    (get henkilotiedot "kotikunta")
-     :hakijan_kansalaisuus (get henkilotiedot "kansalaisuus")}))
+     :hakijan_kansalaisuudet (yhdista (get henkilotiedot "kansalaisuus") (get henkilotiedot "kaksoiskansalaisuus"))}))
 
 (defn koulutustausta-from-hakemus [pohjakoulutus-koodit document]
   (let [koulutustausta (get-in document ["answers" "koulutustausta"])
@@ -139,7 +145,9 @@
                 :henkilo_oid      (get hakemus "henkilo_oid")
                 :haku_oid         (get hakemus "haku_oid")
                 :ensikertalaisuus (if-let [o (first oppija)] (get o "ensikertalainen") nil)
-                :hakutoiveet      (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))})]
+                :hakutoiveet      (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))
+                :hakijan_asuinmaa          (fetch-maakoodi-from-koodisto-cache (get hakemus "asuinmaa"))
+                :hakijan_kotikunta        (get hakemus "kotikunta")})]
     (if palauta-null-arvot?
       data
       (remove-nils data))))
