@@ -45,9 +45,8 @@
     (get (some #(when (= "maatjavaltiot1" (get-in % ["koodisto" "koodistoUri"])) %)
                (full.async/<?? (ulkoiset-rajapinnat.utils.koodisto/koodisto-converted-country-code-as-channel maakoodi))) "koodiArvo")
     (catch Exception e
-      (do
-          (throw (new RuntimeException
-                      (str "Fetching country code from koodisto failed for code: " maakoodi " " e)))))))
+        (log/error e "Fetching country code from koodisto failed for code: " maakoodi)
+        "XXX")))
 
 (defonce one-week (* 1000 60 60 24 7))
 
