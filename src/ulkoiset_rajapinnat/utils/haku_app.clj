@@ -6,7 +6,7 @@
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.read_stream :refer [read-json-stream-to-channel]]
-            [ulkoiset-rajapinnat.utils.rest :refer [to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [to-json get-as-channel parse-json-body body-and-close]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             ))
 

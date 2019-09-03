@@ -8,8 +8,10 @@
             [ulkoiset-rajapinnat.utils.snippets :refer [is-valid-year]]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body-stream to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             [org.httpkit.server :refer :all]
-            [org.httpkit.timer :refer :all]))
+            [org.httpkit.timer :refer :all]
+            [clj-http.client :as client]))
 
 (s/defschema Haku
              {:haku_oid s/Str
@@ -24,6 +26,12 @@
               (s/optional-key :hakukohteiden_priorisointi) s/Bool
               (s/optional-key :haun_kohdejoukko) s/Str
               (s/optional-key :haun_kohdejoukon_tarkenne) s/Str
+              })
+
+(s/defschema HakemusOid
+             {
+              (s/optional-key :_id) {}
+              (s/optional-key :oid) s/Str
               })
 
 (defn haku-to-names [kieli haku]
@@ -86,3 +94,35 @@
   (schedule-task (* 1000 60 60) (close channel)))
 
 
+; e.g. {"searchTerms":"","asIds":["1.2.246.562.29.26435854158"],"aoOids":[],"states":["ACTIVE", "INCOMPLETE"],"keys":["oid"]}
+(defn- hakemus-oids-for-hakuoid-query [haku-oid] {"searchTerms" ""
+                                                  "asIds"       [haku-oid]
+                                                  "aoOids"      []
+                                                  "states"      ["ACTIVE", "INCOMPLETE"]
+                                                  "keys"        ["oid"]
+                                                  })
+
+
+(defn fetch-hakemusoids-for-haku-from-haku-app
+  [haku-oid channel]
+  (let [query (hakemus-oids-for-hakuoid-query haku-oid)
+        service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
+    (go
+      (try
+        (log/info "Start reading 'haku-app'...")
+        (let [st (<? service-ticket-channel)
+              response (let [url (resolve-url :haku-app.listfull)]
+                         (log/info (str "POST -> " url))
+                         (client/post url {:headers {"CasSecurityTicket" st
+                                                     "Content-Type"      "application/json"}
+                                           :body    (to-json query)}))
+              body (response :body)]
+          (-> channel
+              (status 200)
+              (body-and-close body)))
+        (catch Exception e
+          (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
+          (-> channel
+              (status 500)
+              (body-and-close e)))))
+    channel))

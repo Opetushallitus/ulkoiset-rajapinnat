@@ -9,7 +9,7 @@
         [ulkoiset-rajapinnat.utils.audit :refer [audit create-audit-logger]]
         [ulkoiset-rajapinnat.utils.access :refer [access-log access-log-with-ticket-check-with-channel handle-invalid-request]]
         [ulkoiset-rajapinnat.utils.runtime :refer [shutdown-hook]]
-        [ulkoiset-rajapinnat.haku :refer [Haku haku-resource]]
+        [ulkoiset-rajapinnat.haku :refer [Haku HakemusOid haku-resource fetch-hakemusoids-for-haku-from-haku-app]]
         [ulkoiset-rajapinnat.hakukohde :refer [Hakukohde hakukohde-resource]]
         [ulkoiset-rajapinnat.hakemus :refer [Hakemus hakemus-resource]]
         [ulkoiset-rajapinnat.vastaanotto :refer [Vastaanotto vastaanotto-resource]]
@@ -44,6 +44,15 @@
           ticket
           (partial audit audit-logger (str "Haut koulutuksen alkamisvuodella " koulutuksen_alkamisvuosi))
           (partial haku-resource koulutuksen_alkamisvuosi)))
+      (GET "/hakemusoids-for-haku/:haku_oid" [haku_oid ticket]
+        :summary "Haun hakemusoidit"
+        :query-params [ticket :- String]
+        :responses {200 {:schema [HakemusOid]}}
+        (log/info (str "Got incoming request to hakemusoids-for-haku/" haku_oid))
+        (access-log-with-ticket-check-with-channel
+          ticket
+          (partial audit audit-logger (str "Hakemusoidit haulle " haku_oid))
+          (partial fetch-hakemusoids-for-haku-from-haku-app haku_oid)))
       (GET "/hakukohde-for-haku/:haku-oid" [haku-oid palauta-null-arvot ticket]
         :summary "Hakukohteet haku OID:lla"
         :query-params [ticket :- String]
