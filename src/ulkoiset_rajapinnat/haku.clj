@@ -104,7 +104,7 @@
 
 
 (defn fetch-hakemusoids-for-haku-from-haku-app
-  [haku-oid channel]
+  [haku-oid request user channel log-to-access-log]
   (let [query (hakemus-oids-for-hakuoid-query haku-oid)
         service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
     (go
