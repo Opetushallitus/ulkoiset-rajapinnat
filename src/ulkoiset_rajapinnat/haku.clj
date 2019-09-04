@@ -129,3 +129,27 @@
               (status 500)
               (body-and-close e)))))
     channel))
+
+
+(defn fetch-hakemus-by-oid-from-haku-app
+  [hakemus-oids request user channel log-to-access-log]
+  (let [service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
+    (go
+      (try
+        (log/info "Start reading 'haku-app'...")
+        (let [st (<? service-ticket-channel)
+              response (let [url (resolve-url :haku-app.hakemus-by-oids)]
+                         (log/info (str "POST -> " url))
+                         (client/post url {:headers {"CasSecurityTicket" st
+                                                     "Content-Type"      "application/json"}
+                                           :body    hakemus-oids}))
+              foo (log/info (str "Haettiin haku-appista hakemukset: " response))]
+          (-> channel
+              (status 200)
+              (body-and-close response)))
+        (catch Exception e
+          (log/error e (format "Problem when reading haku-app for hakemus oids %s" hakemus-oids))
+          (-> channel
+              (status 500)
+              (body-and-close e)))))
+    channel))
