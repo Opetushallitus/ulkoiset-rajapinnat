@@ -6,7 +6,7 @@
             [schema.core :as s]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.snippets :refer [is-valid-year]]
-            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body-stream to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body-stream to-json parse-json-body]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             [org.httpkit.server :refer :all]
@@ -116,10 +116,13 @@
                          (client/post url {:headers {"CasSecurityTicket" st
                                                      "Content-Type"      "application/json"}
                                            :body    (to-json query)}))
-              body (response :body)]
+              body (-> (parse-json-body response))
+              oids (map #(get % "oid" body))
+              foo (log/info (str "Haettiin haku-appista oidit: " oids))
+              response (to-json oids)]
           (-> channel
               (status 200)
-              (body-and-close body)))
+              (body-and-close response)))
         (catch Exception e
           (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
           (-> channel
