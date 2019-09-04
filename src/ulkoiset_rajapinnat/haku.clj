@@ -117,7 +117,7 @@
                                                      "Content-Type"      "application/json"}
                                            :body    (to-json query)}))
               body (-> (parse-json-body response))
-              oids (map #(get % "oid" body))
+              oids (map #(get % "oid") body)
               foo (log/info (str "Haettiin haku-appista oidit: " oids))
               response (to-json oids)]
           (-> channel
