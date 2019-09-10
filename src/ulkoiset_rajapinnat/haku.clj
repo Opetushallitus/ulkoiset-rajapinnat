@@ -107,49 +107,53 @@
   [haku-oid request user channel log-to-access-log]
   (let [query (hakemus-oids-for-hakuoid-query haku-oid)
         service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
-    (go
-      (try
-        (log/info "Start reading 'haku-app'...")
-        (let [st (<? service-ticket-channel)
-              response (let [url (resolve-url :haku-app.listfull)]
-                         (log/info (str "POST -> " url))
-                         (client/post url {:headers {"CasSecurityTicket" st
-                                                     "Content-Type"      "application/json"}
-                                           :body    (to-json query)}))
-              foo (log/info (str "Haettiin haku-appista oidit: " response))
-              body (-> (parse-json-body response))
-              oids (map #(get % "oid") body)
-              response (to-json oids)]
-          (-> channel
-              (status 200)
-              (body-and-close response)))
-        (catch Exception e
-          (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
-          (-> channel
-              (status 500)
-              (body-and-close e)))))
+    (if (nil? haku-oid)
+      (go [])
+      (go
+        (try
+          (log/info "Start reading 'haku-app'...")
+          (let [st (<? service-ticket-channel)
+                response (let [url (resolve-url :haku-app.listfull)]
+                           (log/info (str "POST -> " url))
+                           (client/post url {:headers {"CasSecurityTicket" st
+                                                       "Content-Type"      "application/json"}
+                                             :body    (to-json query)}))
+                foo (log/info (str "Haettiin haku-appista oidit: " response))
+                body (-> (parse-json-body response))
+                oids (map #(get % "oid") body)
+                response (to-json oids)]
+            (-> channel
+                (status 200)
+                (body-and-close response)))
+          (catch Exception e
+            (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
+            (-> channel
+                (status 500)
+                (body-and-close e))))))
     channel))
 
 
 (defn fetch-hakemus-by-oid-from-haku-app
   [hakemus-oids request user channel log-to-access-log]
   (let [service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
-    (go
-      (try
-        (log/info "Start reading 'haku-app'...")
-        (let [st (<? service-ticket-channel)
-              response (let [url (resolve-url :haku-app.hakemus-by-oids)]
-                         (log/info (str "POST -> " url))
-                         (client/post url {:headers {"CasSecurityTicket" st
-                                                     "Content-Type"      "application/json"}
-                                           :body    hakemus-oids}))
-              foo (log/info (str "Haettiin haku-appista hakemukset: " response))]
-          (-> channel
-              (status 200)
-              (body-and-close response)))
-        (catch Exception e
-          (log/error e (format "Problem when reading haku-app for hakemus oids %s" hakemus-oids))
-          (-> channel
-              (status 500)
-              (body-and-close e)))))
+    (if (nil? hakemus-oids)
+      (go [])
+      (go
+        (try
+          (log/info "Start reading 'haku-app'...")
+          (let [st (<? service-ticket-channel)
+                response (let [url (resolve-url :haku-app.hakemus-by-oids)]
+                           (log/info (str "POST -> " url))
+                           (client/post url {:headers {"CasSecurityTicket" st
+                                                       "Content-Type"      "application/json"}
+                                             :body    hakemus-oids}))
+                foo (log/info (str "Haettiin haku-appista hakemukset: " response))]
+            (-> channel
+                (status 200)
+                (body-and-close response)))
+          (catch Exception e
+            (log/error e (format "Problem when reading haku-app for hakemus oids %s" hakemus-oids))
+            (-> channel
+                (status 500)
+                (body-and-close e))))))
     channel))
