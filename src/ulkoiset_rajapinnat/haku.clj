@@ -149,7 +149,7 @@
                            (log/info (str "POST -> " url))
                            (client/post url {:headers {"CasSecurityTicket" st
                                                        "Content-Type"      "application/json"}
-                                             :body    hakemus-oids}))
+                                             :body    (to-json hakemus-oids)}))
                 foo (log/info (str "Haettiin haku-appista hakemukset: " response))]
             (-> channel
                 (status 200)
