@@ -6,7 +6,7 @@
             [schema.core :as s]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.snippets :refer [is-valid-year]]
-            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body-stream to-json parse-json-body]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body-stream parse-json-request to-json parse-json-body ]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             [org.httpkit.server :refer :all]
@@ -135,8 +135,9 @@
 
 
 (defn fetch-hakemus-by-oid-from-haku-app
-  [hakemus-oids request user channel log-to-access-log]
-  (let [service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
+  [request user channel log-to-access-log]
+  (let [hakemus-oids (vec (parse-json-request request))
+        service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
     (if (nil? hakemus-oids)
       ((log/info "hakemus-oids is nil")
        (go []))

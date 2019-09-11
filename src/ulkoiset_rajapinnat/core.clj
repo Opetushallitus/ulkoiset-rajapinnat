@@ -53,16 +53,16 @@
           ticket
           (partial audit audit-logger (str "Hakemusoidit haulle " haku_oid))
           (partial fetch-hakemusoids-for-haku-from-haku-app haku_oid)))
-      (POST "/hakemukset-by-oids/" [hakemus-oids ticket]
+      (POST "/hakemukset-by-oids/" [ticket]
         :summary "Hakemukset hakemusoideilla"
         :query-params [ticket :- String]
         :body [body (describe [s/Str] "Hakemusten oidit JSON-taulukossa")]
         :responses {200 {:schema [Vastaanotto]}}
-        (log/info (str "Got incoming request to /hakemukset-by-oids/" hakemus-oids))
+        (log/info (str "Got incoming request to /hakemukset-by-oids/" body))
         (access-log-with-ticket-check-with-channel
           ticket
-          (partial audit audit-logger (str "Hakemukset hakemusoideilla" hakemus-oids))
-          (partial fetch-hakemus-by-oid-from-haku-app hakemus-oids)))
+          (partial audit audit-logger (str "Hakemukset hakemusoideilla" body))
+          (partial fetch-hakemus-by-oid-from-haku-app)))
       (GET "/hakukohde-for-haku/:haku-oid" [haku-oid palauta-null-arvot ticket]
         :summary "Hakukohteet haku OID:lla"
         :query-params [ticket :- String]
