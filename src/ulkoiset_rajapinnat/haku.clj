@@ -138,7 +138,7 @@
   [request user channel log-to-access-log]
   (let [hakemus-oids (vec (parse-json-request request))
         service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
-    (if (nil? hakemus-oids)
+    (if (empty? hakemus-oids)
       ((log/info "hakemus-oids is nil")
        (go []))
       (go
