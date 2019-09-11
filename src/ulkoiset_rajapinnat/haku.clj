@@ -108,10 +108,11 @@
   (let [query (hakemus-oids-for-hakuoid-query haku-oid)
         service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
     (if (nil? haku-oid)
-      (go [])
+      ((log/info "haku-oid is nil")
+       (go []))
       (go
         (try
-          (log/info "Start reading 'haku-app'...")
+          (log/info (str "Start reading 'haku-app' for haku-oid " haku-oid))
           (let [st (<? service-ticket-channel)
                 response (let [url (resolve-url :haku-app.listfull)]
                            (log/info (str "POST -> " url))
@@ -137,10 +138,11 @@
   [hakemus-oids request user channel log-to-access-log]
   (let [service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
     (if (nil? hakemus-oids)
-      (go [])
+      ((log/info "hakemus-oids is nil")
+       (go []))
       (go
         (try
-          (log/info "Start reading 'haku-app'...")
+          (log/info (str "Start reading 'haku-app' for hakemus-oids " hakemus-oids))
           (let [st (<? service-ticket-channel)
                 response (let [url (resolve-url :haku-app.hakemus-by-oids)]
                            (log/info (str "POST -> " url))
