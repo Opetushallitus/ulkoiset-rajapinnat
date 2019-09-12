@@ -240,7 +240,7 @@
                                                             (ataru-adapter pohjakoulutus-koodit palauta-null-arvot?))
                  haku-app-channel (if (empty? hakukohde-oids-for-hakukausi)
                                     (go [])
-                                    (fetch-hakemukset-from-haku-app-as-streaming-channel
+                                    (fetch-hakemukset-from-haku-app-in-batches
                                       haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
                                       (haku-app-adapter pohjakoulutus-koodit palauta-null-arvot? vuosi)))
                  close-channel (fn []
