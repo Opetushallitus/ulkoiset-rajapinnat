@@ -29,12 +29,11 @@
     (go [])
     (go (try
           (let [jsession-id "-"
-                person-oid (user :personOid)
-                inet-address (remote-addr-from-request request)
-                user-agent (user-agent-from-request request)
-                url (resolve-url :valintapiste-service.internal.pisteet-for-hakukohde haku-oid hakukohde-oid jsession-id person-oid inet-address user-agent)
-                start-time (System/currentTimeMillis)
-                response (<? (get-as-channel url))
+                person-oid  (user :personOid)
+                inet-addr   (remote-addr-from-request request)
+                user-agent  (user-agent-from-request request)
+                url         (resolve-url :valintapiste-service.internal.pisteet-for-hakukohde haku-oid hakukohde-oid jsession-id person-oid inet-addr user-agent)
+                response    (<? (get-as-channel url))
                 status-code (response :status)]
             (-> channel
                 (status status-code)
@@ -57,14 +56,13 @@
       (go [])
       (go (try
             (let [jsession-id "-"
-                  person-oid (user :personOid)
-                  inet-address (remote-addr-from-request request)
-                  user-agent (user-agent-from-request request)
-                  url (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids jsession-id person-oid inet-address user-agent)
-                  start-time (System/currentTimeMillis)
-                  json (to-json hakemus-oids)
-                  foo (log/info (str "Post JSON body" json))
-                  response (<? (post-as-channel url json (post-json-options jsession-id) nil))
+                  person-oid  (user :personOid)
+                  inet-addr   (remote-addr-from-request request)
+                  user-agent  (user-agent-from-request request)
+                  url         (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids jsession-id person-oid inet-addr user-agent)
+                  json        (to-json hakemus-oids)
+                  foo         (log/info (str "Post JSON body" json))
+                  response    (<? (post-as-channel url json (post-json-options jsession-id) nil))
                   status-code (response :status)]
               (-> channel
                   (status status-code)

@@ -87,7 +87,7 @@
   ([url body options]
    (post-as-channel url body options nil))
   ([url body options mapper]
-   (log/info (str "POST -> " url ", body: " body))
+   (log/info (str "POST -> " url))
    (call-as-channel http/post url (merge-with into options {:body body}) mapper)))
 
 (defn post-form-as-channel [url form mapper]

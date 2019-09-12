@@ -51,14 +51,14 @@
                     write-access-log access-log-mock]
         (let [apicall (api-call "/api/valintapiste/haku/1.2.3.1111/hakukohde/1.2.3.444")
               response (try
-                          (client/get apicall)
-                          (catch Exception e
-                            (log/error e (format "Problem calling url " apicall))
-                            (throw e)))
+                         (client/get apicall)
+                         (catch Exception e
+                           (log/error e (format "Problem calling url " apicall))
+                           (throw e)))
               status (-> response :status)
-              body (-> (parse-json-body response))]
+              body (-> (parse-json-body response))
+              expected (parse-string (resource "test/resources/vastaanotto/pistetiedot.json"))
+              difference (diff expected body)]
           (is (= status 200))
-          (def expected (parse-string (resource "test/resources/vastaanotto/pistetiedot.json")))
-          (def difference (diff expected body))
           (is (= [nil nil expected] difference) difference)
           (assert-access-log-write access-log-mock 200 nil))))))
