@@ -75,7 +75,8 @@
   [haku-oid hakukohde-oids batch-size result-mapper]
   (let [query (hakemus-oids-for-hakuoid-and-hakukohde-oids-query haku-oid hakukohde-oids)
         service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
-    (if (nil? haku-oid)
+    (let [channel (chan 1)]
+      (if (nil? haku-oid)
       ((log/info "haku-oid is nil")
        (go []))
       (go
@@ -91,7 +92,11 @@
                 body (-> (parse-json-body response))
                 hakemus-oids (map #(get % "oid") body)
                 foo (log/info (str "Haettiin haku-appista oidit: " hakemus-oids))]
-            (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids st batch-size result-mapper))
+            (>! channel
+                (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids st batch-size result-mapper))
+            (close! channel))
           (catch Exception e
             (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
-            (throw e)))))))
+            (>! channel e)
+            (close! channel)))))
+      channel)))
