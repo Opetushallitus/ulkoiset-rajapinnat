@@ -43,7 +43,7 @@
 
 (defn- hakemus-oids-for-hakuoid-and-hakukohde-oids-query [haku-oid hakukohde-oids] {"searchTerms" ""
                                                   "asIds"       [haku-oid]
-                                                  "aoOids"      [hakukohde-oids]
+                                                  "aoOids"      hakukohde-oids
                                                   "states"      ["ACTIVE", "INCOMPLETE"]
                                                   "keys"        ["oid"]
                                                   })
