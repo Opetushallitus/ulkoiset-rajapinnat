@@ -80,11 +80,12 @@
         (try
           (log/info (str "Start reading 'haku-app' for haku-oid " haku-oid))
           (let [st (<? service-ticket-channel)
-                response (let [url (resolve-url :haku-app.listfull)]
-                           (log/info (str "POST -> " url))
+                response (let [url (resolve-url :haku-app.listfull)
+                               post-body (to-json query)]
+                           (log/info (str "POST -> " url post-body))
                            (client/post url {:headers {"CasSecurityTicket" st
                                                        "Content-Type"      "application/json"}
-                                             :body    (to-json query)}))
+                                             :body    post-body}))
                 foo (log/info (str "Haettiin haku-appista oidit: " response))
                 body (-> (parse-json-body response))
                 hakemus-oids (map #(get % "oid") body)]
