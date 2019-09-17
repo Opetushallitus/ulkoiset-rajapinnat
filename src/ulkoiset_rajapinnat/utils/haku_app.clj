@@ -66,8 +66,9 @@
                                 {:headers {"CasSecurityTicket" st
                                            "Content-Type"      "application/json"}
                                  :body    post-body})
-          foo (log/info (str "Haettiin haku-appista hakemukset: " response))
-          result (result-mapper response)
+          response-body (-> (parse-json-body response))
+          foo (log/info (str "Haettiin haku-appista hakemukset: " response-body))
+          result (result-mapper response-body)
           foo (log/info (str "Konvertoitiin hakemukset: " result))]
       ((>! channel result)
        (fetch-hakemus-batches-recursively (rest batches) (cons result accumulator) channel st result-mapper))
