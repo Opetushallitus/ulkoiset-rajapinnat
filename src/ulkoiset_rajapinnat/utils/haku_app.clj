@@ -57,14 +57,15 @@
 (defn fetch-hakemus-batches-recursively
   [batches accumulator channel st result-mapper]
   (if (empty? batches)
-    accumulator
-    (let [url (resolve-url :haku-app.hakemus-by-oids)
-          batch (first batches)
-          foo (log/info (str "Aloitetaan hakemaan batchia: " batch))
-          response (client/post url (to-json batch)
-                           {:headers {"CasSecurityTicket" st
-                                      "Content-Type"      "application/json"
-                                      }})
+    ((close! channel)
+      accumulator)
+    (let [batch (first batches)
+          post-body (to-json batch)
+          foo (log/info (str "Aloitetaan hakemaan batchia: " post-body))
+          response (client/post (resolve-url :haku-app.hakemus-by-oids)
+                                {:headers {"CasSecurityTicket" st
+                                           "Content-Type"      "application/json"}
+                                 :body    post-body})
           foo (log/info (str "Haettiin haku-appista hakemukset: " response))
           result (result-mapper response)
           foo (log/info (str "Konvertoitiin hakemukset: " result))]
