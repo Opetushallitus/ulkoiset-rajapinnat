@@ -238,10 +238,11 @@
                  is-toisen-asteen-haku? (is-toinen-aste haku)
                  ataru-channel (fetch-hakemukset-from-ataru haku-oid size-of-henkilo-batch-from-onr-at-once
                                                             (ataru-adapter pohjakoulutus-koodit palauta-null-arvot?))
+                 haku-app-batch-size 1000
                  haku-app-channel (if (empty? hakukohde-oids-for-hakukausi)
                                     (go [])
                                     (fetch-hakemukset-from-haku-app-in-batches
-                                      haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
+                                      haku-oid hakukohde-oids-for-hakukausi haku-app-batch-size
                                       (haku-app-adapter pohjakoulutus-koodit palauta-null-arvot? vuosi)))
                  close-channel (fn []
                                  (do
