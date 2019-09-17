@@ -7,7 +7,7 @@
             [ulkoiset-rajapinnat.utils.async_safe :refer :all]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.read_stream :refer [read-json-stream-to-channel]]
-            [ulkoiset-rajapinnat.utils.rest :refer [to-json get-as-channel parse-json-body body-and-close post-json-as-channel parse-json-body-stream]]
+            [ulkoiset-rajapinnat.utils.rest :refer [to-json get-as-channel parse-json-body body-and-close post-json-as-channel post-as-channel parse-json-body-stream]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             ))
 
@@ -55,17 +55,20 @@
 ;(def hakemus-batch-size 500)
 
 (defn fetch-hakemus-in-batch-channel
-  ([hakemus-oids hakukohde-oids batch-size result-mapper]
+  ([hakemus-oids hakukohde-oids st batch-size result-mapper]
    (if (empty? hakemus-oids)
      (go [])
      (go-try
        (let [url (resolve-url :haku-app.hakemus-by-oids)
              partitions (partition-all batch-size hakemus-oids)
-             post (fn [x] (let [start-time (System/currentTimeMillis)]
-                            ;(if (> (count x) 1000)
-                            ;  (throw (new RuntimeException "Can only fetch 1000 hakemus at once!")))
-                            (post-json-as-channel url x result-mapper)))
-             hakemukset (<? (async-map-safe vector (map #(post %) partitions) []))]
+             post (fn [x] (post-as-channel url
+                                           (to-json x)
+                                           {:headers {"CasSecurityTicket" st
+                                                      "Content-Type" "application/json"
+                                                     }}
+                                           result-mapper))
+             hakemukset (<? (async-map-safe vector (map #(post %) partitions) []))
+             foo (log/info (str "Haettiin haku-appista hakemukset: " hakemukset))]
          (apply concat hakemukset))))))
 
 (defn fetch-hakemukset-from-haku-app-in-batches
@@ -85,10 +88,10 @@
                            (client/post url {:headers {"CasSecurityTicket" st
                                                        "Content-Type"      "application/json"}
                                              :body    post-body}))
-                foo (log/info (str "Haettiin haku-appista oidit: " response))
                 body (-> (parse-json-body response))
-                hakemus-oids (map #(get % "oid") body)]
-            (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids batch-size result-mapper))
+                hakemus-oids (map #(get % "oid") body)
+                foo (log/info (str "Haettiin haku-appista oidit: " hakemus-oids))]
+            (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids st batch-size result-mapper))
           (catch Exception e
             (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
             (throw e)))))))
