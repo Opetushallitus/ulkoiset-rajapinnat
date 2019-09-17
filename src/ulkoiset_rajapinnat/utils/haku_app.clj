@@ -61,11 +61,10 @@
      (go-try
        (let [url (resolve-url :haku-app.hakemus-by-oids)
              partitions (partition-all batch-size hakemus-oids)
-             post (fn [x] (let [start-time (System/currentTimeMillis)
-                                mapper (comp parse-json-body-stream (partial log-fetch (count hakemus-oids) start-time))]
+             post (fn [x] (let [start-time (System/currentTimeMillis)]
                             ;(if (> (count x) 1000)
                             ;  (throw (new RuntimeException "Can only fetch 1000 hakemus at once!")))
-                            (post-json-as-channel url x mapper)))
+                            (post-json-as-channel url x result-mapper)))
              hakemukset (<? (async-map-safe vector (map #(post %) partitions) []))]
          (apply concat hakemukset))))))
 
