@@ -54,24 +54,33 @@
 
 ;(def hakemus-batch-size 500)
 
+(defn fetch-hakemus-batches-recursively
+  [batches accumulator channel st result-mapper]
+  (if (empty? batches)
+    accumulator
+    (let [url (resolve-url :haku-app.hakemus-by-oids)
+          batch (first batches)
+          foo (log/info (str "Aloitetaan hakemaan batchia: " batch))
+          response (client/post url (to-json batch)
+                           {:headers {"CasSecurityTicket" st
+                                      "Content-Type"      "application/json"
+                                      }})
+          foo (log/info (str "Haettiin haku-appista hakemukset: " response))
+          result (result-mapper response)
+          foo (log/info (str "Konvertoitiin hakemukset: " result))]
+      ((>! channel result)
+       (fetch-hakemus-batches-recursively (rest batches) (cons result accumulator) channel st result-mapper))
+      )
+    )
+  )
+
 (defn fetch-hakemus-in-batch-channel
   ([hakemus-oids hakukohde-oids st channel batch-size result-mapper]
    (if (empty? hakemus-oids)
      (go [])
      (go-try
-       (let [url (resolve-url :haku-app.hakemus-by-oids)
-             partitions (partition-all batch-size hakemus-oids)
-             post (fn [x] (post-as-channel url
-                                           (to-json x)
-                                           {:headers {"CasSecurityTicket" st
-                                                      "Content-Type"      "application/json"
-                                                      }}
-                                           result-mapper))
-             hakemukset (<? (async-map-safe vector (map #(post %) partitions) []))
-             all-results (apply concat hakemukset)
-             foo (log/info (str "Haettiin haku-appista hakemukset: " all-results))]
-         (>! channel all-results)
-         (close! channel))))))
+       (let [partitions (partition-all batch-size hakemus-oids)]
+         (fetch-hakemus-batches-recursively partitions [] channel st result-mapper))))))
 
 (defn fetch-hakemukset-from-haku-app-in-batches
   [haku-oid hakukohde-oids batch-size result-mapper]
