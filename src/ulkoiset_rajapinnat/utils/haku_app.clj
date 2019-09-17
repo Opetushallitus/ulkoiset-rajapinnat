@@ -55,7 +55,7 @@
 ;(def hakemus-batch-size 500)
 
 (defn fetch-hakemus-in-batch-channel
-  ([hakemus-oids hakukohde-oids st batch-size result-mapper]
+  ([hakemus-oids hakukohde-oids st channel batch-size result-mapper]
    (if (empty? hakemus-oids)
      (go [])
      (go-try
@@ -64,12 +64,14 @@
              post (fn [x] (post-as-channel url
                                            (to-json x)
                                            {:headers {"CasSecurityTicket" st
-                                                      "Content-Type" "application/json"
-                                                     }}
+                                                      "Content-Type"      "application/json"
+                                                      }}
                                            result-mapper))
              hakemukset (<? (async-map-safe vector (map #(post %) partitions) []))
-             foo (log/info (str "Haettiin haku-appista hakemukset: " hakemukset))]
-         (apply concat hakemukset))))))
+             all-results (apply concat hakemukset)
+             foo (log/info (str "Haettiin haku-appista hakemukset: " all-results))]
+         (>! channel all-results)
+         (close! channel))))))
 
 (defn fetch-hakemukset-from-haku-app-in-batches
   [haku-oid hakukohde-oids batch-size result-mapper]
@@ -92,9 +94,7 @@
                 body (-> (parse-json-body response))
                 hakemus-oids (map #(get % "oid") body)
                 foo (log/info (str "Haettiin haku-appista oidit: " hakemus-oids))]
-            (>! channel
-                (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids st batch-size result-mapper))
-            (close! channel))
+                (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids st channel batch-size result-mapper))
           (catch Exception e
             (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
             (>! channel e)
