@@ -195,7 +195,6 @@
                (fn [henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot]
                  (try
                     (let [personOid (get hakemus "personOid")
-                          foo (log/info (str "Converting hakemus " hakemus))
                           henkilo (get henkilo-by-oid personOid)
                           oppija (get oppijat-by-oid personOid)
                           foo (log/info (str "Henkilo: " henkilo ", oppija: " oppija))]
