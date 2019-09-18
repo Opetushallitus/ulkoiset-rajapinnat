@@ -56,10 +56,10 @@
 
 (defn fetch-hakemus-batches-recursively
   [batches channel st result-mapper]
-  ((log/info (str "Hakemus-oid batches remaining: " (count batches)))
-   (go (if (empty? batches)
+  (go (if (empty? batches)
          (close! channel)
-         (let [batch (first batches)
+         (let [foo (log/info (str "Hakemus-oid batches remaining: " (count batches)))
+               batch (first batches)
                post-body (to-json batch)
                foo (log/info (str "Aloitetaan hakemaan batchia: " post-body))
                response (client/post (resolve-url :haku-app.hakemus-by-oids)
@@ -73,7 +73,6 @@
            (>! channel result)
            (fetch-hakemus-batches-recursively (rest batches) channel st result-mapper)
       )))
-    )
   )
 
 (defn fetch-hakemus-in-batch-channel
