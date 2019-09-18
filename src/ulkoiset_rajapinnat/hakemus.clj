@@ -194,16 +194,20 @@
                batch
                (fn [henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot]
                  (try
-                   ((log/info (str "Converting hakemus " hakemus))
-                    (convert-hakemus
-                      pohjakoulutus-koodit
-                      palauta-null-arvot?
-                      (get henkilo-by-oid (get hakemus "personOid"))
-                      (get oppijat-by-oid (get hakemus "personOid"))
-                      hakemus
-                      is-toisen-asteen-haku?
-                      organisaatiot
-                      vuosi))
+                    (let [personOid (get hakemus "personOid")
+                          foo (log/info (str "Converting hakemus " hakemus))
+                          henkilo (get henkilo-by-oid personOid)
+                          oppija (get oppijat-by-oid personOid)
+                          foo (log/info (str "Henkilo: " henkilo ", oppija: " oppija))]
+                      (convert-hakemus
+                        pohjakoulutus-koodit
+                        palauta-null-arvot?
+                        henkilo
+                        oppija
+                        hakemus
+                        is-toisen-asteen-haku?
+                        organisaatiot
+                        vuosi))
                    (catch Exception e
                      (do
                        (log/error e "Problem when converting hakemus " hakemus)
