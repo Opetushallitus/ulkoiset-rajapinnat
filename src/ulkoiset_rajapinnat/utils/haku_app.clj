@@ -56,7 +56,8 @@
 
 (defn fetch-hakemus-batches-recursively
   [batches accumulator channel st result-mapper]
-  (if (empty? batches)
+  ((log/info (str "Hakemus-oid batches remaining: " (count batches)))
+   (if (empty? batches)
     ((close! channel)
       accumulator)
     (let [batch (first batches)
@@ -72,7 +73,7 @@
           foo (log/info (str "Konvertoitiin hakemukset: " result))]
       ((>! channel result)
        (fetch-hakemus-batches-recursively (rest batches) (cons result accumulator) channel st result-mapper))
-      )
+      ))
     )
   )
 
