@@ -52,8 +52,6 @@
   (log/info "Fetching 'hakemus' (size =" number-of-oids ") ready with status" (response :status) "! Took " (- (System/currentTimeMillis) start-time) "ms!")
   response)
 
-;(def hakemus-batch-size 500)
-
 (defn fetch-hakemus-batches-recursively
   [batches channel st result-mapper]
   (go
