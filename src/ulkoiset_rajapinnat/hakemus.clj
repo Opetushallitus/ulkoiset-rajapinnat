@@ -196,8 +196,7 @@
                  (try
                     (let [personOid (get hakemus "personOid")
                           henkilo (get henkilo-by-oid personOid)
-                          oppija (get oppijat-by-oid personOid)
-                          foo (log/info (str "Henkilo: " henkilo ", oppija: " oppija))]
+                          oppija (get oppijat-by-oid personOid)]
                       (convert-hakemus
                         pohjakoulutus-koodit
                         palauta-null-arvot?

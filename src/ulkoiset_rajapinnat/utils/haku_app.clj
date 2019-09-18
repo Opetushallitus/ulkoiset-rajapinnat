@@ -58,7 +58,7 @@
   [batches channel st result-mapper]
   (go
     (try (if (empty? batches)
-           ((log/info (str "Finished fetching hakemus-oid batches, closing channel."))
+           ((log/info "Finished fetching hakemus-oid batches, closing channel.")
             (close! channel))
            (let [foo (log/info (str "Hakemus-oid batches remaining: " (count batches)))
                  batch (first batches)
