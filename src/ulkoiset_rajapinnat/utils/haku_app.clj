@@ -57,21 +57,21 @@
 (defn fetch-hakemus-batches-recursively
   [batches channel st result-mapper]
   (go (if (empty? batches)
-         (close! channel)
-         (let [foo (log/info (str "Hakemus-oid batches remaining: " (count batches)))
-               batch (first batches)
-               post-body (to-json batch)
-               foo (log/info (str "Aloitetaan hakemaan batchia: " post-body))
-               response (client/post (resolve-url :haku-app.hakemus-by-oids)
-                                     {:headers {"CasSecurityTicket" st
-                                                "Content-Type"      "application/json"}
-                                      :body    post-body})
-               response-body (-> (parse-json-body response))
-               foo (log/info (str "Haettiin haku-appista hakemukset: " response-body))
-               result (result-mapper response-body)
-               foo (log/info (str "Konvertoitiin hakemukset: " result))]
-           (>! channel result)
-           (fetch-hakemus-batches-recursively (rest batches) channel st result-mapper)
+        ((log/info (str "Finished fetching hakemus-oid batches, closing channel."))
+         (close! channel))
+        (let [foo (log/info (str "Hakemus-oid batches remaining: " (count batches)))
+              batch (first batches)
+              post-body (to-json batch)
+              foo (log/info (str "Aloitetaan hakemaan batchia: " post-body))
+              response (client/post (resolve-url :haku-app.hakemus-by-oids)
+                                    {:headers {"CasSecurityTicket" st
+                                               "Content-Type"      "application/json"}
+                                     :body    post-body})
+              response-body (-> (parse-json-body response))
+              foo (log/info (str "Haettiin haku-appista hakemukset: " response-body))
+              result (result-mapper response-body)]
+          (>! channel result)
+          (fetch-hakemus-batches-recursively (rest batches) channel st result-mapper)
       )))
   )
 
