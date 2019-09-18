@@ -55,11 +55,10 @@
 ;(def hakemus-batch-size 500)
 
 (defn fetch-hakemus-batches-recursively
-  [batches accumulator channel st result-mapper]
+  [batches channel st result-mapper]
   ((log/info (str "Hakemus-oid batches remaining: " (count batches)))
    (if (empty? batches)
-    ((>! channel accumulator)
-     (close! channel))
+    (close! channel)
     (let [batch (first batches)
           post-body (to-json batch)
           foo (log/info (str "Aloitetaan hakemaan batchia: " post-body))
@@ -70,8 +69,9 @@
           response-body (-> (parse-json-body response))
           foo (log/info (str "Haettiin haku-appista hakemukset: " response-body))
           result (result-mapper response-body)
-          foo (log/info (str "Konvertoitiin " (count result) " hakemusta"))]
-      (fetch-hakemus-batches-recursively (rest batches) (cons result accumulator) channel st result-mapper)
+          foo (log/info (str "Konvertoitiin hakemukset: " result))]
+      (>! channel result)
+      (fetch-hakemus-batches-recursively (rest batches) channel st result-mapper)
       ))
     )
   )
@@ -82,7 +82,7 @@
      (go [])
      (go-try
        (let [partitions (partition-all batch-size hakemus-oids)]
-         (fetch-hakemus-batches-recursively partitions [] channel st result-mapper))))))
+         (fetch-hakemus-batches-recursively partitions channel st result-mapper))))))
 
 (defn fetch-hakemukset-from-haku-app-in-batches
   [haku-oid hakukohde-oids batch-size result-mapper]
