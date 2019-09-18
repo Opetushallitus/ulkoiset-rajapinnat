@@ -58,8 +58,8 @@
   [batches accumulator channel st result-mapper]
   ((log/info (str "Hakemus-oid batches remaining: " (count batches)))
    (if (empty? batches)
-    ((close! channel)
-      accumulator)
+    ((>! channel accumulator)
+     (close! channel))
     (let [batch (first batches)
           post-body (to-json batch)
           foo (log/info (str "Aloitetaan hakemaan batchia: " post-body))
@@ -70,8 +70,7 @@
           response-body (-> (parse-json-body response))
           foo (log/info (str "Haettiin haku-appista hakemukset: " response-body))
           result (result-mapper response-body)
-          foo (log/info (str "Konvertoitiin hakemukset: " result))]
-      (>! channel result)
+          foo (log/info (str "Konvertoitiin " (count result) " hakemusta"))]
       (fetch-hakemus-batches-recursively (rest batches) (cons result accumulator) channel st result-mapper)
       ))
     )
