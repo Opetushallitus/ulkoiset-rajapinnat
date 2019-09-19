@@ -57,7 +57,10 @@
   (go
     (try (if (empty? batches)
            ((log/info "Finished fetching hakemus-oid batches, closing channel.")
-            (close! channel))
+            (if (nil? channel)
+              (log/info "Channel is nil!")
+              (close! channel)
+              ))
            (let [foo (log/info (str "Hakemus-oid batches remaining: " (count batches)))
                  batch (first batches)
                  post-body (to-json batch)
