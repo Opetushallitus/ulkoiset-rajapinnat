@@ -72,9 +72,8 @@
          (catch Exception e
            (log/error e (format "Problem when reading haku-app for hakemus batch"))
            (>! channel e)
-           (close! channel)
-           )))
-  )
+           (close! channel))))
+  channel)
 
 (defn fetch-hakemus-in-batch-channel
   ([hakemus-oids hakukohde-oids st channel batch-size result-mapper]
