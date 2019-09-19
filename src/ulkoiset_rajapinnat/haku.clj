@@ -28,12 +28,6 @@
               (s/optional-key :haun_kohdejoukon_tarkenne) s/Str
               })
 
-(s/defschema HakemusOid
-             {
-              (s/optional-key :_id) {}
-              (s/optional-key :oid) s/Str
-              })
-
 (defn haku-to-names [kieli haku]
   (let [nimet (filter #((comp not str/blank?) (last %)) (haku "nimi"))
         koodisto_kieli_nimet (map (fn [e] [(get kieli (first e)) (last e)]) nimet)]
@@ -92,71 +86,3 @@
         (log-to-access-log 500 (.getMessage e))
         ((exception-response channel) e))))
   (schedule-task (* 1000 60 60) (close channel)))
-
-
-; e.g. {"searchTerms":"","asIds":["1.2.246.562.29.26435854158"],"aoOids":[],"states":["ACTIVE", "INCOMPLETE"],"keys":["oid"]}
-(defn- hakemus-oids-for-hakuoid-query [haku-oid] {"searchTerms" ""
-                                                  "asIds"       [haku-oid]
-                                                  "aoOids"      []
-                                                  "states"      ["ACTIVE", "INCOMPLETE"]
-                                                  "keys"        ["oid"]
-                                                  })
-
-
-(defn fetch-hakemusoids-for-haku-from-haku-app
-  [haku-oid request user channel log-to-access-log]
-  (let [query (hakemus-oids-for-hakuoid-query haku-oid)
-        service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
-    (if (nil? haku-oid)
-      ((log/info "haku-oid is nil")
-       (go []))
-      (go
-        (try
-          (log/info (str "Start reading 'haku-app' for haku-oid " haku-oid))
-          (let [st (<? service-ticket-channel)
-                response (let [url (resolve-url :haku-app.listfull)]
-                           (log/info (str "POST -> " url))
-                           (client/post url {:headers {"CasSecurityTicket" st
-                                                       "Content-Type"      "application/json"}
-                                             :body    (to-json query)}))
-                foo (log/info (str "Haettiin haku-appista oidit: " response))
-                body (-> (parse-json-body response))
-                oids (map #(get % "oid") body)
-                response (to-json oids)]
-            (-> channel
-                (status 200)
-                (body-and-close response)))
-          (catch Exception e
-            (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
-            (-> channel
-                (status 500)
-                (body-and-close e))))))
-    channel))
-
-
-(defn fetch-hakemus-by-oid-from-haku-app
-  [request user channel log-to-access-log]
-  (let [hakemus-oids (vec (parse-json-request request))
-        service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
-    (if (empty? hakemus-oids)
-      ((log/info "hakemus-oids is nil")
-       (go []))
-      (go
-        (try
-          (log/info (str "Start reading 'haku-app' for hakemus-oids " hakemus-oids))
-          (let [st (<? service-ticket-channel)
-                response (let [url (resolve-url :haku-app.hakemus-by-oids)]
-                           (log/info (str "POST -> " url))
-                           (client/post url {:headers {"CasSecurityTicket" st
-                                                       "Content-Type"      "application/json"}
-                                             :body    (to-json hakemus-oids)}))
-                foo (log/info (str "Haettiin haku-appista hakemukset: " response))]
-            (-> channel
-                (status 200)
-                (body-and-close response)))
-          (catch Exception e
-            (log/error e (format "Problem when reading haku-app for hakemus oids %s" hakemus-oids))
-            (-> channel
-                (status 500)
-                (body-and-close e))))))
-    channel))
