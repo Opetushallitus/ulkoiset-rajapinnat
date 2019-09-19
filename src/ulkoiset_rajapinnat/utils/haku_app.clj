@@ -11,36 +11,6 @@
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             ))
 
-(defn- hakemukset-for-hakukohde-oids-query [haku-oid hakukohde-oids] {"searchTerms" ""
-                                                                      "asIds"       [haku-oid]
-                                                                      "aoOids"      hakukohde-oids
-                                                                      "states"      ["ACTIVE", "INCOMPLETE"]
-                                                                      })
-
-(defn fetch-hakemukset-from-haku-app-as-streaming-channel
-  [haku-oid hakukohde-oids batch-size result-mapper]
-  (let [query (hakemukset-for-hakukohde-oids-query haku-oid hakukohde-oids)
-        service-ticket-channel (fetch-service-ticket-channel "/haku-app")
-        channel (chan 1)]
-    (go
-      (try
-        (log/info "Start reading 'haku-app'...")
-        (let [st (<? service-ticket-channel)
-              response (let [url (resolve-url :haku-app.streaming-listfull)]
-                         (log/info (str "POST -> " url))
-                         (client/post url {:headers {"CasSecurityTicket" st
-                                                     "Content-Type"      "application/json"}
-                                           :as      :stream
-                                           :body    (to-json query)}))
-              body-stream (response :body)]
-          (read-json-stream-to-channel body-stream channel batch-size result-mapper))
-        (catch Exception e
-          (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
-          (>! channel e)
-          (close! channel))))
-    channel))
-
-
 (defn- hakemus-oids-for-hakuoid-and-hakukohde-oids-query [haku-oid hakukohde-oids] {"searchTerms" ""
                                                   "asIds"       [haku-oid]
                                                   "aoOids"      hakukohde-oids
