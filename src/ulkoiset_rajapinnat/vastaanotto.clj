@@ -11,7 +11,10 @@
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [ulkoiset-rajapinnat.utils.async_safe :refer :all]
             [org.httpkit.server :refer :all]
-            [org.httpkit.timer :refer :all])
+            [org.httpkit.timer :refer :all]
+            [clojure.core.cache :as cache]
+
+            )
   (:import (java.time Duration)))
 
 (s/defschema Vastaanotto
@@ -161,7 +164,7 @@
   (get-as-channel (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid) {:as :stream :timeout valinta-tulos-service-timeout-millis} parse-json-body-stream))
 
 (defn vastaanotot-of-hakukohdeoids-channel [haku-oid hakukohde-oids]
-  (log/info "Haku %s haetaan vastaanotot %d hakukohteelle..." haku-oid (count hakukohde-oids))
+  (log/infof "Haku %s haetaan vastaanotot %d hakukohteelle valinta-tulos-servicestä..." haku-oid (count hakukohde-oids))
   (post-json-as-channel
     (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid)
     hakukohde-oids
@@ -198,6 +201,7 @@
       (apply merge kielikokeet))))
 
 (defn- filter-vastaanotot [haun-hakukohdeoidit haun-vastaanotot haku-oid vuosi kausi]
+  (log/info "filter-vastaanotot " haun-hakukohdeoidit haun-vastaanotot)
   (if (not-empty haun-hakukohdeoidit)
     (trim-streaming-response haun-hakukohdeoidit haun-vastaanotot)
     (throw (RuntimeException.
@@ -207,6 +211,38 @@
 
 (defn- empty-object-channel []
   (async/to-chan '({}) ))
+
+(def two-hours (* 1000 60 60 2))
+
+(defn- update-cache [cache key value]
+  (if (cache/has? cache key)
+    (do
+      (log/info "Cache hit with " key)
+      (cache/hit cache key))
+    (do
+      (log/info "Cache miss with " key)
+      (cache/miss cache key value))))
+
+(defn memo [cache f]
+  (let [cache (atom cache)]
+    (with-meta
+      (fn [& params]
+        (log/info "params for getter function: " params)
+        (async/go
+          (when-let [res (or (cache/lookup @cache params)
+                             (<? (apply f params)))]
+            (swap! cache update-cache params res)
+            res)))
+      {::cache cache})
+    )
+  )
+
+(defn- make-memo-fn [memo-factory]
+  (fn [f & opts]
+    (memo (apply memo-factory {} opts) f)))
+
+(def cached-vastaanotot-for-hakukohdes
+  ((make-memo-fn cache/ttl-cache-factory) vastaanotot-of-hakukohdeoids-channel :ttl two-hours))
 
 (defn vastaanotot-for-haku [haku-oid vuosi kausi request user channel log-to-access-log]
   (async/go
@@ -241,11 +277,23 @@
           (log-to-access-log 500 (.getMessage e))
           ((exception-response channel) e))))))
 
+(defn get-vastaanotot-channel [haku-oid hakukohde-oids]
+  (if (= (count hakukohde-oids) 1)
+    (do
+      (log/info "Getting with/from cache as only 1 hakukohdeOid given")
+      (cached-vastaanotot-for-hakukohdes haku-oid hakukohde-oids))
+    (do
+      (log/info "Getting normally.")
+      (vastaanotot-of-hakukohdeoids-channel haku-oid hakukohde-oids)))
+  )
+
 (defn vastaanotot-for-haku-and-hakukohdeoids [haku-oid hakukohde-oids request user channel log-to-access-log]
+  (log/info "Getting vastaanotot for hakukohtees: " hakukohde-oids)
   (async/go
     (try
       (if (seq (<? (haku-for-haku-oid-channel haku-oid)))
-        (let [vastaanotot (<? (vastaanotot-of-hakukohdeoids-channel haku-oid hakukohde-oids))
+        (let [;vastaanotot (<? (get-vastaanotot-channel haku-oid hakukohde-oids))
+              vastaanotot (<?(cached-vastaanotot-for-hakukohdes haku-oid hakukohde-oids))
               vastaanottojen-hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
               hakemus-oidit (map #(% "hakemusOid") vastaanotot)
               valintakokeet-ch (if (empty? vastaanottojen-hakukohde-oidit) (empty-object-channel) (fetch-kokeet-channel haku-oid vastaanottojen-hakukohde-oidit))
