@@ -190,4 +190,38 @@
              (log/info (to-json body true)))
            (catch Exception e
              (log/info (str "Exception " ((ex-data e) :status)))
-             (is (= false true)))))))
+             (is (= false true))))))
+
+  )
+
+(defn mock-http-hakukohtees [url options transform & flags]
+  (log/info (str "Mocking url " url " flags: " flags))
+  (def response (partial channel-response transform url))
+  (let [use-empty-avaimet (some #{:empty-avaimet} flags)]
+    (if (str/starts-with? url "http://fake.internal.virkailija.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=-&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
+      (response 200 (valintapisteet-chunk (options :body)))
+      (case url
+        "http://fake.internal.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (response 200 vastaanotot-json)
+        "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (response 200 (if use-empty-avaimet avaimet-empty-json avaimet-json))
+        "http://fake.internal.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
+        "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.25191045126" (response 200 haku-json)
+        "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 tilastokeskus-json)
+        (response 404 "[]")))))
+
+
+(deftest fii-foo-fuu
+  (testing "Hakukohtees-for-haku something something"
+    (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
+                  http/get (fn [url options transform] (mock-http-hakukohtees url options transform))
+                  http/post (fn [url options transform] (mock-http-hakukohtees url options transform))
+                  fetch-jsessionid-channel (fn [a] (mock-channel "FAKEJSESSIONID"))]
+      (try (let [response (client/post (api-call "/api/vastaanotto-for-haku/1.2.246.562.29.25191045126") {:body "[\"1.2.3.444\", \"4.5.6.7.888\"]" :content-type :json})
+                 status (-> response :status)
+                 body (-> (parse-json-body response))]
+             (log/info "aaaaa")
+             (is (= status 200))
+             (log/info (to-json body true)))
+           (catch Exception e
+             (log/info (str "Exception " ((ex-data e) :status)))
+             (is (= false true))))))
+  )
