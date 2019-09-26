@@ -1,4 +1,4 @@
-(comment (ns ulkoiset-rajapinnat.hakemus-test
+(ns ulkoiset-rajapinnat.hakemus-test
   (:require [clojure.test :refer :all]
             [full.async :refer :all]
             [clojure.core.async :refer [<! promise-chan >! go put! close!]]
@@ -280,4 +280,3 @@
             (def expected (parse-string (resource "test/resources/hakemus/result-ataru.json")))
             (def difference (diff expected body))
             (is (= [nil nil expected] difference) difference))))))
-         )
