@@ -23,7 +23,7 @@
   response)
 
 (defn fetch-hakemus-batches-recursively
-  [batches channel st result-mapper]
+  [batches channel result-mapper]
   (go
     (try (if (empty? batches)
            (do
@@ -32,6 +32,7 @@
            (let [foo (log/info (str "Hakemus-oid batches remaining: " (count batches)))
                  batch (first batches)
                  post-body (to-json batch)
+                 st (<? (fetch-service-ticket-channel "/haku-app"))
                  response (client/post (resolve-url :haku-app.hakemus-by-oids)
                                        {:headers {"CasSecurityTicket" st
                                                   "Content-Type"      "application/json"}
@@ -39,7 +40,7 @@
                  response-body (-> (parse-json-body response))
                  result (result-mapper response-body)]
              (>! channel result)
-             (fetch-hakemus-batches-recursively (rest batches) channel st result-mapper)))
+             (fetch-hakemus-batches-recursively (rest batches) channel result-mapper)))
          (catch Exception e
            (log/error e (format "Problem when reading haku-app for hakemus batch"))
            (>! channel e)
@@ -47,12 +48,12 @@
   channel)
 
 (defn fetch-hakemus-in-batch-channel
-  ([hakemus-oids hakukohde-oids st channel batch-size result-mapper]
+  ([hakemus-oids hakukohde-oids channel batch-size result-mapper]
    (if (empty? hakemus-oids)
      (go [])
      (go-try
        (let [partitions (partition-all batch-size hakemus-oids)]
-         (fetch-hakemus-batches-recursively partitions channel st result-mapper))))))
+         (fetch-hakemus-batches-recursively partitions channel result-mapper))))))
 
 (defn fetch-hakemukset-from-haku-app-in-batches
   [haku-oid hakukohde-oids batch-size result-mapper]
@@ -75,7 +76,7 @@
                 body (-> (parse-json-body response))
                 hakemus-oids (map #(get % "oid") body)
                 foo (log/info (str "Haettiin haku-appista oidit: " hakemus-oids))]
-                (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids st channel batch-size result-mapper))
+                (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids channel batch-size result-mapper))
           (catch Exception e
             (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
             (>! channel e)
