@@ -50,7 +50,9 @@
 (defn fetch-hakemus-in-batch-channel
   ([hakemus-oids hakukohde-oids channel batch-size result-mapper]
    (if (empty? hakemus-oids)
-     (go [])
+     (go
+       (>! channel [])
+       (close! channel))
      (go-try
        (let [partitions (partition-all batch-size hakemus-oids)]
          (fetch-hakemus-batches-recursively partitions channel result-mapper))))))
