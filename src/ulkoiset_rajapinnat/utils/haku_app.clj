@@ -25,12 +25,12 @@
 (defn fetch-hakemus-batches-recursively
   [batches channel result-mapper]
   (go
+    (log/info (str "Hakemus-oid batches remaining: " (count batches)))
     (try (if (empty? batches)
            (do
              (log/info "Finished fetching hakemus-oid batches, closing channel.")
              (close! channel))
-           (let [foo (log/info (str "Hakemus-oid batches remaining: " (count batches)))
-                 batch (first batches)
+           (let [batch (first batches)
                  post-body (to-json batch)
                  st (<? (fetch-service-ticket-channel "/haku-app"))
                  response (client/post (resolve-url :haku-app.hakemus-by-oids)
@@ -75,7 +75,7 @@
                                              :body    post-body}))
                 body (-> (parse-json-body response))
                 hakemus-oids (map #(get % "oid") body)
-                foo (log/info (str "Haettiin haku-appista oidit: " hakemus-oids))]
+                foo (log/info (str "Haettiin haku-appista " (count hakemus-oids) " oidia"))]
                 (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids channel batch-size result-mapper))
           (catch Exception e
             (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
