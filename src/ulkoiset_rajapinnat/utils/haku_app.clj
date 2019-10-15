@@ -60,8 +60,8 @@
 (defn fetch-hakemukset-from-haku-app-in-batches
   [haku-oid hakukohde-oids batch-size result-mapper]
   (let [query (hakemus-oids-for-hakuoid-and-hakukohde-oids-query haku-oid hakukohde-oids)
-        service-ticket-channel (fetch-service-ticket-channel "/haku-app")]
-    (let [channel (chan 1)]
+        service-ticket-channel (fetch-service-ticket-channel "/haku-app")
+        channel (chan 1)]
       (if (nil? haku-oid)
       ((log/info "haku-oid is nil")
        (go []))
@@ -83,4 +83,4 @@
             (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
             (>! channel e)
             (close! channel)))))
-      channel)))
+      channel))
