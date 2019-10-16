@@ -6,10 +6,12 @@
             [schema.core :as s]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.snippets :refer [is-valid-year]]
-            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body-stream to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body-stream parse-json-request to-json parse-json-body ]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             [org.httpkit.server :refer :all]
-            [org.httpkit.timer :refer :all]))
+            [org.httpkit.timer :refer :all]
+            [clj-http.client :as client]))
 
 (s/defschema Haku
              {:haku_oid s/Str
@@ -84,5 +86,3 @@
         (log-to-access-log 500 (.getMessage e))
         ((exception-response channel) e))))
   (schedule-task (* 1000 60 60) (close channel)))
-
-

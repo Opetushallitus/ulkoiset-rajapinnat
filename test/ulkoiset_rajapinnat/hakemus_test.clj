@@ -43,7 +43,7 @@
                 koodisto-as-channel (mock-channel-fn {})]
     (testing "Fetch hakemukset for haku with no hakemuksia!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
-                    fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])]
+                    fetch-hakemukset-from-haku-app-in-batches (mock-mapped [])]
         (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s%231"))
               status (-> response :status)
               body (response :body)]
@@ -52,7 +52,7 @@
 
     (testing "Fetch hakemukset for haku with 'ataru' hakemuksia!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [{"oid" "1.2.3.4.5.6"}])
-                    fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])]
+                    fetch-hakemukset-from-haku-app-in-batches (mock-mapped [])]
         (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s%231")
                                    {:as :json})
               status (-> response :status)
@@ -62,7 +62,7 @@
 
     (testing "Fetch hakemukset for haku with 'haku-app' hakemuksia!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
-                    fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [{"oid" "1.2.3.4"}])]
+                    fetch-hakemukset-from-haku-app-in-batches (mock-mapped [{"oid" "1.2.3.4"}])]
         (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s%231")
                                    {:as :json})
               status (-> response :status)
@@ -72,7 +72,7 @@
 
     (testing "When haku-app gives 2aste hakemus, the result will have the 2aste pohjakoulutus field!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
-                    fetch-hakemukset-from-haku-app-as-streaming-channel (fn [x y z mapper] (go (mapper (parse-string hakemus-2aste-json))))]
+                    fetch-hakemukset-from-haku-app-in-batches (fn [x y z mapper] (go (mapper (parse-string hakemus-2aste-json))))]
         (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s%231")
                                    {:as :json})
               status (-> response :status)
@@ -84,7 +84,7 @@
 
     (testing "When haku-app gives KK hakemus, the result will have the KK pohjakoulutus field!"
       (with-redefs [fetch-hakemukset-from-ataru (mock-mapped [])
-                    fetch-hakemukset-from-haku-app-as-streaming-channel (fn [x y z mapper] (go (mapper (parse-string hakemus-kk-json))))
+                    fetch-hakemukset-from-haku-app-in-batches (fn [x y z mapper] (go (mapper (parse-string hakemus-kk-json))))
                     koodisto-as-channel (mock-channel-fn {"koodi1" "pohjakoulutus_amt", "koodi2" "dummy_value", "koodi3" "pohjakoulutus_kk"})]
         (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.94986312133?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s%231")
                                    {:as :json})
@@ -118,7 +118,7 @@
   (testing "Fetch lähtökoulu from Sure 2. aste"
     (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                   fetch-hakemukset-from-ataru (mock-mapped [])
-                  fetch-hakemukset-from-haku-app-as-streaming-channel (fn [x y z mapper] (go (mapper (parse-string hakemus-2aste-json))))
+                  fetch-hakemukset-from-haku-app-in-batches (fn [x y z mapper] (go (mapper (parse-string hakemus-2aste-json))))
                   fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
                   fetch-service-ticket-channel (mock-channel-fn "FAKEST")
                   http/get (fn [url options transform] (mock-http url options transform))
@@ -153,7 +153,7 @@
                   fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
                   fetch-henkilot-channel (mock-channel-fn [])
                   koodisto-as-channel (mock-channel-fn {})
-                  fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
+                  fetch-hakemukset-from-haku-app-in-batches (mock-mapped [])
                   http/get (fn [url options transform] (mock-ataru-http url options transform))
                   http/post (fn [url options transform] (mock-ataru-http url options transform))]
       (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
@@ -184,7 +184,7 @@
                   fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
                   fetch-henkilot-channel (mock-channel-fn [])
                   koodisto-as-channel (mock-channel-fn {})
-                  fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
+                  fetch-hakemukset-from-haku-app-in-batches (mock-mapped [])
                   http/get (fn [url options transform] (mock-ataru-http-without-asuinmaa-and-kotikunta url options transform))
                   http/post (fn [url options transform] (mock-ataru-http-without-asuinmaa-and-kotikunta url options transform))]
       (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
@@ -213,7 +213,7 @@
                 fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
                 fetch-henkilot-channel (mock-channel-fn [])
                 koodisto-as-channel (mock-channel-fn {})
-                fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
+                fetch-hakemukset-from-haku-app-in-batches (mock-mapped [])
                 http/get (fn [url options transform] (mock-not-found-http url options transform))
                 http/post (fn [url options transform] (mock-not-found-http url options transform))]
 
@@ -269,7 +269,7 @@
                       fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
                       fetch-henkilot-channel (mock-channel-fn [])
                       koodisto-as-channel (mock-channel-fn {})
-                      fetch-hakemukset-from-haku-app-as-streaming-channel (mock-mapped [])
+                      fetch-hakemukset-from-haku-app-in-batches (mock-mapped [])
                       http/get (fn [url options transform] (mock-ataru-http url options transform))
                       http/post (fn [url options transform] (mock-ataru-http url options transform))]
           (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))

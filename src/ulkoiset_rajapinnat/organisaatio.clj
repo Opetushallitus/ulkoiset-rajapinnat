@@ -9,7 +9,7 @@
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
 
-(defn log-fetch [number-of-oids start-time response]
+(defn- log-fetch [number-of-oids start-time response]
   (log/info "Fetching 'organisaatiot' (size =" number-of-oids ") ready with status" (response :status) "! Took " (- (System/currentTimeMillis) start-time) "ms!")
   response)
 

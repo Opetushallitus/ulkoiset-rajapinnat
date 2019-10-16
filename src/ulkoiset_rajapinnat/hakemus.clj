@@ -194,15 +194,18 @@
                batch
                (fn [henkilo-by-oid oppijat-by-oid hakemus is-toisen-asteen-haku? organisaatiot]
                  (try
-                   (convert-hakemus
-                     pohjakoulutus-koodit
-                     palauta-null-arvot?
-                     (get henkilo-by-oid (get hakemus "personOid"))
-                     (get oppijat-by-oid (get hakemus "personOid"))
-                     hakemus
-                     is-toisen-asteen-haku?
-                     organisaatiot
-                     vuosi)
+                    (let [personOid (get hakemus "personOid")
+                          henkilo (get henkilo-by-oid personOid)
+                          oppija (get oppijat-by-oid personOid)]
+                      (convert-hakemus
+                        pohjakoulutus-koodit
+                        palauta-null-arvot?
+                        henkilo
+                        oppija
+                        hakemus
+                        is-toisen-asteen-haku?
+                        organisaatiot
+                        vuosi))
                    (catch Exception e
                      (do
                        (log/error e "Problem when converting hakemus " hakemus)
@@ -238,10 +241,11 @@
                  is-toisen-asteen-haku? (is-toinen-aste haku)
                  ataru-channel (fetch-hakemukset-from-ataru haku-oid size-of-henkilo-batch-from-onr-at-once
                                                             (ataru-adapter pohjakoulutus-koodit palauta-null-arvot?))
+                 haku-app-batch-size 1000
                  haku-app-channel (if (empty? hakukohde-oids-for-hakukausi)
                                     (go [])
-                                    (fetch-hakemukset-from-haku-app-as-streaming-channel
-                                      haku-oid hakukohde-oids-for-hakukausi size-of-henkilo-batch-from-onr-at-once
+                                    (fetch-hakemukset-from-haku-app-in-batches
+                                      haku-oid hakukohde-oids-for-hakukausi haku-app-batch-size
                                       (haku-app-adapter pohjakoulutus-koodit palauta-null-arvot? vuosi)))
                  close-channel (fn []
                                  (do
