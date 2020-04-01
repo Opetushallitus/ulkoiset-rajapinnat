@@ -90,7 +90,7 @@
                  "osallistui_kielikokeeseen"                  kielikokeeseen-osallistuminen})
         (catch Exception e
           (do
-            (log/error e (format "Virhe käsiteltäessä hakutoivetta %s" hakutoive))
+            (log/errorf e "Virhe käsiteltäessä hakutoivetta %s" hakutoive)
             (throw e))))))
 
   (fn [vastaanotto]
@@ -104,7 +104,7 @@
              "hakutoiveet" (map build-hakutoive (vastaanotto "hakutoiveet"))})
       (catch Exception e
         (do
-          (log/error (format "Virhe muodostettaessa vastaanottotietoa vastaanotosta %s" vastaanotto) e)
+          (log/errorf e "Virhe muodostettaessa vastaanottotietoa vastaanotosta %s" vastaanotto)
           (throw e))))))
 
 (defn find-valintakokeet [valintaperusteet]
@@ -157,18 +157,18 @@
   (if (empty? hakukohde-oidit) [] (filter #(not-empty (% "hakutoiveet")) (map trim-vastaanotto vastaanotot))))
 
 (defn vastaanotot-whole-haku-channel [haku-oid]
-  (log/info (format "Haku %s haetaan vastaanotot..." haku-oid))
+  (log/infof "Haku %s haetaan vastaanotot..." haku-oid)
   (get-as-channel (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid) {:as :stream :timeout valinta-tulos-service-timeout-millis} parse-json-body-stream))
 
 (defn vastaanotot-of-hakukohdeoids-channel [haku-oid hakukohde-oids]
-  (log/info (format "Haku %s haetaan vastaanotot %d hakukohteelle..." haku-oid (count hakukohde-oids)))
+  (log/info "Haku %s haetaan vastaanotot %d hakukohteelle..." haku-oid (count hakukohde-oids))
   (post-json-as-channel
     (resolve-url :valinta-tulos-service.internal.streaming-hakemukset haku-oid)
     hakukohde-oids
     parse-json-body-stream))
 
 (defn fetch-kokeet-channel [haku-oid hakukohde-oidit]
-  (log/info (format "Haku %s haetaan valintakokeet %d hakukohteelle..." haku-oid (count hakukohde-oidit)))
+  (log/infof "Haku %s haetaan valintakokeet %d hakukohteelle..." haku-oid (count hakukohde-oidit))
   (go-try
     (let [jsession-id (<? (fetch-jsessionid-channel "/valintaperusteet-service"))
           mapper (comp find-valintakokeet parse-json-body-stream)
@@ -176,7 +176,7 @@
       valintaperusteet)))
 
 (defn fetch-valintapisteet-channel [haku-oid kaikki-hakemus-oidit request user]
-  (log/info (format "Haku %s haetaan valintapisteet %d hakemukselle..." haku-oid (count kaikki-hakemus-oidit)))
+  (log/infof "Haku %s haetaan valintapisteet %d hakemukselle..." haku-oid (count kaikki-hakemus-oidit))
   (go-try
     (let [url (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids "-" (user :personOid) (remote-addr-from-request request) (user-agent-from-request request))
           group-valintapisteet (fn [x] (apply merge (map (fn [p] {(p "hakemusOID") (p "pisteet")}) x)))
@@ -187,7 +187,7 @@
       (apply merge valintapisteet))))
 
 (defn fetch-ammatilliset-kielikokeet-channel [haku-oid kaikki-oppijanumerot]
-  (log/info (format "Haku %s haetaan ammatilliset kielikokeet %d oppijalle..." haku-oid (count kaikki-oppijanumerot)))
+  (log/infof "Haku %s haetaan ammatilliset kielikokeet %d oppijalle..." haku-oid (count kaikki-oppijanumerot))
   (go-try
     (let [jsession-id (<? (fetch-jsessionid-channel "/suoritusrekisteri"))
           url (resolve-url :suoritusrekisteri-service.oppijat false haku-oid)
@@ -221,9 +221,9 @@
               valintapisteet-ch (if (empty? hakemus-oidit) (empty-object-channel) (fetch-valintapisteet-channel haku-oid hakemus-oidit request user))
               oppijanumerot (map #(% "hakijaOid") vastaanotot)
               kielikokeet-ch (if (empty? oppijanumerot) (empty-object-channel) (fetch-ammatilliset-kielikokeet-channel haku-oid oppijanumerot))]
-          (log/info (format "Haku %s hakijoita %d kpl" haku-oid (count hakemus-oidit)))
-          (log/info (format "Haku %s hakukohteita %d kpl" haku-oid (count hakukohde-oidit)))
-          (log/info (format "Haku %s hakemuksia %d kpl" haku-oid (count hakemus-oidit)))
+          (log/infof "Haku %s hakijoita %d kpl" haku-oid (count hakemus-oidit))
+          (log/infof "Haku %s hakukohteita %d kpl" haku-oid (count hakukohde-oidit))
+          (log/infof "Haku %s hakemuksia %d kpl" haku-oid (count hakemus-oidit))
           (let [build-vastaanotto (vastaanotto-builder (<? valintakokeet-ch) (<? valintapisteet-ch) (<? kielikokeet-ch))
                 json (to-json (pmap build-vastaanotto vastaanotot))]
             (log-to-access-log 200 nil)
@@ -237,7 +237,7 @@
           (log-to-access-log 404 message)))
       (catch Exception e
         (do
-          (log/error (format "Virhe haettaessa vastaanottoja haulle %s!" haku-oid), e)
+          (log/errorf e "Virhe haettaessa vastaanottoja haulle %s!" haku-oid)
           (log-to-access-log 500 (.getMessage e))
           ((exception-response channel) e))))))
 
@@ -252,9 +252,9 @@
               valintapisteet-ch (if (empty? hakemus-oidit) (empty-object-channel) (fetch-valintapisteet-channel haku-oid hakemus-oidit request user))
               oppijanumerot (map #(% "hakijaOid") vastaanotot)
               kielikokeet-ch (if (empty? oppijanumerot) (empty-object-channel) (fetch-ammatilliset-kielikokeet-channel haku-oid oppijanumerot))]
-          (log/info (format "Haku %s hakijoita %d kpl %d hakukohteeseen, joissa tuloksia" haku-oid (count hakemus-oidit) (count vastaanottojen-hakukohde-oidit)))
-          (log/info (format "Haku %s hakukohteita, joissa tuloksia %d kpl" haku-oid (count vastaanottojen-hakukohde-oidit)))
-          (log/info (format "Haku %s hakemuksia %d kpl %d hakukohteeseen, joissa tuloksia" haku-oid (count hakemus-oidit) (count vastaanottojen-hakukohde-oidit)))
+          (log/infof "Haku %s hakijoita %d kpl %d hakukohteeseen, joissa tuloksia" haku-oid (count hakemus-oidit) (count vastaanottojen-hakukohde-oidit))
+          (log/infof "Haku %s hakukohteita, joissa tuloksia %d kpl" haku-oid (count vastaanottojen-hakukohde-oidit))
+          (log/infof "Haku %s hakemuksia %d kpl %d hakukohteeseen, joissa tuloksia" haku-oid (count hakemus-oidit) (count vastaanottojen-hakukohde-oidit))
           (let [build-vastaanotto (vastaanotto-builder (<? valintakokeet-ch) (<? valintapisteet-ch) (<? kielikokeet-ch))
                 json (to-json (pmap build-vastaanotto vastaanotot))]
             (log-to-access-log 200 nil)
@@ -268,7 +268,7 @@
           (log-to-access-log 404 message)))
       (catch Exception e
         (do
-          (log/error (format "Virhe haettaessa vastaanottoja haun %s %d hakukohteelle!" haku-oid (count hakukohde-oids)), e)
+          (log/errorf e "Virhe haettaessa vastaanottoja haun %s %d hakukohteelle!" haku-oid (count hakukohde-oids))
           (log-to-access-log 500 (.getMessage e))
           ((exception-response channel) e))))))
 

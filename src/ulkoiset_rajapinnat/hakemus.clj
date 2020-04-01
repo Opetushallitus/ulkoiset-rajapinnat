@@ -285,7 +285,7 @@
                (log/info "Returned successfully" @counter "'hakemusta' from Haku-App and Ataru! Took" (- (System/currentTimeMillis) start-time) "ms!")
                (catch Throwable e
                  (do
-                   (log/error "Failed to write 'hakemukset'!" e)
+                   (log/error e "Failed to write 'hakemukset'!")
                    (write-object-to-channel is-first-written
                                             {:error (.getMessage e)}
                                             channel)
@@ -301,7 +301,7 @@
                               is-illegal-argument (or (instance? IllegalArgumentException e)
                                                       (instance? IllegalArgumentException (.getCause e)))
                               status-code (if is-illegal-argument 400 500)]
-                          (log/error "Exception in fetch-hakemukset-for-haku" e)
+                          (log/error e "Exception in fetch-hakemukset-for-haku")
                           (status channel status-code)
                           (body channel (to-json {:error error-message}))
                           (close channel)

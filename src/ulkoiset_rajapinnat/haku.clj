@@ -49,7 +49,7 @@
      "haun_kohdejoukon_tarkenne" (get haunkohdejoukontarkenne (strip-version-from-tarjonta-koodisto-uri (haku "kohdejoukonTarkenne")))}))
 
 (defn log-fetch [resource-name start-time response]
-  (log/debug "Fetching '{}' ready with status {}! Took {}ms!" resource-name (response :status) (- (System/currentTimeMillis) start-time))
+  (log/debugf "Fetching '%s' ready with status %s! Took %sms!" resource-name (response :status) (- (System/currentTimeMillis) start-time))
   response)
 
 (defn fetch-haku [vuosi]

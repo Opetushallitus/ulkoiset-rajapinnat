@@ -80,7 +80,7 @@
                 foo (log/info (str "Haettiin haku-appista " (count hakemus-oids) " oidia"))]
                 (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids channel batch-size result-mapper))
           (catch Exception e
-            (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
+            (log/errorf e "Problem when reading haku-app for haku %s" haku-oid)
             (>! channel e)
             (close! channel)))))
       channel))

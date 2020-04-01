@@ -143,7 +143,7 @@
   (init-config args)
   (let [port (-> @config :server :port)]
 
-    (log/info "Starting server in port {}" port)
+    (log/info "Starting server in port" port)
     (let [audit-logger (create-audit-logger)
           server (run-server (api-opintopolku-routes audit-logger) {:port port})
           close-handle (fn [] (-> (meta server)
