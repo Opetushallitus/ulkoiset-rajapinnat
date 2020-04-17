@@ -3,10 +3,13 @@
     "hakemus_oid": "1.2.246.562.11.00000000000000005622",
     "haku_oid": "1.2.246.562.29.64078816267",
     "henkilo_oid": "1.2.246.562.24.15338984249",
-    "hakukohde_oids": [
-      "1.2.246.562.20.46063019841"
-    ],
+    "hakutoiveet": [{
+      "sija": 1,
+      "hakukohde_oid": "1.2.246.562.20.46063019841"
+    }],
     "kotikunta" : "Helsinki",
-    "asuinmaa" : "246"
+    "asuinmaa" : "246",
+    "kk_pohjakoulutus": "pohjakoulutus_yo",
+    "pohjakoulutus_kk_ulk_country" : "FIN"
   }
 ]
