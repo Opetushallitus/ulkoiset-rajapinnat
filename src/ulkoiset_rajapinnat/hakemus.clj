@@ -141,13 +141,16 @@
 (defn convert-ataru-hakemus [pohjakoulutus-koodit palauta-null-arvot? henkilo oppija hakemus]
   (let [data (core-merge
                (oppija-data-from-henkilo henkilo)
-               {:hakemus_oid      (get hakemus "hakemus_oid")
-                :henkilo_oid      (get hakemus "henkilo_oid")
-                :haku_oid         (get hakemus "haku_oid")
-                :ensikertalaisuus (if-let [o (first oppija)] (get o "ensikertalainen") nil)
-                :hakutoiveet      (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))
-                :hakijan_asuinmaa          (fetch-maakoodi-from-koodisto-cache (get hakemus "asuinmaa"))
-                :hakijan_kotikunta        (get hakemus "kotikunta")})]
+               {:hakemus_oid       (get hakemus "hakemus_oid")
+                :henkilo_oid       (get hakemus "henkilo_oid")
+                :haku_oid          (get hakemus "haku_oid")
+                :ensikertalaisuus  (some-> (first oppija) (get "ensikertalainen"))
+                :hakutoiveet       (-> (get hakemus "hakukohde_oids") (map (fn [oid] {:hakukohde_oid oid})))
+                :hakijan_asuinmaa  (-> (get hakemus "asuinmaa") (fetch-maakoodi-from-koodisto-cache))
+                :hakijan_kotikunta (get hakemus "kotikunta")
+                :pohjakoulutus_kk  (-> (get hakemus "kk_pohjakoulutus") (map (fn [k])))
+                :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa
+                (get hakemus "pohjakoulutus_kk_ulk_country")})]
     (if palauta-null-arvot?
       data
       (remove-nils data))))
