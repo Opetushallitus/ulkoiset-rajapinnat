@@ -153,7 +153,7 @@
                 :hakutoiveet       (get hakemus "hakutoiveet")
                 :hakijan_asuinmaa  (-> (get hakemus "asuinmaa") (fetch-maakoodi-from-koodisto-cache))
                 :hakijan_kotikunta (get hakemus "kotikunta")
-                :pohjakoulutus_kk  (-> (get hakemus "kk_pohjakoulutus"))
+                :pohjakoulutus_kk  (-> (get hakemus "pohjakoulutus_kk"))
                 :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa
                 (get hakemus "pohjakoulutus_kk_ulk_country")})]
     (log/infof "Converted data for ataru hakemus %s" hakemus)
