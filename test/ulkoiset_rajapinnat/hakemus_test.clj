@@ -266,11 +266,9 @@
                       fetch-hakemukset-from-haku-app-in-batches (mock-mapped [])
                       http/get (fn [url options transform] (mock-ataru-http url options transform))
                       http/post (fn [url options transform] (mock-ataru-http url options transform))]
-          (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
-                status (-> response :status)
-                body (-> (parse-json-body response))]
+          (let [expected (parse-string (resource "test/resources/hakemus/result-ataru.json"))
+                response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
+                status   (-> response :status)
+                body     (-> (parse-json-body response))]
             (is (= status 200))
-            (log/info (to-json body true))
-            (def expected (parse-string (resource "test/resources/hakemus/result-ataru.json")))
-            (def difference (diff expected body))
-            (is (= [nil nil expected] difference) difference))))))
+            (is (= expected body)))))))

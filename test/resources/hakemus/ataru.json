@@ -9,7 +9,10 @@
     }],
     "kotikunta" : "Helsinki",
     "asuinmaa" : "246",
-    "kk_pohjakoulutus": "pohjakoulutus_yo",
+    "pohjakoulutus_kk": [{
+      "pohjakoulutuskklomake":  "pohjakoulutus_yo",
+      "suoritusvuosi": 2020
+    }],
     "pohjakoulutus_kk_ulk_country" : "FIN"
   }
 ]

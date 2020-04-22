@@ -8,6 +8,9 @@
   } ],
   "hakijan_kotikunta" : "Helsinki",
   "hakijan_asuinmaa" : "FIN",
-  "pohjakoulutus_kk" : "pohjakoulutus_yo",
+  "pohjakoulutus_kk" : [{
+    "pohjakoulutuskklomake": "pohjakoulutus_yo",
+    "suoritusvuosi": 2020
+  }],
   "ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa" : "FIN"
 } ]
