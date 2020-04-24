@@ -60,7 +60,7 @@
     response))
 
 (defn- call-as-channel [method url options mapper]
-  (let [p (promise-chan)
+  (let [p (promise-chan nil (fn [e] (log/warnf e "%s %s failed!" method url)))
         options-with-ids (update-in options [:headers] assoc
                                     "Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
                                     "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat")
