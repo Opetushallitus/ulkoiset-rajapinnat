@@ -28,6 +28,9 @@
   {:haku_oid                                                                   s/Str
    :hakemus_oid                                                                s/Str
    :henkilo_oid                                                                s/Str
+
+   (s/optional-key :hakemus_tila)                                              s/Str
+
    (s/optional-key :ensikertalaisuus)                                          s/Bool
    (s/optional-key :yksiloity)                                                 s/Str
    (s/optional-key :henkilotunnus)                                             s/Str
@@ -149,6 +152,7 @@
                {:hakemus_oid       (get hakemus "hakemus_oid")
                 :henkilo_oid       (get hakemus "henkilo_oid")
                 :haku_oid          (get hakemus "haku_oid")
+                :hakemus_tila      (get hakemus "hakemus_tila")
                 :ensikertalaisuus  (some-> (first oppija) (get "ensikertalainen"))
                 :hakutoiveet       (get hakemus "hakutoiveet")
                 :hakijan_asuinmaa  (-> (get hakemus "asuinmaa") (fetch-maakoodi-from-koodisto-cache))
