@@ -142,11 +142,6 @@
      :lahtokoulun_oppilaitos_koodi oppilaitoskoodi}))
 
 (defn convert-ataru-hakemus [pohjakoulutus-koodit palauta-null-arvot? henkilo oppija hakemus]
-  (log/info "pohjakoulutus-koodit " pohjakoulutus-koodit)
-  (log/info "palauta-null-arvot?" palauta-null-arvot?)
-  (log/info "henkilo" henkilo)
-  (log/info "oppija" oppija)
-  (log/info "hakemus" hakemus)
   (let [data (core-merge
                (oppija-data-from-henkilo henkilo)
                {:hakemus_oid       (get hakemus "hakemus_oid")
@@ -160,7 +155,9 @@
                 :pohjakoulutus_kk  (->> (get hakemus "pohjakoulutus_kk") (map #(get % "pohjakoulutuskklomake" )))
                 :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa
                 (get hakemus "pohjakoulutus_kk_ulk_country")})]
-    (log/infof "Converted data for ataru hakemus %s" hakemus)
+    (if (log/enabled? :debug)
+      (log/debugf "Converted data for ataru hakemus %s" hakemus)
+      (log/infof "Converted data for ataru hakemus %s" (:hakemus_oid hakemus)))
     (if palauta-null-arvot?
       data
       (remove-nils data))))

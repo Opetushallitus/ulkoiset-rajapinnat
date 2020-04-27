@@ -71,7 +71,7 @@
           (let [st (<? service-ticket-channel)
                 response (let [url (resolve-url :haku-app.listfull)
                                post-body (to-json query)]
-                           (log/info (str "POST -> " url post-body))
+                           (log/debugf "POST -> %" url post-body)
                            (client/post url {:headers {"CasSecurityTicket" st
                                                        "Content-Type"      "application/json"}
                                              :body    post-body}))
