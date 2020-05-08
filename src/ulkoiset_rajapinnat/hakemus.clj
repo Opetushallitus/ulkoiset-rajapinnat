@@ -154,7 +154,7 @@
                 :hakijan_kotikunta (get hakemus "kotikunta")
                 :pohjakoulutus_kk  (->> (get hakemus "pohjakoulutus_kk") (map #(get % "pohjakoulutuskklomake" )))
                 :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa
-                (get hakemus "pohjakoulutus_kk_ulk_country")})]
+                (-> (get hakemus "pohjakoulutus_kk_ulk_country") (fetch-maakoodi-from-koodisto-cache))})]
     (if (log/enabled? :debug)
       (log/debugf "Converted data for ataru hakemus %s" hakemus)
       (log/infof "Converted data for ataru hakemus %s" (:hakemus_oid hakemus)))
