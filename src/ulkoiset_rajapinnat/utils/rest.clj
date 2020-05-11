@@ -60,11 +60,16 @@
         e))
     response))
 
+(def ^:private one-hour-ms (* 1000 60 60))
+
 (defn- call-as-channel [method url options mapper]
   (let [p (promise-chan nil (fn [e] (log/warnf e "%s %s failed!" method url)))
-        options-with-ids (update-in options [:headers] assoc
+        options-with-ids (merge
+                          {:socket-timeout     30000
+                           :connection-timeout one-hour-ms}
+                          (update-in options [:headers] assoc
                                     "Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
-                                    "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat")
+                                    "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat"))
         start-time (System/nanoTime)]
     (method url options-with-ids
       #(go
