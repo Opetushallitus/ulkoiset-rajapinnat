@@ -1,13 +1,15 @@
 (ns ulkoiset-rajapinnat.utils.read_stream
   (:require [full.async :refer :all]
             [cheshire.core :refer :all]
-            [clojure.core.async :refer [>! go close!]])
+            [clojure.core.async :refer [>! go close!]]
+            [clojure.tools.logging :as log])
   (:import (com.fasterxml.jackson.databind ObjectMapper)
            (com.fasterxml.jackson.core JsonFactory JsonToken)))
 
 (defn read-json-stream-to-channel [input-stream channel batch-size result-mapper]
   (go
     (try
+      (log/debugf "Reading %s with batch-size %s using result-mapper %s" input-stream batch-size result-mapper)
       (let [mapper (ObjectMapper.)
             parser (-> (doto (JsonFactory.)
                          (.setCodec mapper))

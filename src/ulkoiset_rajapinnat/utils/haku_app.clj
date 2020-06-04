@@ -71,7 +71,7 @@
           (let [st (<? service-ticket-channel)
                 response (let [url (resolve-url :haku-app.listfull)
                                post-body (to-json query)]
-                           (log/info (str "POST -> " url post-body))
+                           (log/debugf "POST -> %" url post-body)
                            (client/post url {:headers {"CasSecurityTicket" st
                                                        "Content-Type"      "application/json"}
                                              :body    post-body}))
@@ -80,7 +80,7 @@
                 foo (log/info (str "Haettiin haku-appista " (count hakemus-oids) " oidia"))]
                 (fetch-hakemus-in-batch-channel hakemus-oids hakukohde-oids channel batch-size result-mapper))
           (catch Exception e
-            (log/error e (format "Problem when reading haku-app for haku %s" haku-oid))
+            (log/errorf e "Problem when reading haku-app for haku %s" haku-oid)
             (>! channel e)
             (close! channel)))))
       channel))

@@ -14,7 +14,7 @@
             [ulkoiset-rajapinnat.utils.snippets :refer [remove-when remove-nils]]))
 
 (defn log-fetch [resource-name start-time response]
-  (log/debug "Fetching '{}' ready with status {}! Took {}ms!" resource-name (response :status) (- (System/currentTimeMillis) start-time))
+  (log/debugf "Fetching '%s' ready with status %s! Took %sms!" resource-name (response :status) (- (System/currentTimeMillis) start-time))
   response)
 
 (s/defschema Hakukohde
@@ -110,7 +110,7 @@
     (try
       (remove str/blank? (str/split parentOidPath #"\|"))
       (catch Exception e
-        (log/error e (format "Problem when finding parent oids of %s" (pr-str (get organisaatio "oid"))))
+        (log/errorf e "Problem when finding parent oids of %s" (pr-str (get organisaatio "oid")))
         (throw e)))))
 
 (defn get-all-parent-oids [organisaatiot]

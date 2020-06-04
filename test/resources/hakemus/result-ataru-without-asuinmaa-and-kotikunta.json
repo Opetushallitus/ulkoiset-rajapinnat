@@ -3,7 +3,10 @@
   "henkilo_oid" : "1.2.246.562.24.15338984249",
   "haku_oid" : "1.2.246.562.29.64078816267",
   "hakutoiveet" : [ {
+    "sija": 1,
     "hakukohde_oid" : "1.2.246.562.20.46063019841"
   } ],
-  "hakijan_asuinmaa" : "XXX"
+  "hakijan_asuinmaa" : "XXX",
+  "pohjakoulutus_kk": [],
+  "ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa": "XXX"
 } ]

@@ -137,7 +137,7 @@
                   (body-and-close json))))
           (catch Exception e
             (do
-              (log/error (format "Virhe haettaessa valintaperusteita %d hakukohteelle!" (count requested-oids)), e)
+              (log/errorf e "Virhe haettaessa valintaperusteita %d hakukohteelle!" (count requested-oids))
               (log-to-access-log 500 (.getMessage e))
               ((exception-response channel) e)))))
    (schedule-task (* 1000 60 60) (close channel))))

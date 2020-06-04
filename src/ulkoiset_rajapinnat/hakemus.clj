@@ -28,6 +28,9 @@
   {:haku_oid                                                                   s/Str
    :hakemus_oid                                                                s/Str
    :henkilo_oid                                                                s/Str
+
+   (s/optional-key :hakemus_tila)                                              s/Str
+
    (s/optional-key :ensikertalaisuus)                                          s/Bool
    (s/optional-key :yksiloity)                                                 s/Str
    (s/optional-key :henkilotunnus)                                             s/Str
@@ -141,13 +144,20 @@
 (defn convert-ataru-hakemus [pohjakoulutus-koodit palauta-null-arvot? henkilo oppija hakemus]
   (let [data (core-merge
                (oppija-data-from-henkilo henkilo)
-               {:hakemus_oid      (get hakemus "hakemus_oid")
-                :henkilo_oid      (get hakemus "henkilo_oid")
-                :haku_oid         (get hakemus "haku_oid")
-                :ensikertalaisuus (if-let [o (first oppija)] (get o "ensikertalainen") nil)
-                :hakutoiveet      (map (fn [oid] {:hakukohde_oid oid}) (get hakemus "hakukohde_oids"))
-                :hakijan_asuinmaa          (fetch-maakoodi-from-koodisto-cache (get hakemus "asuinmaa"))
-                :hakijan_kotikunta        (get hakemus "kotikunta")})]
+               {:hakemus_oid       (get hakemus "hakemus_oid")
+                :henkilo_oid       (get hakemus "henkilo_oid")
+                :haku_oid          (get hakemus "haku_oid")
+                :hakemus_tila      (get hakemus "hakemus_tila")
+                :ensikertalaisuus  (some-> (first oppija) (get "ensikertalainen"))
+                :hakutoiveet       (get hakemus "hakutoiveet")
+                :hakijan_asuinmaa  (-> (get hakemus "asuinmaa") (fetch-maakoodi-from-koodisto-cache))
+                :hakijan_kotikunta (get hakemus "kotikunta")
+                :pohjakoulutus_kk  (->> (get hakemus "pohjakoulutus_kk") (map #(get % "pohjakoulutuskklomake" )))
+                :ulkomailla_suoritetun_toisen_asteen_tutkinnon_suoritusmaa
+                (-> (get hakemus "pohjakoulutus_kk_ulk_country") (fetch-maakoodi-from-koodisto-cache))})]
+    (if (log/enabled? :debug)
+      (log/debugf "Converted data for ataru hakemus %s" hakemus)
+      (log/infof "Converted data for ataru hakemus %s" (:hakemus_oid hakemus)))
     (if palauta-null-arvot?
       data
       (remove-nils data))))
@@ -285,7 +295,7 @@
                (log/info "Returned successfully" @counter "'hakemusta' from Haku-App and Ataru! Took" (- (System/currentTimeMillis) start-time) "ms!")
                (catch Throwable e
                  (do
-                   (log/error "Failed to write 'hakemukset'!" e)
+                   (log/error e "Failed to write 'hakemukset'!")
                    (write-object-to-channel is-first-written
                                             {:error (.getMessage e)}
                                             channel)
@@ -301,7 +311,7 @@
                               is-illegal-argument (or (instance? IllegalArgumentException e)
                                                       (instance? IllegalArgumentException (.getCause e)))
                               status-code (if is-illegal-argument 400 500)]
-                          (log/error "Exception in fetch-hakemukset-for-haku" e)
+                          (log/error e "Exception in fetch-hakemukset-for-haku")
                           (status channel status-code)
                           (body channel (to-json {:error error-message}))
                           (close channel)

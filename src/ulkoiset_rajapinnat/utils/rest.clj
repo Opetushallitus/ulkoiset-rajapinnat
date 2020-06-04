@@ -6,7 +6,8 @@
             [clojure.core.async :refer [>! promise-chan >! go put! close!]]
             [clojure.tools.logging :as log]
             [org.httpkit.server :refer :all])
-  (:import (clojure.lang IExceptionInfo)))
+  (:import [clojure.lang IExceptionInfo]
+           [java.util.concurrent TimeUnit]))
 
 (def mime-application-json "application/json; charset=utf-8")
 
@@ -59,16 +60,21 @@
         e))
     response))
 
+(def ^:private one-hour-ms (* 1000 60 60))
+
 (defn- call-as-channel [method url options mapper]
-  (let [p (promise-chan)
-        options-with-ids (update-in options [:headers] assoc
+  (let [p (promise-chan nil (fn [e] (log/warnf e "%s %s failed!" method url)))
+        options-with-ids (merge
+                          {:socket-timeout     30000
+                           :connection-timeout one-hour-ms}
+                          (update-in options [:headers] assoc
                                     "Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
-                                    "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat")
-        start-time (System/currentTimeMillis)]
+                                    "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat"))
+        start-time (System/nanoTime)]
     (method url options-with-ids
       #(go
         (do (>! p (transform-response mapper %))
-          (log/info "Response came in" (- (System/currentTimeMillis) start-time) "ms from" url)
+          (log/info "Response came in" (.toMillis TimeUnit/NANOSECONDS (- (System/nanoTime) start-time)) "ms from" url)
           (close! p))))
     p))
 

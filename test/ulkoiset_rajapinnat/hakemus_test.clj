@@ -4,7 +4,7 @@
             [clojure.core.async :refer [<! promise-chan >! go put! close!]]
             [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles write-access-log]]
             [ulkoiset-rajapinnat.oppija :refer [fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel]]
-            [clj-log4j2.core :as log]
+            [clojure.tools.logging :as log]
             [org.httpkit.client :as http]
             [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json]]
             [clj-http.client :as client]
@@ -124,16 +124,14 @@
                   http/get (fn [url options transform] (mock-http url options transform))
                   http/post (fn [url options transform] (mock-http url options transform))
                   fetch-jsessionid-channel (mock-channel-fn "FAKEJSESSIONID")]
-      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2018&koulutuksen_alkamiskausi=kausi_s"))
-            status (-> response :status)
-            body (-> (parse-json-body response))]
+      (let [expected (parse-string (resource "test/resources/hakemus/result-2aste.json"))
+            response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2018&koulutuksen_alkamiskausi=kausi_s"))
+            status   (-> response :status)
+            body     (-> (parse-json-body response))]
         (is (= status 200))
-        (log/info (to-json body true))
-        (def expected (parse-string (resource "test/resources/hakemus/result-2aste.json")))
-        (def difference (diff expected body))
-        (is (= [nil nil expected] difference) difference)))))
+        (is (= expected body))))))
 
-(defn mock-ataru-http [url options transform]
+(defn- mock-ataru-http [url options transform]
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
   (def ataru-json (resource "test/resources/hakemus/ataru.json"))
@@ -147,25 +145,23 @@
 (deftest ataru-deep-test
   (testing "Fetch from Ataru, using also the ataru-adapter"
     (with-redefs [hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
-                  check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                  fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
-                  fetch-service-ticket-channel (mock-channel-fn "FAKEST")
-                  fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
-                  fetch-henkilot-channel (mock-channel-fn [])
-                  koodisto-as-channel (mock-channel-fn {})
-                  fetch-hakemukset-from-haku-app-in-batches (mock-mapped [])
-                  http/get (fn [url options transform] (mock-ataru-http url options transform))
-                  http/post (fn [url options transform] (mock-ataru-http url options transform))]
-      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
-            status (-> response :status)
-            body (-> (parse-json-body response))]
+                  check-ticket-is-valid-and-user-has-required-roles          (fn [& _] (go fake-user))
+                  fetch-jsessionid-channel                                   (mock-channel-fn "FAKE-SESSIONID")
+                  fetch-service-ticket-channel                               (mock-channel-fn "FAKEST")
+                  fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel    (fn [x y z h] (mock-channel (parse-string oppijat-json)))
+                  fetch-henkilot-channel                                     (mock-channel-fn [])
+                  koodisto-as-channel                                        (mock-channel-fn {})
+                  fetch-hakemukset-from-haku-app-in-batches                  (mock-mapped [])
+                  http/get                                                   (fn [url options transform] (mock-ataru-http url options transform))
+                  http/post                                                  (fn [url options transform] (mock-ataru-http url options transform))]
+      (let [expected (parse-string (resource "test/resources/hakemus/result-ataru.json"))
+            response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
+            status   (-> response :status)
+            body     (-> (parse-json-body response))]
         (is (= status 200))
-        (log/info (to-json body true))
-        (def expected (parse-string (resource "test/resources/hakemus/result-ataru.json")))
-        (def difference (diff expected body))
-        (is (= [nil nil expected] difference) difference)))))
+        (is (= expected body))))))
 
-(defn mock-ataru-http-without-asuinmaa-and-kotikunta [url options transform]
+(defn- mock-ataru-http-without-asuinmaa-and-kotikunta [url options transform]
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
   (def ataru-json-without-asuinmaa-and-kotikunta (resource "test/resources/hakemus/ataru-without-asuinmaa-and-kotikunta.json"))
@@ -178,23 +174,21 @@
 (deftest ataru-deep-test-without-asuinmaa-and-kotikunta
   (testing "Fetch from Ataru, using also the ataru-adapter. Missing asuinmaa and kotikunta"
     (with-redefs [hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan (mock-channel-fn ["1.2.3.4"])
-                  check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
-                  fetch-jsessionid-channel (mock-channel-fn "FAKE-SESSIONID")
-                  fetch-service-ticket-channel (mock-channel-fn "FAKEST")
-                  fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel (fn [x y z h] (mock-channel (parse-string oppijat-json)))
-                  fetch-henkilot-channel (mock-channel-fn [])
-                  koodisto-as-channel (mock-channel-fn {})
-                  fetch-hakemukset-from-haku-app-in-batches (mock-mapped [])
-                  http/get (fn [url options transform] (mock-ataru-http-without-asuinmaa-and-kotikunta url options transform))
-                  http/post (fn [url options transform] (mock-ataru-http-without-asuinmaa-and-kotikunta url options transform))]
-      (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
-            status (-> response :status)
-            body (-> (parse-json-body response))]
+                  check-ticket-is-valid-and-user-has-required-roles          (fn [& _] (go fake-user))
+                  fetch-jsessionid-channel                                   (mock-channel-fn "FAKE-SESSIONID")
+                  fetch-service-ticket-channel                               (mock-channel-fn "FAKEST")
+                  fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel    (fn [x y z h] (mock-channel (parse-string oppijat-json)))
+                  fetch-henkilot-channel                                     (mock-channel-fn [])
+                  koodisto-as-channel                                        (mock-channel-fn {})
+                  fetch-hakemukset-from-haku-app-in-batches                  (mock-mapped [])
+                  http/get                                                   (fn [url options transform] (mock-ataru-http-without-asuinmaa-and-kotikunta url options transform))
+                  http/post                                                  (fn [url options transform] (mock-ataru-http-without-asuinmaa-and-kotikunta url options transform))]
+      (let [expected (parse-string (resource "test/resources/hakemus/result-ataru-without-asuinmaa-and-kotikunta.json"))
+            response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
+            status   (-> response :status)
+            body     (-> (parse-json-body response))]
         (is (= status 200))
-        (log/info (to-json body true))
-        (def expected (parse-string (resource "test/resources/hakemus/result-ataru-without-asuinmaa-and-kotikunta.json")))
-        (def difference (diff expected body))
-        (is (= [nil nil expected] difference) difference)))))
+        (is (= expected body))))))
 
 (defn mock-not-found-http [url options transform]
   (log/info (str "Mocking url " url))
@@ -272,11 +266,9 @@
                       fetch-hakemukset-from-haku-app-in-batches (mock-mapped [])
                       http/get (fn [url options transform] (mock-ataru-http url options transform))
                       http/post (fn [url options transform] (mock-ataru-http url options transform))]
-          (let [response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
-                status (-> response :status)
-                body (-> (parse-json-body response))]
+          (let [expected (parse-string (resource "test/resources/hakemus/result-ataru.json"))
+                response (client/get (api-call "/api/hakemus-for-haku/1.2.246.562.29.999999?koulutuksen_alkamisvuosi=2017&koulutuksen_alkamiskausi=kausi_s"))
+                status   (-> response :status)
+                body     (-> (parse-json-body response))]
             (is (= status 200))
-            (log/info (to-json body true))
-            (def expected (parse-string (resource "test/resources/hakemus/result-ataru.json")))
-            (def difference (diff expected body))
-            (is (= [nil nil expected] difference) difference))))))
+            (is (= expected body)))))))

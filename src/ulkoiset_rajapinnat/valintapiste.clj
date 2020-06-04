@@ -41,7 +41,7 @@
             (log-to-access-log status-code nil))
           (catch Exception e
             (do
-              (log/error (format "Virhe hakiessa valintapisteitä " haku-oid " " hakukohde-oid) e)
+              (log/errorf e "Virhe hakiessa valintapisteitä " haku-oid " " hakukohde-oid)
               (log-to-access-log 500 (.getMessage e))
               (-> channel
                   (status 500)
@@ -51,7 +51,7 @@
 
 (defn fetch-valintapisteet-for-hakemus-oids [request user channel log-to-access-log]
   (let [hakemus-oids (vec (parse-json-request request))
-        foo (log/info (str "Haetaan hakemus-oidit hakemuksille " hakemus-oids))]
+        _            (log/infof "Haetaan hakemus-oidit hakemuksille %s" hakemus-oids)]
     (if (nil? hakemus-oids)
       (go [])
       (go (try
@@ -61,7 +61,7 @@
                   user-agent  (user-agent-from-request request)
                   url         (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids jsession-id person-oid inet-addr user-agent)
                   json        (to-json hakemus-oids)
-                  foo         (log/info (str "Post JSON body" json))
+                  _           (log/infof "Post JSON body %s" json)
                   response    (<? (post-as-channel url json (post-json-options jsession-id) nil))
                   status-code (response :status)]
               (-> channel
@@ -70,7 +70,7 @@
               (log-to-access-log status-code nil))
             (catch Exception e
               (do
-                (log/error "Virhe hakiessa valintapisteitä hakemuksille " e)
+                (log/error e "Virhe hakiessa valintapisteitä hakemuksille ")
                 (log-to-access-log 500 (.getMessage e))
                 (-> channel
                     (status 500)

@@ -22,11 +22,11 @@
   [args]
    (if-let [from-args (read-config-path-from-args args)]
     (do
-      (log/info "Using config property {} from main args!" from-args)
+      (log/infof "Using config property %s from main args!" from-args)
       from-args)
     (if-let [from-env (read-config-path-from-env)]
       (do
-        (log/info "Using config property {} from env.vars!" from-env)
+        (log/infof "Using config property %s from env.vars!" from-env)
         from-env)
       (throw (Exception. (str (name ulkoiset-rajapinnat-property-key) " is mandatory! Either give it in args or set env.var!"))))))
 

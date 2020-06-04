@@ -12,7 +12,7 @@
 (defn onr-sessionid-channel [] (fetch-jsessionid-channel "/oppijanumerorekisteri-service"))
 
 (defn log-fetch [number-of-oids start-time response]
-  (log/debug "Fetching 'henkilot' (size = {}) ready with status {}! Took {}ms!" number-of-oids (response :status) (- (System/currentTimeMillis) start-time))
+  (log/debugf "Fetching 'henkilot' (size = %s) ready with status %s! Took %sms!" number-of-oids (response :status) (- (System/currentTimeMillis) start-time))
   response)
 
 (defn fetch-henkilot-channel [jsessionid henkilo-oids]
