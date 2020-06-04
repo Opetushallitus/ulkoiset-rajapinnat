@@ -66,7 +66,7 @@
   (let [p (promise-chan nil (fn [e] (log/warnf e "%s %s failed!" method url)))
         options-with-ids (merge
                           {:socket-timeout     30000
-                           :connection-timeout one-hour-ms}
+                           :timeout            one-hour-ms}
                           (update-in options [:headers] assoc
                                     "Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
                                     "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat"))
