@@ -292,8 +292,8 @@
   (async/go
     (try
       (if (seq (<? (haku-for-haku-oid-channel haku-oid)))
-        (let [;vastaanotot (<? (get-vastaanotot-channel haku-oid hakukohde-oids))
-              vastaanotot (<?(cached-vastaanotot-for-hakukohdes haku-oid hakukohde-oids))
+        (let [vastaanotot (<? (get-vastaanotot-channel haku-oid hakukohde-oids))
+              ;vastaanotot (<?(cached-vastaanotot-for-hakukohdes haku-oid hakukohde-oids))
               vastaanottojen-hakukohde-oidit (distinct (map #(% "hakukohdeOid") (flatten (map #(% "hakutoiveet") vastaanotot))))
               hakemus-oidit (map #(% "hakemusOid") vastaanotot)
               valintakokeet-ch (if (empty? vastaanottojen-hakukohde-oidit) (empty-object-channel) (fetch-kokeet-channel haku-oid vastaanottojen-hakukohde-oidit))
