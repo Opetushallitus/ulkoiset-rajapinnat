@@ -35,6 +35,7 @@
                  st (<? (fetch-service-ticket-channel "/haku-app"))
                  response (client/post (resolve-url :haku-app.hakemus-by-oids)
                                        {:headers {"CasSecurityTicket" st
+                                                  "Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
                                                   "Content-Type"      "application/json"}
                                         :body    post-body})
                  response-body (-> (parse-json-body response))
@@ -73,6 +74,7 @@
                                post-body (to-json query)]
                            (log/debugf "POST -> %" url post-body)
                            (client/post url {:headers {"CasSecurityTicket" st
+                                                       "Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
                                                        "Content-Type"      "application/json"}
                                              :body    post-body}))
                 body (-> (parse-json-body response))
