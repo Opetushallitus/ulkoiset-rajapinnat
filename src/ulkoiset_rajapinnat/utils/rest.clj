@@ -68,8 +68,8 @@
                           {:socket-timeout     30000
                            :timeout            one-hour-ms}
                           (update-in options [:headers] assoc
-                                    "Caller-Id" "fi.opintopolku.ulkoiset-rajapinnat"
-                                    "clientSubSystemCode" "fi.opintopolku.ulkoiset-rajapinnat"))
+                                    "Caller-Id" "1.2.246.562.10.00000000001.ulkoiset-rajapinnat"
+                                    "CSRF" "1.2.246.562.10.00000000001.ulkoiset-rajapinnat"))
         start-time (System/nanoTime)]
     (method url options-with-ids
       #(go
