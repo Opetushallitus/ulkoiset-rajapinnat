@@ -18,7 +18,7 @@
                  [clj-http "3.7.0"]
                  [org.clojure/data.xml "0.0.8"]
                  [fullcontact/full.async "1.0.0"]
-                 [http-kit "2.2.0"]
+                 [http-kit "2.5.3"]
                  [prismatic/schema "1.1.7"]
                  [metosin/compojure-api "1.1.11"]
                  [cheshire "5.8.0"]

@@ -38,6 +38,7 @@
                                                   "Caller-Id" "1.2.246.562.10.00000000001.ulkoiset-rajapinnat"
                                                   "CSRF" "1.2.246.562.10.00000000001.ulkoiset-rajapinnat"
                                                   "Content-Type"      "application/json"}
+                                        :cookies {"CSRF" {:value "1.2.246.562.10.00000000001.ulkoiset-rajapinnat" :path "/"}}
                                         :body    post-body})
                  response-body (-> (parse-json-body response))
                  result (result-mapper response-body)]

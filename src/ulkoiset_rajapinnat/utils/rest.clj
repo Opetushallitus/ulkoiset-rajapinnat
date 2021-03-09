@@ -4,6 +4,7 @@
             [cheshire.core :refer :all]
             [full.async :refer :all]
             [clojure.core.async :refer [>! promise-chan >! go put! close!]]
+            [clojure.string :as s]
             [clojure.tools.logging :as log]
             [org.httpkit.server :refer :all])
   (:import [clojure.lang IExceptionInfo]
@@ -69,7 +70,10 @@
                            :timeout            one-hour-ms}
                           (update-in options [:headers] assoc
                                     "Caller-Id" "1.2.246.562.10.00000000001.ulkoiset-rajapinnat"
-                                    "CSRF" "1.2.246.562.10.00000000001.ulkoiset-rajapinnat"))
+                                    "CSRF" "1.2.246.562.10.00000000001.ulkoiset-rajapinnat"
+                                    "Cookie" (s/join "; " (remove s/blank?
+                                                             [(get-in options [:headers "Cookie"])
+                                                              "CSRF=1.2.246.562.10.00000000001.ulkoiset-rajapinnat"]))))
         start-time (System/nanoTime)]
     (method url options-with-ids
       #(go
