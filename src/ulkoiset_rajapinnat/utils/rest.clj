@@ -103,9 +103,15 @@
 (defn post-form-as-channel [url form mapper]
   (post-as-channel url nil {:form-params form} mapper))
 
+(def CSRF_VALUE "1.2.246.562.10.00000000001.ulkoiset-rajapinnat")
+
 (defn post-json-options
-  ([] {:as :stream :timeout 600000 :headers {"Content-Type" mime-application-json}})
-  ([jsession-id] {:as :stream :timeout 600000 :headers {"Content-Type" mime-application-json "Cookie" (str "JSESSIONID=" jsession-id)}}))
+  ([] {:as :stream :timeout 600000 :headers {"Content-Type" mime-application-json
+                                             "CSRF" CSRF_VALUE
+                                             "Cookie" (str "CSRF="CSRF_VALUE)}})
+  ([jsession-id] {:as :stream :timeout 600000 :headers {"Content-Type" mime-application-json
+                                                        "CSRF" CSRF_VALUE
+                                                        "Cookie" (str "JSESSIONID=" jsession-id "; CSRF=" CSRF_VALUE)}}))
 
 (defn post-json-as-channel
   ([url data mapper]
