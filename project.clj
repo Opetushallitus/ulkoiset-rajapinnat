@@ -26,10 +26,10 @@
                  [clj-soup/clojure-soup "0.1.3"]
                  ; Logging
                  [org.clojure/tools.logging "0.4.0"]
-                 [org.apache.logging.log4j/log4j-api "2.9.0"]
-                 [org.apache.logging.log4j/log4j-core "2.9.0"]
-                 [org.apache.logging.log4j/log4j-slf4j-impl "2.9.0"]
-                 [clj-log4j2 "0.2.0"]
+                 [org.apache.logging.log4j/log4j-api "2.15.0"]
+                 [org.apache.logging.log4j/log4j-core "2.15.0"]
+                 [org.apache.logging.log4j/log4j-slf4j-impl "2.15.0"]
+                 [clj-log4j2 "0.3.0"]
                  ; Configuration
                  [fi.vm.sade.java-utils/java-properties "0.1.0-SNAPSHOT"]
                  ]
