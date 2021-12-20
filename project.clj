@@ -33,6 +33,7 @@
                  ; Configuration
                  [fi.vm.sade.java-utils/java-properties "0.1.0-SNAPSHOT"]
                  ]
+
   :prep-tasks ["compile"]
   :jvm-opts ["-Dlog4j.configurationFile=test/log4j2.properties"
              "-XX:+TieredCompilation" "-XX:TieredStopAtLevel=1"]
