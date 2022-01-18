@@ -37,7 +37,7 @@
   (log/info (str "Mocking url " url " flags: " flags))
   (def response (partial channel-response transform url))
   (let [use-empty-avaimet (some #{:empty-avaimet} flags)]
-    (if (str/starts-with? url "http://fake.internal.virkailija.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=-&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
+    (if (str/starts-with? url "http://fake.virkailija.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=-&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
       (response 200 (valintapisteet-chunk (options :body)))
       (case url
         "http://fake.internal.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (response 200 vastaanotot-json)
