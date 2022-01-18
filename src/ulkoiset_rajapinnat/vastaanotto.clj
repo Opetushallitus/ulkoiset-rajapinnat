@@ -178,10 +178,11 @@
 (defn fetch-valintapisteet-channel [haku-oid kaikki-hakemus-oidit request user]
   (log/infof "Haku %s haetaan valintapisteet %d hakemukselle..." haku-oid (count kaikki-hakemus-oidit))
   (go-try
-    (let [url (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids "-" (user :personOid) (remote-addr-from-request request) (user-agent-from-request request))
+    (let [jsession-id (<? (fetch-jsessionid-channel "/valintapiste-service"))
+          url (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids "-" (user :personOid) (remote-addr-from-request request) (user-agent-from-request request))
           group-valintapisteet (fn [x] (apply merge (map (fn [p] {(p "hakemusOID") (p "pisteet")}) x)))
           mapper (comp group-valintapisteet parse-json-body-stream)
-          post (fn [x] (post-json-as-channel url x mapper))
+          post (fn [x] (post-json-as-channel url x mapper jsession-id))
           partitions (partition valintapisteet-batch-size valintapisteet-batch-size nil kaikki-hakemus-oidit)
           valintapisteet (<? (async-map-safe vector (map #(post %) partitions) []))]
       (apply merge valintapisteet))))
