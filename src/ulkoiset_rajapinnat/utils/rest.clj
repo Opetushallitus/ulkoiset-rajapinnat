@@ -105,6 +105,12 @@
 
 (def CSRF_VALUE "1.2.246.562.10.00000000001.ulkoiset-rajapinnat")
 
+(defn post-json-with-cookies
+  [cookies]
+  {:as :stream :timeout 600000 :headers {"Content-Type" mime-application-json
+                                         "CSRF" CSRF_VALUE
+                                         "Cookie" (str cookies ";CSRF="CSRF_VALUE)}})
+
 (defn post-json-options
   ([] {:as :stream :timeout 600000 :headers {"Content-Type" mime-application-json
                                              "CSRF" CSRF_VALUE
@@ -112,6 +118,10 @@
   ([jsession-id] {:as :stream :timeout 600000 :headers {"Content-Type" mime-application-json
                                                         "CSRF" CSRF_VALUE
                                                         "Cookie" (str "JSESSIONID=" jsession-id "; CSRF=" CSRF_VALUE)}}))
+
+(defn post-json-as-channel-with-cookies
+  ([url data mapper cookies]
+   (post-as-channel url (to-json data) (post-json-with-cookies cookies) mapper)))
 
 (defn post-json-as-channel
   ([url data mapper]

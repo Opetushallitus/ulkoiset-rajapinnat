@@ -4,8 +4,8 @@
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
-            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
-            [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json get-as-channel post-as-channel status body body-and-close exception-response parse-json-body to-json parse-json-request post-json-options]]
+            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel fetch-service-ticket-channel]]
+            [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json get-as-channel post-as-channel status body body-and-close exception-response parse-json-body to-json parse-json-request post-json-options post-json-with-cookies]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [strip-version-from-tarjonta-koodisto-uri]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
@@ -28,12 +28,14 @@
   (if (or (nil? haku-oid) (nil? hakukohde-oid))
     (go [])
     (go (try
-          (let [jsession-id "-"
+          (let [ticket (<? (fetch-service-ticket-channel "/valintapiste-service/auth/cas" true))
+                auth-response (<? (get-as-channel (resolve-url :valintapiste-service.cas-by-ticket ticket) {:follow-redirects false}))
                 person-oid  (user :personOid)
                 inet-addr   (remote-addr-from-request request)
                 user-agent  (user-agent-from-request request)
-                url         (resolve-url :valintapiste-service.internal.pisteet-for-hakukohde haku-oid hakukohde-oid jsession-id person-oid inet-addr user-agent)
-                response    (<? (get-as-channel url))
+                jsession-id "-"
+                url         (resolve-url :valintapiste-service.pisteet-for-hakukohde haku-oid hakukohde-oid jsession-id person-oid inet-addr user-agent)
+                response    (<? (get-as-channel url {:headers {"Cookie" (-> auth-response :headers :set-cookie)}}))
                 status-code (response :status)]
             (-> channel
                 (status status-code)
@@ -55,14 +57,16 @@
     (if (nil? hakemus-oids)
       (go [])
       (go (try
-            (let [jsession-id "-"
+            (let [ticket (<? (fetch-service-ticket-channel "/valintapiste-service/auth/cas" true))
+                  auth-response (<? (get-as-channel (resolve-url :valintapiste-service.cas-by-ticket ticket) {:follow-redirects false}))
                   person-oid  (user :personOid)
                   inet-addr   (remote-addr-from-request request)
                   user-agent  (user-agent-from-request request)
-                  url         (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids jsession-id person-oid inet-addr user-agent)
+                  jsession-id "-"
+                  url         (resolve-url :valintapiste-service.pisteet-with-hakemusoids jsession-id person-oid inet-addr user-agent)
                   json        (to-json hakemus-oids)
                   _           (log/infof "Post JSON body %s" json)
-                  response    (<? (post-as-channel url json (post-json-options jsession-id) nil))
+                  response    (<? (post-as-channel url json (post-json-with-cookies (-> auth-response :headers :set-cookie)) nil))
                   status-code (response :status)]
               (-> channel
                   (status status-code)
