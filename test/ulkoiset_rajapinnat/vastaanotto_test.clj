@@ -40,7 +40,6 @@
     (if (str/starts-with? url "http://fake.virkailija.opintopolku.fi/valintapiste-service/api/pisteet-with-hakemusoids?sessionId=-&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
       (response 200 (valintapisteet-chunk (options :body)))
       (case url
-        "http://fake.virkailija.opintopolku.fi/valintapiste-service/auth/cas?ticket=FAKESERVICETICKET" (response 200 "[]")
         "http://fake.internal.virkailija.opintopolku.fi/valinta-tulos-service/haku/streaming/1.2.246.562.29.25191045126/sijoitteluajo/latest/hakemukset?vainMerkitsevaJono=true" (response 200 vastaanotot-json)
         "http://fake.virkailija.opintopolku.fi/valintaperusteet-service/resources/hakukohde/avaimet" (response 200 (if use-empty-avaimet avaimet-empty-json avaimet-json))
         "http://fake.internal.virkailija.opintopolku.fi/suoritusrekisteri/rest/v1/oppijat/?ensikertalaisuudet=false&haku=1.2.246.562.29.25191045126" (response 200 (oppijat-chunk (options :body)))
