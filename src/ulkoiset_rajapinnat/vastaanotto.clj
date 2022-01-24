@@ -5,9 +5,9 @@
             [clojure.core.async :as async]
             [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request]]
             [ulkoiset-rajapinnat.utils.tarjonta :refer [hakukohde-oidit-koulutuksen-alkamiskauden-ja-vuoden-mukaan haku-for-haku-oid-channel]]
-            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
+            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel fetch-service-ticket-channel]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
-            [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel get-as-channel status body-and-close exception-response to-json parse-json-body-stream body parse-json-request]]
+            [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel post-json-as-channel-with-cookies get-as-channel status body-and-close exception-response to-json parse-json-body-stream body parse-json-request]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching get-value-if-not-nil]]
             [ulkoiset-rajapinnat.utils.async_safe :refer :all]
             [org.httpkit.server :refer :all]
@@ -178,10 +178,13 @@
 (defn fetch-valintapisteet-channel [haku-oid kaikki-hakemus-oidit request user]
   (log/infof "Haku %s haetaan valintapisteet %d hakemukselle..." haku-oid (count kaikki-hakemus-oidit))
   (go-try
-    (let [url (resolve-url :valintapiste-service.internal.pisteet-with-hakemusoids "-" (user :personOid) (remote-addr-from-request request) (user-agent-from-request request))
+    (let [ticket (<? (fetch-service-ticket-channel "/valintapiste-service/auth/cas" true))
+          auth-response (<? (get-as-channel (resolve-url :valintapiste-service.cas-by-ticket ticket) {:follow-redirects false}))
+          url (resolve-url :valintapiste-service.pisteet-with-hakemusoids "-" (user :personOid) (remote-addr-from-request request) (user-agent-from-request request))
           group-valintapisteet (fn [x] (apply merge (map (fn [p] {(p "hakemusOID") (p "pisteet")}) x)))
           mapper (comp group-valintapisteet parse-json-body-stream)
-          post (fn [x] (post-json-as-channel url x mapper))
+          cookies (-> auth-response :headers :set-cookie)
+          post (fn [x] (post-json-as-channel-with-cookies url x mapper cookies))
           partitions (partition valintapisteet-batch-size valintapisteet-batch-size nil kaikki-hakemus-oidit)
           valintapisteet (<? (async-map-safe vector (map #(post %) partitions) []))]
       (apply merge valintapisteet))))

@@ -9,7 +9,7 @@
             [clojure.core.async :refer [go <!!]]
             [ulkoiset-rajapinnat.utils.access :refer [check-ticket-is-valid-and-user-has-required-roles write-access-log]]
             [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body to-json post-json-as-channel]]
-            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
+            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel fetch-service-ticket-channel]]
             [ulkoiset-rajapinnat.fixture :refer :all]
             [picomock.core :as pico]
             [ulkoiset-rajapinnat.test_utils :refer [mock-channel channel-response mock-write-access-log assert-access-log-write]]
@@ -23,7 +23,7 @@
 (defn mock-http [url options transform]
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
-  (if (str/starts-with? url "http://fake.internal.virkailija.opintopolku.fi/valintapiste-service/api/haku/1.2.3.1111/hakukohde/1.2.3.444?sessionId=-&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
+  (if (str/starts-with? url "http://fake.virkailija.opintopolku.fi/valintapiste-service/api/haku/1.2.3.1111/hakukohde/1.2.3.444?sessionId=-&uid=1.2.246.562.24.1234567890&inetAddress=127.0.0.1&userAgent=")
     (response 200 pistetiedot-json)
     (response 404 "[]")))
 
@@ -34,6 +34,7 @@
       (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                     http/get (fn [url options transform] (mock-http url options transform))
                     fetch-jsessionid-channel (fn [& _] (mock-channel "FAKEJSESSIONID"))
+                    fetch-service-ticket-channel (fn [x y] (mock-channel "FAKESERVICETICKET"))
                     write-access-log access-log-mock]
         (let [apicall (api-call "/api/valintapiste/haku/1.2.3.nonexistent/hakukohde/1.2.3.nonexistent")
               response (try
@@ -48,6 +49,7 @@
       (with-redefs [check-ticket-is-valid-and-user-has-required-roles (fn [& _] (go fake-user))
                     http/get (fn [url options transform] (mock-http url options transform))
                     fetch-jsessionid-channel (fn [& _] (mock-channel "FAKEJSESSIONID"))
+                    fetch-service-ticket-channel (fn [x y] (mock-channel "FAKESERVICETICKET"))
                     write-access-log access-log-mock]
         (let [apicall (api-call "/api/valintapiste/haku/1.2.3.1111/hakukohde/1.2.3.444")
               response (try
