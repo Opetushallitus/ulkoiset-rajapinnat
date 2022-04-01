@@ -20,10 +20,10 @@
 (defn fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel
   ([haku-oid oppija-oids ensikertalaisuus?]
    (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel
-     haku-oid oppija-oids (fetch-hakurekisteri-service-ticket-channel)))
+     haku-oid oppija-oids ensikertalaisuus? (fetch-hakurekisteri-service-ticket-channel)))
   ([haku-oid oppija-oids ensikertalaisuus? service-ticket-channel]
    (go-try
      (let [service-ticket (<? service-ticket-channel)
-           url (resolve-url :suoritusrekisteri-service.oppijat-with-ticket ensikertalaisuus? haku-oid service-ticket)]
+           url (resolve-url :suoritusrekisteri-service.oppijat ensikertalaisuus? haku-oid)]
        (<? (post-as-channel url (to-json oppija-oids) {:headers {"CasSecurityTicket" service-ticket}}
                             parse-json-body))))))
