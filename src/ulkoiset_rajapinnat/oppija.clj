@@ -25,6 +25,6 @@
    (go-try
      (let [service-ticket (<? service-ticket-channel)
            url (resolve-url :suoritusrekisteri-service.oppijat ensikertalaisuus? haku-oid)]
-       (log/info (str "Fetch oppijat for hakemus for oids " service-ticket " : " oppija-oids))
+       (log/info (str "Fetch oppijat for hakemus for oids " service-ticket " : " (pr-str oppija-oids)))
        (<? (post-as-channel url (to-json oppija-oids) {:headers {"CasSecurityTicket" service-ticket}}
                             parse-json-body))))))
