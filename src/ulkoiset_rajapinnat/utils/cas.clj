@@ -25,7 +25,7 @@
 
 (defn ^:private parse-service-ticket [service response]
   (if-let [st (response :body)]
-    st
+    (if (instance? java.io.InputStream st) (new String (.bytes st) "UTF-8") st)
     (RuntimeException. (format "Unable to parse service ticket for service %s!" service))))
 
 (defn ^:private st-request-channel
@@ -39,6 +39,7 @@
    (let [p-chan (promise-chan)]
      (go
        (try
+         (log/info "Getting service ticket channel for service " service)
          (let [absolute-service (if as-absolute-service?
                                   (str host service)
                                   (str host service "/j_spring_cas_security_check"))
