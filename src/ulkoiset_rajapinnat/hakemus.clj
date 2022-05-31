@@ -266,8 +266,7 @@
                                          (body channel "[]")
                                          (close channel))
                                      (do (body channel "]")
-                                         (close channel)))))
-                 oppija-service-ticket-channel (fetch-hakurekisteri-service-ticket-channel)]
+                                         (close channel)))))]
              (try
                (core-loop [channels [ataru-channel haku-app-channel]]
                  (when (not-empty channels)
@@ -276,7 +275,7 @@
                        (recur (remove #{ch} channels))
                        (let [[henkilo-oids batch mapper] v
                              oppijat (if (or is-haku-with-ensikertalaisuus? is-toisen-asteen-haku?)
-                                       (<? (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel haku-oid henkilo-oids is-haku-with-ensikertalaisuus? oppija-service-ticket-channel)) nil)
+                                       (<? (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel haku-oid henkilo-oids is-haku-with-ensikertalaisuus?)) nil)
                              jsessionid (<? (onr-sessionid-channel))
                              henkilot (<? (fetch-henkilot-channel jsessionid henkilo-oids))
                              oppijat-by-oid (group-by #(get % "oppijanumero") oppijat)
