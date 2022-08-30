@@ -19,11 +19,11 @@
 
 (defn fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel
   ([haku-oid oppija-oids ensikertalaisuus?]
-   (fetch-oppijat-for-hakemus-with-ensikertalaisuus-channel
-     haku-oid oppija-oids (fetch-hakurekisteri-service-ticket-channel)))
-  ([haku-oid oppija-oids ensikertalaisuus? service-ticket-channel]
    (go-try
-     (let [service-ticket (<? service-ticket-channel)
+     (let [post-body (to-json (doall oppija-oids))
+           service-ticket-channel (fetch-hakurekisteri-service-ticket-channel)
+           service-ticket (<? service-ticket-channel)
            url (resolve-url :suoritusrekisteri-service.oppijat-with-ticket ensikertalaisuus? haku-oid service-ticket)]
-       (<? (post-as-channel url (to-json oppija-oids) {:headers {"CasSecurityTicket" service-ticket}}
+       (log/info (str "Calling suoritusrekisteri url " url " with " (count oppija-oids) " oppijas and ticket " service-ticket))
+       (<? (post-as-channel url post-body {:headers {"CasSecurityTicket" service-ticket}}
                             parse-json-body))))))
