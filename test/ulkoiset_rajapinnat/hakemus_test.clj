@@ -107,7 +107,7 @@
   (log/info (str "Mocking url " url))
   (def response (partial channel-response transform url))
   (case url
-    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/pohjakoulutuskklomake/0" (response 200 "[]")
+    "http://fake.virkailija.opintopolku.fi/koodisto-service/rest/codeelement/codes/pohjakoulutuskklomake/1" (response 200 "[]")
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/v1/haku/1.2.246.562.29.999999" (response 200 haku-json)
     "http://fake.virkailija.opintopolku.fi/tarjonta-service/rest/hakukohde/tilastokeskus" (response 200 hakukohteet-json)
     "http://fake.virkailija.opintopolku.fi/oppijanumerorekisteri-service/henkilo/henkilotByHenkiloOidList" (response 200 henkilot-json)
