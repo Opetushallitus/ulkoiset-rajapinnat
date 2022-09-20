@@ -6,6 +6,7 @@ import kotlinx.coroutines.future.await
 import kotlinx.coroutines.future.future
 import ulkoiset_rajapinnat.haku.dto.OldHakukohdeTulos
 import ulkoiset_rajapinnat.kouta.dto.HakukohdeInternal
+import ulkoiset_rajapinnat.kouta.dto.KoulutusInternal
 import ulkoiset_rajapinnat.organisaatio.dto.Organisaatio
 import ulkoiset_rajapinnat.response.HakukohdeResponse
 import ulkoiset_rajapinnat.response.OrganisaatioResponse
@@ -62,9 +63,6 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                 val search = hakukohdesearch().get(hk.hakukohdeOid)
                 val koulutukset = koulutussearch().getAll(hk.koulutusOids.toSet())
                 val koulutus = koulutukset.firstOrNull()
-                if(search?.pohjakoulutusvaatimus != null && search?.pohjakoulutusvaatimus.isNotEmpty()) {
-                    println(search?.pohjakoulutusvaatimus)
-                }
                 HakukohdeResponse(
                     hakukohteenOid = oid,
                     organisaatiot = hk.organisaatioOids.mapNotNull { organisaatiot()[it] },
@@ -104,33 +102,29 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
             .map { hk: HakukohdeInternal ->
                 val organisaatio = organisaatiot()[hk.organisaatioOid]
                 val toteutus = koutaToteutukset().get(hk.toteutusOid)
-                println(toteutus)
-                val koulutus = if(toteutus?.koulutusOid != null) koutaKoulutukset().get(toteutus.koulutusOid) else null
-                println(koulutus)
+                val koulutus: KoulutusInternal? = if(toteutus?.koulutusOid != null) koutaKoulutukset().get(toteutus.koulutusOid) else null
                 val haku = koutaHaku()
-
 
                 HakukohdeResponse(
                     hakukohteenOid = hk.oid,
                     organisaatiot = listOf(organisaatio).filterNotNull(),
                     hakukohteenNimi = hk.nimi.excludeBlankValues,
-                    koulutuksenOpetuskieli = hk.kielivalinta,
+                    koulutuksenOpetuskieli = hk.kielivalinta.mapNotNull(kieli()::arvo),
                     koulutuksenKoulutustyyppi = koulutustyyppi().arvo(koulutus?.koulutustyyppi),
                     hakukohteenKoulutuskoodit = listOf(koulutus?.koulutusKoodiUrit)
-                        .filterNotNull().flatten().map { it.stripVersion.stripType }, // TODO 742702
+                        .filterNotNull().flatten().map { it.stripVersion.stripType },
                     koulutuksenAlkamisvuosi = if(hk.kaytetaankoHaunAlkamiskautta)
                         haku.alkamisvuosi else hk.paateltyAlkamiskausi.vuosi,
                     koulutuksenAlkamiskausi = kausi().arvo(if(hk.kaytetaankoHaunAlkamiskautta)
                         haku.alkamiskausiKoodiUri else hk.paateltyAlkamiskausi.kausiUri),
                     hakukohteenKoulutukseenSisaltyvatKoulutuskoodit = listOf(koulutus?.koulutusKoodiUrit)
                         .filterNotNull().flatten().map { it.stripVersion.stripType }, // TODO 742702
-                    hakukohteenKoodi = "", // TODO search?.koodistoNimi?.stripVersion?.stripType?.stripNull,
-                    pohjakoulutusvaatimus = hk.pohjakoulutusvaatimusKoodiUrit.filterNotNull()
+                    hakukohteenKoodi = null,
+                    pohjakoulutusvaatimus = hk.pohjakoulutusvaatimusKoodiUrit
                         .map { it.stripVersion.stripType }.firstOrNull(),
-                    // search?.pohjakoulutusvaatimus?.get("fi"),
-                    hakijalleIlmoitetutAloituspaikat = hk.aloituspaikat, // hakukohde search?.aloituspaikat,
-                    valintojenAloituspaikat = 22, // TODO hakukohde search?.valintojenAloituspaikat,
-                    ensikertalaistenAloituspaikat = hk.ensikertalaisenAloituspaikat // hakukohde search?.ensikertalaistenAloituspaikat
+                    hakijalleIlmoitetutAloituspaikat = hk.aloituspaikat,
+                    valintojenAloituspaikat = null, // Kouta doesnt provide this
+                    ensikertalaistenAloituspaikat = hk.ensikertalaisenAloituspaikat
                 )
             }
     }
