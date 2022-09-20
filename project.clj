@@ -67,7 +67,7 @@
   :git-version {:version-file      "target/classes/buildversion.edn"
                 :version-file-keys [:ref :version :branch :message]}
 
-  :profiles {:uberjar {:prep-tasks ["kotlinc" "resource"]}
+  :profiles {:uberjar {:prep-tasks ["compile" "kotlinc" "resource"]}
              :plugins [[lein-ring "0.11.0"]]
              :dev {:test-paths ["test/clj" "test/kotlin"]
                    :kotlin-source-paths ["test/kotlin"]
@@ -80,7 +80,6 @@
                                   [io.github.infeez.kotlin-mock-server/mock-server-okhttp "1.0.0"]
                                   [de.flapdoodle.embed/de.flapdoodle.embed.mongo "2.0.0"]
                                   [org.jetbrains.kotlinx/kotlinx-coroutines-test "1.6.4"]
-                                  ;[com.github.fakemongo/fongo "2.1.0"]
                                   [ring/ring-mock "0.3.1"]
                                   [audiogum/picomock "0.1.11"]]}})
 

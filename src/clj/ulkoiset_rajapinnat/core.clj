@@ -1,8 +1,5 @@
 (ns ulkoiset-rajapinnat.core
   (:require [compojure.handler :only [site]]
-        [clojure.java.data :as jd]
-        [camel-snake-kebab.core :as csk]
-        [camel-snake-kebab.extras :refer [transform-keys]]
         [org.httpkit.timer :refer :all]
         [compojure.api.sweet :refer :all]
         [compojure.api.exception :as ex]
