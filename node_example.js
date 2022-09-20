@@ -28,7 +28,7 @@ postForm(hostname + '/cas/v1/tickets', {username:username, password:password})
 	.then(ticketGrantingTicketFromResponseHtml)
 	.then((tgtUrl) => postForm(tgtUrl,{service:hostname+'/ulkoiset-rajapinnat'}))
 	.then((serviceTicket) => {
-		const url = hostname + '/ulkoiset-rajapinnat/api/hakemus-for-haku/1.2.246.562.29.11787797049?koulutuksen_alkamisvuosi=2018&koulutuksen_alkamiskausi=K&ticket=' + serviceTicket
+		const url = hostname + '/ulkoiset-rajapinnat/api/haku-for-year/2021?ticket=' + serviceTicket
 		//console.log('Calling URL ' + url)
 		request.get(url, (e,r,body) => {
 			console.log(JSON.stringify(JSON.parse(body), null, 2))
