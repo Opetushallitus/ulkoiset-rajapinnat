@@ -25,10 +25,8 @@ interface HakuByYear {
 
 class UlkoisetRajapinnatApi(
     properties: OphProperties,
-    config: PersistentArrayMap,
-    wrappedConfig: PersistentArrayMapWrapper = PersistentArrayMapWrapper(config),
-    username: String = wrappedConfig.read("ulkoiset-rajapinnat-cas-username") as String,
-    password: String = wrappedConfig.read("ulkoiset-rajapinnat-cas-password") as String,
+    username: String,
+    password: String,
     clients: Clients = Clients(
         hakuClient = HakuClient(properties),
         koodistoClient = KoodistoClient(properties),
@@ -39,7 +37,17 @@ class UlkoisetRajapinnatApi(
     hakukohteetForHaku: HakukohteetForHakuApi = HakukohteetForHakuApi(clients),
     hakuByYear: HakuByYear = HakuByYearApi(clients)
 ) : HakukohteetForHaku by hakukohteetForHaku,
-    HakuByYear by hakuByYear
+    HakuByYear by hakuByYear {
+
+    constructor(
+        p: OphProperties,
+        c: PersistentArrayMap
+    ) : this(
+        p,
+        username = PersistentArrayMapWrapper(c).read("ulkoiset-rajapinnat-cas-username") as String,
+        password = PersistentArrayMapWrapper(c).read("ulkoiset-rajapinnat-cas-password") as String
+    )
+}
 
 
 
