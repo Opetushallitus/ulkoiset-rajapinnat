@@ -1,0 +1,33 @@
+{
+  "1.2.246.562.29.00000000000000000800": {
+    "PH_AHP": {
+      "date": 1668679200000
+    },
+    "PH_HKP": {
+      "date": 1676024659575
+    },
+    "PH_LMT": {
+      "value": 7
+    },
+    "PH_OPVP": {
+      "date": 1669986000000
+    },
+    "PH_VSTP": {
+      "date": 1670936400000
+    },
+    "PH_HPVOA": {
+      "value": 7
+    },
+    "PH_VSSAV": {
+      "date": 1669370400000
+    },
+    "PH_VTSSV": {
+      "date": 1669370400000
+    },
+    "sijoittelu": true,
+    "useitaHakemuksia": false,
+    "jarjestetytHakutoiveet": true,
+    "hakutoiveidenEnimmaismaara": 6,
+    "hakutoiveidenMaaraRajoitettu": true
+  }
+}

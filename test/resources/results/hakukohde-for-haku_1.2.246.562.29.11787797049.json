@@ -1,0 +1,539 @@
+[
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Biomedical Sciences, Master of Science (2 years)",
+      "en": "Master's Degree Programme in Biomedical Sciences, Master of Science (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.78305677532",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto",
+          "sv": "Turun yliopisto",
+          "en": "University of Turku"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "742702"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.14542843496",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "742702"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 40,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Nordic Cultural and Social Resilience, Master of Arts (2 years)",
+      "en": "Master's Degree Programme in Nordic Cultural and Social Resilience, Master of Arts (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.520877937010",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Humanistinen tiedekunta",
+          "sv": "Turun yliopisto, Humanistinen tiedekunta",
+          "en": "University of Turku, Faculty of Humanities"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "726999"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.78745840484",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "726999"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 20,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Education and Learning, Master of Arts (Education), (2 years)",
+      "en": "Master's Degree Programme in Education and Learning, Master of Arts (Education), (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.36999367752",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Kasvatustieteiden tiedekunta",
+          "sv": "Turun yliopisto, Kasvatustieteiden tiedekunta",
+          "en": "University of Turku, Faculty of Education"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "712201"
+    ],
+    "koulutuksen_opetuskieli": [
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.23563280603",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "712201"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 20,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Human Neuroscience, Master of Science (2 years)",
+      "en": "Master's Degree Programme in Human Neuroscience, Master of Science (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.51777608657",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Lääketieteellinen tiedekunta",
+          "sv": "Turun yliopisto, Lääketieteellinen tiedekunta",
+          "en": "University of Turku, Faculty of Medicine"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "742999"
+    ],
+    "koulutuksen_opetuskieli": [
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.56666116852",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "742999"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 40,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Digital Health and Life Sciences, Master of Science (2 years)",
+      "en": "Master's Degree Programme in Digital Health and Life Sciences, Master of Science (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.42196752952",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "sv": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "en": "University of Turku, Faculty of Science"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "742201"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.68376898331",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "742201"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 15,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Digital Health and Life Sciences, Master of Science (Technology), (2 years)",
+      "en": "Master's Degree Programme in Digital Health and Life Sciences, Master of Science (Technology), (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.42196752952",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "sv": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "en": "University of Turku, Faculty of Science"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "751301"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.26323973151",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "751301"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 15,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Embedded Computing, Master of Science (Technology) (2 years)",
+      "en": "Master's Degree Programme in Embedded Computing, Master of Science (Technology) (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.42196752952",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "sv": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "en": "University of Turku, Faculty of Science"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "751301"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.73813184444",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "751301"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 10,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Food Development, Master of Science (Technology) (2 years)",
+      "en": "Master's Degree Programme in Food Development, Master of Science (Technology) (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.42196752952",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "sv": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "en": "University of Turku, Faculty of Science"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "751409"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.562526801710",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "751409"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 15,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Information Security and Cryptography, Master of Science (2 years)",
+      "en": "Master's Degree Programme in Information Security and Cryptography, Master of Science (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.42196752952",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "sv": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "en": "University of Turku, Faculty of Science"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "742201"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.12016168747",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "742201"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 10,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Information Security and Cryptography, Master of Science (Technology) (2 years)",
+      "en": "Master's Degree Programme in Information Security and Cryptography, Master of Science (Technology) (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.42196752952",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "sv": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "en": "University of Turku, Faculty of Science"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "751301"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.73700177907",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "751301"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 10,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Physical and Chemical Sciences, Master of Science (2 years)",
+      "en": "Master's Degree Programme in Physical and Chemical Sciences, Master of Science (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.42196752952",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "sv": "Turun yliopisto, Matemaattis-luonnontieteellinen tiedekunta",
+          "en": "University of Turku, Faculty of Science"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "742999"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.93022851351",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "742999"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 20,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Law and Information Society, Master of International Law and Comparative Law (2 v",
+      "en": "Master's Degree Programme in Law and Information Society, Master of International Law and Comparative Law (2 v"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.73298799609",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Oikeustieteellinen tiedekunta",
+          "sv": "Turun yliopisto, Oikeustieteellinen tiedekunta",
+          "en": "University of Turku, Faculty of Law"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "734102"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.56995046333",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "734102"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 20,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Futures Studies, Master of Arts (2 years)",
+      "en": "Master's Degree Programme in Futures Studies, Master of Arts (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.35830094294",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Turun kauppakorkeakoulu",
+          "sv": "Turun yliopisto, Turun kauppakorkeakoulu",
+          "en": "University of Turku, School of Economics and Business Administration"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "726999"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.220532180410",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "726999"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 20,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in Global Innovation Management, Master of Science (Economics and Business Administration), (2 years)",
+      "en": "Master's Degree Programme in Global Innovation Management, Master of Science (Economics and Business Administration), (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.35830094294",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Turun kauppakorkeakoulu",
+          "sv": "Turun yliopisto, Turun kauppakorkeakoulu",
+          "en": "University of Turku, School of Economics and Business Administration"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "732101"
+    ],
+    "koulutuksen_opetuskieli": [
+      "FI",
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.26646758164",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "732101"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 25,
+    "valintojen_aloituspaikat": 0
+  },
+  {
+    "hakukohteen_nimi": {
+      "fi": "Master's Degree Programme in East Asian Studies, Master of Social Sciences (2 years)",
+      "en": "Master's Degree Programme in East Asian Studies, Master of Social Sciences (2 years)"
+    },
+    "koulutuksen_alkamisvuosi": 2018,
+    "organisaatiot": [
+      {
+        "organisaation_oid": "1.2.246.562.10.941260067110",
+        "koulutustoimijan_ytunnus": "0245896-3",
+        "oppilaitos_koodi": "10089",
+        "organisaation_kuntakoodi": "853",
+        "organisaation_nimi": {
+          "fi": "Turun yliopisto, Yhteiskuntatieteellinen tiedekunta",
+          "sv": "Turun yliopisto, Yhteiskuntatieteellinen tiedekunta",
+          "en": "University of Turku, Faculty of Social Sciences"
+        }
+      }
+    ],
+    "koulutuksen_alkamiskausi": "s",
+    "koulutuksen_koulutustyyppi": "3",
+    "hakukohteen_koulutukseen_sisaltyvat_koulutuskoodit": [
+      "733101"
+    ],
+    "koulutuksen_opetuskieli": [
+      "EN"
+    ],
+    "hakukohteen_oid": "1.2.246.562.20.11454025229",
+    "ensikertalaisten_aloituspaikat": 0,
+    "hakukohteen_koulutuskoodit": [
+      "733101"
+    ],
+    "hakijalle_ilmoitetut_aloituspaikat": 15,
+    "valintojen_aloituspaikat": 0
+  }
+]

@@ -13,6 +13,10 @@ or run in REPL
 
 `(ulkoiset-rajapinnat.core/-main "ulkoisetrajapinnat-properties=my.edn")`
 
+or run Java part only from Idea (Edit Configurations -> Environment Variables -> config=../my.edn)
+
+`RunJavaApi`
+
 ## CAS with Node.js Example
 
 `npm install --save cheerio request bluebird`

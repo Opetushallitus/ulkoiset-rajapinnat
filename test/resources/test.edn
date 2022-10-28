@@ -1,0 +1,10 @@
+{:ulkoiset-rajapinnat-cas-username "tester"
+ :ulkoiset-rajapinnat-cas-password "tester-password"
+ :urls {
+        :host-virkailija "http://localhost:9999"
+        :host-virkailija-internal "http://localhost:9999"
+        }
+ :server {:port 8000
+          :base-url "/ulkoiset-rajapinnat"}
+ :enable-dangerous-magic-ticket-access true
+ :dangerous-magic-ticket "oph"}
