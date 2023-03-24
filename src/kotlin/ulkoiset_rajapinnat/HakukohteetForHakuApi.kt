@@ -95,7 +95,7 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
             .thenApply { it.map { it.oid to it }.toMap() }
         val koutaHakukohteet = koutaInternalClient.findHakukohteetByHakuOid(hakuOid)
         val organisaatiot = koutaHakukohteet.thenCompose {
-            organisaatioClient.fetchOrganisaatiotAndParentOrganisaatiot(it.map { hk -> hk.oid }.toSet()) }
+            organisaatioClient.fetchOrganisaatiotAndParentOrganisaatiot(it.map { hk -> hk.organisaatioOid }.toSet()) }
             .thenApply { orgs -> enrichOrganisaatiot(orgs.map { it.oid to it }.toMap()) }
 
         return koutaHakukohteet()
@@ -109,13 +109,13 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                     hakukohteenOid = hk.oid,
                     organisaatiot = listOf(organisaatio).filterNotNull(),
                     hakukohteenNimi = hk.nimi.excludeBlankValues,
-                    koulutuksenOpetuskieli = hk.kielivalinta.mapNotNull(kieli()::arvo),
-                    koulutuksenKoulutustyyppi = koulutustyyppi().arvo(koulutus?.koulutustyyppi),
+                    koulutuksenOpetuskieli = hk.kielivalinta.map {"kieli_" + it}.mapNotNull(kieli()::arvo),
+                    koulutuksenKoulutustyyppi = koulutus?.koulutustyyppi,
                     hakukohteenKoulutuskoodit = listOf(koulutus?.koulutusKoodiUrit)
                         .filterNotNull().flatten().map { it.stripVersion.stripType },
-                    koulutuksenAlkamisvuosi = if(hk.kaytetaankoHaunAlkamiskautta)
+                    koulutuksenAlkamisvuosi = if(hk.kaytetaanHaunAlkamiskautta)
                         haku.alkamisvuosi else hk.paateltyAlkamiskausi.vuosi,
-                    koulutuksenAlkamiskausi = kausi().arvo(if(hk.kaytetaankoHaunAlkamiskautta)
+                    koulutuksenAlkamiskausi = kausi().arvo(if(hk.kaytetaanHaunAlkamiskautta)
                         haku.alkamiskausiKoodiUri else hk.paateltyAlkamiskausi.kausiUri),
                     hakukohteenKoulutukseenSisaltyvatKoulutuskoodit = listOf(koulutus?.koulutusKoodiUrit)
                         .filterNotNull().flatten().map { it.stripVersion.stripType }, // TODO 742702

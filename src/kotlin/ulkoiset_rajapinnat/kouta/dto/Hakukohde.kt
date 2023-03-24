@@ -24,7 +24,7 @@ data class HakukohdeInternal(
     val aloituspaikat: Int?,
     val ensikertalaisenAloituspaikat: Int?,
     val nimi: Map<String, String>,
-    val kaytetaankoHaunAlkamiskautta: Boolean,
+    val kaytetaanHaunAlkamiskautta: Boolean,
     val hakulomaketyyppi: String,
     val hakulomakeAtaruId: String,
     val hakulomakeKuvaus: Map<String, String>,

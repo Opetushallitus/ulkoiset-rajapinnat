@@ -33,7 +33,6 @@ fun Map<String, Koodisto>.arvo(k: String?): String? {
     if (k == null) {
         return null
     } else {
-
         return get(k.stripVersion)?.koodiArvo
     }
 }
