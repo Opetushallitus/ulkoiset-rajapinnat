@@ -28,6 +28,9 @@ object KoodistoMocks {
     val koulutustyyppi = mock("/koodisto-service/rest/codeelement/codes/koulutustyyppi/1") {
         body(resource("koodisto/koulutustyyppi1.json"))
     }
+    val opetuskieli = mock("/koodisto-service/rest/codeelement/codes/oppilaitoksenopetuskieli/2") {
+        body(resource("koodisto/oppilaitoksenopetuskieli2.json"))
+    }
 
     val koodistot = mocks {
         +kausi
@@ -37,5 +40,6 @@ object KoodistoMocks {
         +haunkohdejoukontarkenne
         +kieli
         +koulutustyyppi
+        +opetuskieli
     }
 }

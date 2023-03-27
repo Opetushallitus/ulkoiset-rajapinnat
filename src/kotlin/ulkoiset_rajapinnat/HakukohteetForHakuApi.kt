@@ -2,11 +2,12 @@ package ulkoiset_rajapinnat
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.future.await
 import kotlinx.coroutines.future.future
 import ulkoiset_rajapinnat.haku.dto.OldHakukohdeTulos
+import ulkoiset_rajapinnat.koodisto.dto.Koodisto
 import ulkoiset_rajapinnat.kouta.dto.HakukohdeInternal
 import ulkoiset_rajapinnat.kouta.dto.KoulutusInternal
+import ulkoiset_rajapinnat.kouta.dto.ToteutusInternal
 import ulkoiset_rajapinnat.organisaatio.dto.Organisaatio
 import ulkoiset_rajapinnat.response.HakukohdeResponse
 import ulkoiset_rajapinnat.response.OrganisaatioResponse
@@ -84,10 +85,22 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
             }
     }
 
+    private suspend fun koutaKoulutuksenOpetuskieli(toteutus: ToteutusInternal?, opetusKieli: CompletableFuture<Map<String, Koodisto>>): List<String> {
+        val opetus = toteutus?.metadata?.getOrDefault("opetus", emptyMap<String, Any>())
+        return if (opetus is Map<*, *>) {
+            (opetus.getOrDefault("opetuskieliKoodiUrit", emptyList<String>()) as List<*>)
+            .map { it as String?}
+                    .mapNotNull(opetusKieli()::arvo)
+        } else {
+            emptyList()
+        }
+    }
+
     private suspend fun findHakukohteetForKoutaHaku(hakuOid: String): List<HakukohdeResponse> {
         val kieli = koodistoClient.fetchKoodisto("kieli")
         val kausi = koodistoClient.fetchKoodisto("kausi")
         val koulutustyyppi = koodistoClient.fetchKoodisto("koulutustyyppi")
+        val opetusKieli = koodistoClient.fetchKoodisto("oppilaitoksenopetuskieli", 2)
         val koutaHaku = koutaInternalClient.findByHakuOid(hakuOid)
         val koutaToteutukset = koutaInternalClient.findToteutuksetByHakuOid(hakuOid)
             .thenApply { it.map { it.oid to it }.toMap() }
@@ -95,12 +108,12 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
             .thenApply { it.map { it.oid to it }.toMap() }
         val koutaHakukohteet = koutaInternalClient.findHakukohteetByHakuOid(hakuOid)
         val organisaatiot = koutaHakukohteet.thenCompose {
-            organisaatioClient.fetchOrganisaatiotAndParentOrganisaatiot(it.map { hk -> hk.organisaatioOid }.toSet()) }
+            organisaatioClient.fetchOrganisaatiotAndParentOrganisaatiot(it.map { hk -> hk.tarjoaja }.toSet()) }
             .thenApply { orgs -> enrichOrganisaatiot(orgs.map { it.oid to it }.toMap()) }
 
         return koutaHakukohteet()
             .map { hk: HakukohdeInternal ->
-                val organisaatio = organisaatiot()[hk.organisaatioOid]
+                val organisaatio = organisaatiot()[hk.tarjoaja]
                 val toteutus = koutaToteutukset().get(hk.toteutusOid)
                 val koulutus: KoulutusInternal? = if(toteutus?.koulutusOid != null) koutaKoulutukset().get(toteutus.koulutusOid) else null
                 val haku = koutaHaku()
@@ -109,21 +122,18 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                     hakukohteenOid = hk.oid,
                     organisaatiot = listOf(organisaatio).filterNotNull(),
                     hakukohteenNimi = hk.nimi.excludeBlankValues,
-                    koulutuksenOpetuskieli = hk.kielivalinta.map {"kieli_" + it}.mapNotNull(kieli()::arvo),
+                    koulutuksenOpetuskieli = koutaKoulutuksenOpetuskieli(toteutus, opetusKieli),
                     koulutuksenKoulutustyyppi = koulutus?.koulutustyyppi,
-                    hakukohteenKoulutuskoodit = listOf(koulutus?.koulutusKoodiUrit)
+                    hakukohteenKoulutuskoodit = listOf(koulutus?.koulutusKoodiUrit) //haetaan relaation kautta
                         .filterNotNull().flatten().map { it.stripVersion.stripType },
-                    koulutuksenAlkamisvuosi = if(hk.kaytetaanHaunAlkamiskautta)
-                        haku.alkamisvuosi else hk.paateltyAlkamiskausi.vuosi,
-                    koulutuksenAlkamiskausi = kausi().arvo(if(hk.kaytetaanHaunAlkamiskautta)
-                        haku.alkamiskausiKoodiUri else hk.paateltyAlkamiskausi.kausiUri),
-                    hakukohteenKoulutukseenSisaltyvatKoulutuskoodit = listOf(koulutus?.koulutusKoodiUrit)
-                        .filterNotNull().flatten().map { it.stripVersion.stripType }, // TODO 742702
-                    hakukohteenKoodi = null,
+                    koulutuksenAlkamisvuosi = hk.paateltyAlkamiskausi.vuosi,
+                    koulutuksenAlkamiskausi = kausi().arvo(hk.paateltyAlkamiskausi.kausiUri),
+                    hakukohteenKoulutukseenSisaltyvatKoulutuskoodit = emptyList(),
+                    hakukohteenKoodi = null, //hakukohteen koodi
                     pohjakoulutusvaatimus = hk.pohjakoulutusvaatimusKoodiUrit
                         .map { it.stripVersion.stripType }.firstOrNull(),
                     hakijalleIlmoitetutAloituspaikat = hk.aloituspaikat,
-                    valintojenAloituspaikat = null, // Kouta doesnt provide this
+                    valintojenAloituspaikat = hk.aloituspaikat,
                     ensikertalaistenAloituspaikat = hk.ensikertalaisenAloituspaikat
                 )
             }
