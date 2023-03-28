@@ -28,18 +28,23 @@ class KoodistoClient(properties: OphProperties) : BaseClient(
     private val cache = Caffeine.newBuilder()
         .expireAfterWrite(2L, TimeUnit.HOURS)
         .buildAsync { key: String, executor: Executor ->
-            fetchKoodistoForReal(key.split("%")[0], Integer.parseInt(key.split("%")[1]))
+             if ((key.split('%')[2].toBoolean())) {
+                 fetchKoodistoWithRelationsForReal(key.split("%")[0], Integer.parseInt(key.split("%")[1]))
+            } else {
+                fetchKoodistoForReal(key.split("%")[0], Integer.parseInt(key.split("%")[1]))
+            }
         }
 
     private fun fetchKoodistoForReal(koodisto: String, version: Int): CompletableFuture<Map<String, Koodisto>> =
         fetch<List<Koodisto>>(url("koodisto-service.codeelement-codes", koodisto, version))
             .thenApply { koodit -> koodit.map { it.koodiUri to it }.toMap() }
 
-    fun fetchKoodisto(koodisto: String, version: Int): CompletableFuture<Map<String, Koodisto>> {
-        return cache["$koodisto%$version"]
-    }
-    fun fetchKoodisto(koodisto: String): CompletableFuture<Map<String, Koodisto>> {
-        return fetchKoodisto(koodisto, 1)
+    private fun fetchKoodistoWithRelationsForReal(koodisto: String, version: Int): CompletableFuture<Map<String, Koodisto>> =
+            fetch<List<Koodisto>>(url("koodisto-service.codeelement-codes-with-relations", koodisto, version))
+                    .thenApply { koodit -> koodit.map { it.koodiUri to it }.toMap() }
+
+    fun fetchKoodisto(koodisto: String, version: Int? = 1, withRelations: Boolean? = false): CompletableFuture<Map<String, Koodisto>> {
+        return cache["$koodisto%$version%$withRelations"]
     }
 
 }
