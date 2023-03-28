@@ -107,11 +107,9 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
     }
 
     private suspend fun findHakukohteetForKoutaHaku(hakuOid: String): List<HakukohdeResponse> {
-        val kieli = koodistoClient.fetchKoodisto("kieli")
         val kausi = koodistoClient.fetchKoodisto("kausi")
         val koulutustyyppi = koodistoClient.fetchKoodisto("koulutustyyppi", 2, true)
         val opetusKieli = koodistoClient.fetchKoodisto("oppilaitoksenopetuskieli", 2)
-        val koutaHaku = koutaInternalClient.findByHakuOid(hakuOid)
         val koutaToteutukset = koutaInternalClient.findToteutuksetByHakuOid(hakuOid)
             .thenApply { it.map { it.oid to it }.toMap() }
         val koutaKoulutukset = koutaInternalClient.findKoulutuksetByHakuOid(hakuOid)
@@ -120,14 +118,12 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
         val organisaatiot = koutaHakukohteet.thenCompose {
             organisaatioClient.fetchOrganisaatiotAndParentOrganisaatiot(it.map { hk -> hk.tarjoaja }.toSet()) }
             .thenApply { orgs -> enrichOrganisaatiot(orgs.map { it.oid to it }.toMap()) }
-        println(koulutustyyppi)
 
         return koutaHakukohteet()
             .map { hk: HakukohdeInternal ->
                 val organisaatio = organisaatiot()[hk.tarjoaja]
                 val toteutus = koutaToteutukset().get(hk.toteutusOid)
                 val koulutus: KoulutusInternal? = if(toteutus?.koulutusOid != null) koutaKoulutukset().get(toteutus.koulutusOid) else null
-                val haku = koutaHaku()
 
                 HakukohdeResponse(
                     hakukohteenOid = hk.oid,
@@ -139,7 +135,7 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                     koulutuksenAlkamisvuosi = hk.paateltyAlkamiskausi.vuosi,
                     koulutuksenAlkamiskausi = kausi().arvo(hk.paateltyAlkamiskausi.kausiUri),
                     hakukohteenKoulutukseenSisaltyvatKoulutuskoodit = emptyList(),
-                    hakukohteenKoodi = null, //hakukohteen koodi
+                    hakukohteenKoodi = null,
                     pohjakoulutusvaatimus = hk.pohjakoulutusvaatimusKoodiUrit
                         .map { it.stripVersion.stripType }.firstOrNull(),
                     hakijalleIlmoitetutAloituspaikat = hk.aloituspaikat,
