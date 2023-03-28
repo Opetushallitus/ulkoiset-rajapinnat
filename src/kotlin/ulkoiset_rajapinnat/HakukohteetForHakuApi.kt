@@ -98,17 +98,19 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
     }
 
     private suspend fun koulutuksienKoulutustyypit(koulutus: KoulutusInternal?, koulutustyyppi: CompletableFuture<Map<String, Koodisto>>): List<String> {
-        val containsRelation = {ce: List<WithinCodeElement>, koulutusKoodi: String -> ce.filter { it.codeElementUri.equals(koulutusKoodi)}.size > 0 }
+        val containsRelation = {ce: List<WithinCodeElement>, koulutusKoodi: String -> ce.filter { !it.passive && it.codeElementUri.equals(koulutusKoodi)}
+                .isNotEmpty() }
         val koodiUrit = koulutus?.koulutusKoodiUrit?.map { it.stripVersion }
         val koulutukset = koodiUrit?.flatMap { koulutuskoodi -> koulutustyyppi().values.filter { it.withinCodeElements != null
                 && containsRelation(it.withinCodeElements, koulutuskoodi)}}
-        return if (koulutukset != null) koulutukset.map { it.koodiUri }.distinct()
+        return if (koulutukset != null) koulutukset.map { it.koodiArvo }.distinct()
                else emptyList()
     }
 
     private suspend fun findHakukohteetForKoutaHaku(hakuOid: String): List<HakukohdeResponse> {
         val kausi = koodistoClient.fetchKoodisto("kausi")
         val koulutustyyppi = koodistoClient.fetchKoodisto("koulutustyyppi", 2, true)
+        val koulutusKoodisto = koodistoClient.fetchKoodisto("koulutus", 12)
         val opetusKieli = koodistoClient.fetchKoodisto("oppilaitoksenopetuskieli", 2)
         val koutaToteutukset = koutaInternalClient.findToteutuksetByHakuOid(hakuOid)
             .thenApply { it.map { it.oid to it }.toMap() }
@@ -132,7 +134,7 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                     koulutuksenOpetuskieli = koutaKoulutuksenOpetuskieli(toteutus, opetusKieli),
                     koulutuksenKoulutustyyppi = koulutuksienKoulutustyypit(koulutus, koulutustyyppi),
                     hakukohteenKoulutuskoodit = listOf(koulutus?.koulutusKoodiUrit)
-                            .filterNotNull().flatten().map { it.stripVersion.stripType },
+                            .filterNotNull().flatten().map(koulutusKoodisto()::arvo).filterNotNull(),
                     koulutuksenAlkamisvuosi = hk.paateltyAlkamiskausi.vuosi,
                     koulutuksenAlkamiskausi = kausi().arvo(hk.paateltyAlkamiskausi.kausiUri),
                     hakukohteenKoulutukseenSisaltyvatKoulutuskoodit = emptyList(),
