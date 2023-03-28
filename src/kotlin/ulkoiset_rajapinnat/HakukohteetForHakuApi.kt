@@ -135,7 +135,7 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                     koulutuksenAlkamisvuosi = hk.paateltyAlkamiskausi.vuosi,
                     koulutuksenAlkamiskausi = kausi().arvo(hk.paateltyAlkamiskausi.kausiUri),
                     hakukohteenKoulutukseenSisaltyvatKoulutuskoodit = emptyList(),
-                    hakukohteenKoodi = null,
+                    hakukohteenKoodi = hk.hakukohde?.koodiUri,
                     pohjakoulutusvaatimus = hk.pohjakoulutusvaatimusKoodiUrit
                         .map { it.stripVersion.stripType }.firstOrNull(),
                     hakijalleIlmoitetutAloituspaikat = hk.aloituspaikat,

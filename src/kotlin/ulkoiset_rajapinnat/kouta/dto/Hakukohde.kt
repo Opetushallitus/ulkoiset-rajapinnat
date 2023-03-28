@@ -16,6 +16,8 @@ data class PaateltyAlkamiskausi(
     val vuosi: Int?
 )
 
+data class HakukohdeKoodi(val koodiUri: String) {}
+
 data class HakukohdeInternal(
     val oid: String,
     val toteutusOid: String,
@@ -55,5 +57,6 @@ data class HakukohdeInternal(
     val externalId: String,
     val uudenOpiskelijanUrl: Any,
     val paateltyAlkamiskausi: PaateltyAlkamiskausi,
-    val jarjestyspaikkaOid: String
+    val jarjestyspaikkaOid: String,
+    val hakukohde: HakukohdeKoodi?,
 )
