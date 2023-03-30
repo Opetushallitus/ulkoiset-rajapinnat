@@ -86,12 +86,18 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
             }
     }
 
-    private suspend fun koutaKoulutuksenOpetuskieli(toteutus: ToteutusInternal?, opetusKieli: CompletableFuture<Map<String, Koodisto>>): List<String> {
+    private suspend fun koutaKoulutuksenOpetuskieli(toteutus: ToteutusInternal?, kieli: CompletableFuture<Map<String, Koodisto>>): List<String> {
+        val containsRelation = {ce: List<WithinCodeElement>, opetuskieliKoodi: String -> ce.filter { !it.passive && it.codeElementUri.equals(opetuskieliKoodi)}
+                .isNotEmpty() }
         val opetus = toteutus?.metadata?.getOrDefault("opetus", emptyMap<String, Any>())
         return if (opetus is Map<*, *>) {
             (opetus.getOrDefault("opetuskieliKoodiUrit", emptyList<String>()) as List<*>)
-            .map { it as String?}
-            .mapNotNull(opetusKieli()::arvo)
+                .map { it as String?}
+                .map { it?.stripVersion }
+                .flatMap { opetuskieliKoodi: String? -> kieli().values.filter { opetuskieliKoodi != null && it.withinCodeElements != null
+                    && containsRelation(it.withinCodeElements, opetuskieliKoodi)}}
+                .map { it.koodiArvo}
+                .distinct()
         } else {
             emptyList()
         }
@@ -111,7 +117,7 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
         val kausi = koodistoClient.fetchKoodisto("kausi")
         val koulutustyyppi = koodistoClient.fetchKoodisto("koulutustyyppi", 2, true)
         val koulutusKoodisto = koodistoClient.fetchKoodisto("koulutus", 12)
-        val opetusKieli = koodistoClient.fetchKoodisto("oppilaitoksenopetuskieli", 2)
+        val kieli = koodistoClient.fetchKoodisto("kieli", 1,true)
         val koutaToteutukset = koutaInternalClient.findToteutuksetByHakuOid(hakuOid)
             .thenApply { it.map { it.oid to it }.toMap() }
         val koutaKoulutukset = koutaInternalClient.findKoulutuksetByHakuOid(hakuOid)
@@ -131,7 +137,7 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                     hakukohteenOid = hk.oid,
                     organisaatiot = listOf(organisaatio).filterNotNull(),
                     hakukohteenNimi = hk.nimi.excludeBlankValues,
-                    koulutuksenOpetuskieli = koutaKoulutuksenOpetuskieli(toteutus, opetusKieli),
+                    koulutuksenOpetuskieli = koutaKoulutuksenOpetuskieli(toteutus, kieli),
                     koulutuksenKoulutustyyppi = koulutuksienKoulutustyypit(koulutus, koulutustyyppi),
                     hakukohteenKoulutuskoodit = listOf(koulutus?.koulutusKoodiUrit)
                             .filterNotNull().flatten().map(koulutusKoodisto()::arvo).filterNotNull(),
