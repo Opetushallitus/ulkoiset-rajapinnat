@@ -3,6 +3,7 @@ package ulkoiset_rajapinnat
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.future.future
+import org.slf4j.LoggerFactory
 import ulkoiset_rajapinnat.haku.dto.OldHakukohdeTulos
 import ulkoiset_rajapinnat.koodisto.dto.Koodisto
 import ulkoiset_rajapinnat.koodisto.dto.CodeElement
@@ -22,6 +23,7 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
     private val hakuClient = clients.hakuClient
     private val organisaatioClient = clients.organisaatioClient
     private val koodistoClient = clients.koodistoClient
+    private val logger = LoggerFactory.getLogger("HakukohteetForHakuApi")
 
     private fun enrichOrganisaatiot(organisaatiot: Map<String, Organisaatio>): Map<String, OrganisaatioResponse> {
         return organisaatiot.mapValues { (oid, org) ->
@@ -104,6 +106,7 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
     }
 
     private suspend fun findHakukohteetForKoutaHaku(hakuOid: String): List<HakukohdeResponse> {
+        logger.info("Finding hakukohteet for haku $hakuOid")
         val kausi = koodistoClient.fetchKoodisto("kausi")
         val koulutustyyppi = koodistoClient.fetchKoodisto("koulutustyyppi", 2, true)
         val koulutusKoodisto = koodistoClient.fetchKoodisto("koulutus", 12)
@@ -122,7 +125,18 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                 val organisaatio = organisaatiot()[hk.tarjoaja]
                 val toteutus = koutaToteutukset().get(hk.toteutusOid)
                 val koulutus: KoulutusInternal? = if(toteutus?.koulutusOid != null) koutaKoulutukset().get(toteutus.koulutusOid) else null
-                val koulutustyyppiHakukohteelta = koulutustyyppi().arvo(hk.koulutustyyppikoodi)
+                val koulutusKoodit = listOf(koulutus?.koulutusKoodiUrit)
+                    .filterNotNull().flatten().map(koulutusKoodisto()::arvo).filterNotNull()
+                var koulutustyyppiHakukohteelta = koulutustyyppi().arvo(hk.koulutustyyppikoodi)
+                if (koulutustyyppiHakukohteelta == null) {
+                    //fixme väliaikainen ratkaisu testiympäristöön, heitetään tämä virhe jatkossa
+                    //kun koulutus-koodiston relaatiot on korjattu ja tiedon pitäisi oikeasti löytyä
+                    if (!(koulutusKoodit.firstOrNull() ?: "").startsWith("9")) {
+                        logger.warn("Haun $hakuOid hakukohteelta ${hk.oid} puuttuu koulutustyyppi. Koulutuskoodit: $koulutusKoodit. Oletetaan rennosti, että tämä on korkeakoulutusta.")
+                        koulutustyyppiHakukohteelta = "3"
+                    }
+                    //throw RuntimeException("Puuttuva koulutustyyppi haun $hakuOid hakukohteella ${hk.oid}")
+                }
 
                 HakukohdeResponse(
                     hakukohteenOid = hk.oid,
@@ -130,8 +144,7 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                     hakukohteenNimi = hk.nimi.excludeBlankValues,
                     koulutuksenOpetuskieli = koutaKoulutuksenOpetuskieli(toteutus, kieli),
                     koulutuksenKoulutustyyppi = if (koulutustyyppiHakukohteelta != null) listOf(koulutustyyppiHakukohteelta) else emptyList(),
-                    hakukohteenKoulutuskoodit = listOf(koulutus?.koulutusKoodiUrit)
-                            .filterNotNull().flatten().map(koulutusKoodisto()::arvo).filterNotNull(),
+                    hakukohteenKoulutuskoodit = koulutusKoodit,
                     koulutuksenAlkamisvuosi = hk.paateltyAlkamiskausi.vuosi,
                     koulutuksenAlkamiskausi = kausi().arvo(hk.paateltyAlkamiskausi.kausiUri),
                     hakukohteenKoulutukseenSisaltyvatKoulutuskoodit = emptyList(),

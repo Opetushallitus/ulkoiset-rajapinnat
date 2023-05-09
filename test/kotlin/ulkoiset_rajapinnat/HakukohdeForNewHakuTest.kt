@@ -73,6 +73,6 @@ class HakukohdeForNewHakuTest {
         assertEquals("100", sairaanhoitajaHk?.pohjakoulutusvaatimus)
         assertEquals(6, sairaanhoitajaHk?.hakijalleIlmoitetutAloituspaikat)
         assertEquals(6, sairaanhoitajaHk?.valintojenAloituspaikat)
-        assertEquals(emptyList<String>(), sairaanhoitajaHk?.koulutuksenKoulutustyyppi)
+        assertEquals(listOf("3"), sairaanhoitajaHk?.koulutuksenKoulutustyyppi)
     }
 }
