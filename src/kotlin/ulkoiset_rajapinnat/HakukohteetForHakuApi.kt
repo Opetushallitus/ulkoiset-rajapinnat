@@ -5,7 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.future.future
 import ulkoiset_rajapinnat.haku.dto.OldHakukohdeTulos
 import ulkoiset_rajapinnat.koodisto.dto.Koodisto
-import ulkoiset_rajapinnat.koodisto.dto.WithinCodeElement
+import ulkoiset_rajapinnat.koodisto.dto.CodeElement
 import ulkoiset_rajapinnat.kouta.dto.HakukohdeInternal
 import ulkoiset_rajapinnat.kouta.dto.KoulutusInternal
 import ulkoiset_rajapinnat.kouta.dto.ToteutusInternal
@@ -87,16 +87,16 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
     }
 
     private suspend fun koutaKoulutuksenOpetuskieli(toteutus: ToteutusInternal?, kieli: CompletableFuture<Map<String, Koodisto>>): List<String> {
-        val containsRelation = {ce: List<WithinCodeElement>, opetuskieliKoodi: String -> ce.filter { !it.passive && it.codeElementUri.equals(opetuskieliKoodi)}
+        val containsRelation = { ce: List<CodeElement>, opetuskieliKoodi: String -> ce.filter { !it.passive && it.codeElementUri.equals(opetuskieliKoodi) }
                 .isNotEmpty() }
         val opetus = toteutus?.metadata?.getOrDefault("opetus", emptyMap<String, Any>())
         return if (opetus is Map<*, *>) {
             (opetus.getOrDefault("opetuskieliKoodiUrit", emptyList<String>()) as List<*>)
-                .map { it as String?}
+                .map { it as String? }
                 .map { it?.stripVersion }
-                .flatMap { opetuskieliKoodi: String? -> kieli().values.filter { opetuskieliKoodi != null && it.withinCodeElements != null
-                    && containsRelation(it.withinCodeElements, opetuskieliKoodi)}}
-                .map { it.koodiArvo}
+                .flatMap { opetuskieliKoodi: String? -> kieli().values.filter { opetuskieliKoodi != null && it.levelsWithCodeElements != null
+                    && containsRelation(it.levelsWithCodeElements, opetuskieliKoodi)} }
+                .map { it.koodiArvo }
                 .distinct()
         } else {
             emptyList()
@@ -104,11 +104,11 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
     }
 
     private suspend fun koulutuksienKoulutustyypit(koulutus: KoulutusInternal?, koulutustyyppi: CompletableFuture<Map<String, Koodisto>>): List<String> {
-        val containsRelation = {ce: List<WithinCodeElement>, koulutusKoodi: String -> ce.filter { !it.passive && it.codeElementUri.equals(koulutusKoodi)}
+        val containsRelation = { ce: List<CodeElement>, koulutusKoodi: String -> ce.filter { !it.passive && it.codeElementUri.equals(koulutusKoodi) }
                 .isNotEmpty() }
         val koodiUrit = koulutus?.koulutusKoodiUrit?.map { it.stripVersion }
         val koulutukset = koodiUrit?.flatMap { koulutuskoodi -> koulutustyyppi().values.filter { it.withinCodeElements != null
-                && containsRelation(it.withinCodeElements, koulutuskoodi)}}
+                && containsRelation(it.withinCodeElements, koulutuskoodi)} }
         return if (koulutukset != null) koulutukset.map { it.koodiArvo }.distinct()
                else emptyList()
     }
