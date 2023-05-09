@@ -62,6 +62,8 @@ class HakukohdeForNewHakuTest {
         assertEquals("108", tradenomiHk?.pohjakoulutusvaatimus)
         assertEquals(2, tradenomiHk?.hakijalleIlmoitetutAloituspaikat)
         assertEquals(2, tradenomiHk?.valintojenAloituspaikat)
+        assertEquals(listOf("3"), tradenomiHk?.koulutuksenKoulutustyyppi)
+
         val sairaanhoitajaHk = data.find { it.hakukohteenOid == "1.2.246.562.20.00000000000000010806" }
         assertEquals( "Lisähaku, Sairaanhoitaja (AMK), monimuotototeutus, Kajaani", sairaanhoitajaHk?.hakukohteenNimi?.get("fi"))
         assertEquals(listOf("FI"), sairaanhoitajaHk?.koulutuksenOpetuskieli)
@@ -71,5 +73,6 @@ class HakukohdeForNewHakuTest {
         assertEquals("100", sairaanhoitajaHk?.pohjakoulutusvaatimus)
         assertEquals(6, sairaanhoitajaHk?.hakijalleIlmoitetutAloituspaikat)
         assertEquals(6, sairaanhoitajaHk?.valintojenAloituspaikat)
+        assertEquals(emptyList<String>(), sairaanhoitajaHk?.koulutuksenKoulutustyyppi)
     }
 }

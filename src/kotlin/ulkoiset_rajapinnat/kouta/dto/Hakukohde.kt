@@ -59,4 +59,5 @@ data class HakukohdeInternal(
     val paateltyAlkamiskausi: PaateltyAlkamiskausi,
     val jarjestyspaikkaOid: String,
     val hakukohde: HakukohdeKoodi?,
+    val koulutustyyppikoodi: String?,
 )
