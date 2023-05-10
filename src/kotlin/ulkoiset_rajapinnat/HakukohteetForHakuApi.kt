@@ -125,8 +125,7 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                 val organisaatio = organisaatiot()[hk.tarjoaja]
                 val toteutus = koutaToteutukset().get(hk.toteutusOid)
                 val koulutus: KoulutusInternal? = if(toteutus?.koulutusOid != null) koutaKoulutukset().get(toteutus.koulutusOid) else null
-                val koulutusKoodit = listOf(koulutus?.koulutusKoodiUrit)
-                    .filterNotNull().flatten().map(koulutusKoodisto()::arvo).filterNotNull()
+                val koulutusKoodit = (koulutus?.koulutusKoodiUrit ?: emptyList()).mapNotNull(koulutusKoodisto()::arvo)
                 var koulutustyyppiHakukohteelta = koulutustyyppi().arvo(hk.koulutustyyppikoodi)
                 if (koulutustyyppiHakukohteelta == null) {
                     //fixme väliaikainen ratkaisu testiympäristöön, heitetään tämä virhe jatkossa
