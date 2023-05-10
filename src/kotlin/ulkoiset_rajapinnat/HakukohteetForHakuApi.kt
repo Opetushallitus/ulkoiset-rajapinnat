@@ -127,6 +127,9 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                 val koulutus: KoulutusInternal? = if(toteutus?.koulutusOid != null) koutaKoulutukset().get(toteutus.koulutusOid) else null
                 val koulutusKoodit = (koulutus?.koulutusKoodiUrit ?: emptyList()).mapNotNull(koulutusKoodisto()::arvo)
                 var koulutustyyppiHakukohteelta = koulutustyyppi().arvo(hk.koulutustyyppikoodi)
+                if (koulutusKoodit.isEmpty()) {
+                    logger.warn("Haun $hakuOid hakukohteelta ${hk.oid} puuttuu koulutusKoodit. Koulutus: $koulutus")
+                }
                 if (koulutustyyppiHakukohteelta == null) {
                     //fixme väliaikainen ratkaisu testiympäristöön, heitetään tämä virhe jatkossa
                     //kun koulutus-koodiston relaatiot on korjattu ja tiedon pitäisi oikeasti löytyä
