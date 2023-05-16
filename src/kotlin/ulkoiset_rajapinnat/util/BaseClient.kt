@@ -5,6 +5,7 @@ import fi.vm.sade.properties.OphProperties
 import org.asynchttpclient.AsyncHttpClient
 import org.asynchttpclient.Request
 import org.asynchttpclient.RequestBuilder
+import org.slf4j.LoggerFactory
 import ulkoiset_rajapinnat.config.Headers
 import java.util.concurrent.CompletableFuture
 
@@ -12,6 +13,8 @@ abstract class BaseClient(
     val properties: OphProperties,
     val client: AsyncHttpClient
 ) {
+
+    val logger = LoggerFactory.getLogger("BaseClient")
 
     protected fun url(s: String, vararg params: Any): String {
         return properties.getProperty(s, *params)
@@ -22,6 +25,7 @@ abstract class BaseClient(
             .setUrl(url)
             .build()
         val t = object: TypeToken<T>() {}.type
+        val startTimeMillis = System.currentTimeMillis()
         return this.client.executeRequest(req).toCompletableFuture().thenApply<T> {
             if(it.statusCode != 200 && !acceptStatusCodes.contains(it.statusCode)) {
                 throw RuntimeException("Calling $url failed with status ${it.statusCode}")
@@ -30,6 +34,8 @@ abstract class BaseClient(
         }.handle { u, t ->
             if(t != null) {
                 throw RuntimeException("Failed to fetch $url",t)
+            } else {
+                logger.info("(${System.currentTimeMillis() - startTimeMillis }ms) Got response from $url" )
             }
             u
         }
@@ -43,6 +49,7 @@ abstract class BaseClient(
             .setBody(Json.gson.toJson(body))
             .build()
         val t = object: TypeToken<T>() {}.type
+        val startTimeMillis = System.currentTimeMillis()
         return this.client.executeRequest(req).toCompletableFuture().thenApply<T> {
             if(it.statusCode != 200 && !acceptStatusCodes.contains(it.statusCode)) {
                 throw RuntimeException("Calling $url failed with status ${it.statusCode}")
@@ -51,6 +58,8 @@ abstract class BaseClient(
         }.handle { u, t ->
             if(t != null) {
                 throw RuntimeException("Failed to fetch $url",t)
+            } else {
+                logger.info("(${System.currentTimeMillis() - startTimeMillis }ms) Got response from $url" )
             }
             u
         }

@@ -60,4 +60,10 @@ data class HakukohdeInternal(
     val jarjestyspaikkaOid: String,
     val hakukohde: HakukohdeKoodi?,
     val koulutustyyppikoodi: String?,
-)
+) {
+    //kausi_s, kausi_k
+    fun onAlkamiskaudella(kausiUri: String, vuosi: String): Boolean {
+        val kausiPrefix = paateltyAlkamiskausi.kausiUri?.split("#")?.first() ?: ""
+        return kausiPrefix.equals(kausiUri) && vuosi.equals(paateltyAlkamiskausi.vuosi.toString())
+    }
+}
