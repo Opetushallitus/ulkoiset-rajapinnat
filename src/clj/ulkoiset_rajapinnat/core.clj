@@ -47,11 +47,6 @@
         :responses {200 {:schema [Haku]}}
         (let [year (Integer/parseInt koulutuksen_alkamisvuosi)]
           (log/info (str "Got incoming request to /haku-for-year/" koulutuksen_alkamisvuosi))
-          (comment
-            (access-log-with-ticket-check-with-channel
-              ticket
-              (partial audit audit-logger (str "Haut koulutuksen alkamisvuodella " koulutuksen_alkamisvuosi))
-              (partial haku-resource koulutuksen_alkamisvuosi)))
           (access-log-with-ticket-check-as-channel
             ticket
             (partial audit audit-logger (str "Haut koulutuksen alkamisvuodella " koulutuksen_alkamisvuosi))
@@ -62,11 +57,6 @@
         :query-params [ticket :- String]
         :responses {200 {:schema [Hakukohde]}}
         (log/info (str "Got incoming request to /hakukohde-for-haku/" haku-oid))
-        (comment
-          (access-log-with-ticket-check-with-channel
-            ticket
-            (partial audit audit-logger (str "Hakukohteet haku OID:lla" haku-oid))
-            (partial hakukohde-resource haku-oid palauta-null-arvot)))
         (access-log-with-ticket-check-as-channel
           ticket
           (partial audit audit-logger (str "Hakukohteet haku OID:lla " haku-oid))
