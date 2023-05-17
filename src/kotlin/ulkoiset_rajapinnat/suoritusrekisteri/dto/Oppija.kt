@@ -44,12 +44,12 @@ data class Arvosana(
 )
 data class SuoritusJaArvosanat(
     val suoritus: Suoritus,
-    val opiskelu: List<Luokkatieto>,
-    val opiskeluoikeudet: List<Opiskeluoikeus>,
     val arvosanat: List<Arvosana>
 )
 data class Oppija(
     val oppijanumero: String,
+    val opiskelu: List<Luokkatieto>,
+    val opiskeluoikeudet: List<Opiskeluoikeus>,
     val ensikertalainen: Boolean?,
     val suoritukset: List<SuoritusJaArvosanat>
 )

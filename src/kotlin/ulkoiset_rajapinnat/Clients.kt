@@ -1,9 +1,11 @@
 package ulkoiset_rajapinnat
 
+import ulkoiset_rajapinnat.ataru.AtaruClient
 import ulkoiset_rajapinnat.haku.HakuClient
 import ulkoiset_rajapinnat.koodisto.KoodistoClient
 import ulkoiset_rajapinnat.kouta.KoutaInternalClient
 import ulkoiset_rajapinnat.ohjausparametrit.OhjausparametritClient
+import ulkoiset_rajapinnat.oppijanumerorekisteri.OppijanumerorekisteriClient
 import ulkoiset_rajapinnat.organisaatio.OrganisaatioClient
 import ulkoiset_rajapinnat.suoritusrekisteri.SuoritusrekisteriClient
 import ulkoiset_rajapinnat.valinta_tulos_service.ValintaTulosServiceClient
@@ -19,5 +21,7 @@ data class Clients(
     val valintaTulosServiceClient: ValintaTulosServiceClient,
     val valintaperusteetClient: ValintaperusteetClient,
     val valintapisteClient: ValintapisteClient,
-    val suoritusrekisteriClient: SuoritusrekisteriClient
+    val suoritusrekisteriClient: SuoritusrekisteriClient,
+    val ataruClient: AtaruClient,
+    val oppijanumerorekisteriClient: OppijanumerorekisteriClient
 )

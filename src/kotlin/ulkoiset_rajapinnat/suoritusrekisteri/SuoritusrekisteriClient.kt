@@ -6,7 +6,9 @@ import fi.vm.sade.properties.OphProperties
 import ulkoiset_rajapinnat.config.Headers
 import ulkoiset_rajapinnat.suoritusrekisteri.dto.Oppija
 import ulkoiset_rajapinnat.util.BaseCasClient
+import ulkoiset_rajapinnat.util.sequentialBatches
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletableFuture.completedFuture
 
 class SuoritusrekisteriClient(username: String,
                          password: String,
@@ -25,16 +27,16 @@ class SuoritusrekisteriClient(username: String,
     )
 ) {
 
-  /*  fun fetchOppijatForPersonOidsInBatches(hakuOid: String, ensikertalaisuudet: Boolean, hakemusOids: List<String>): CompletableFuture<List<Oppija>> {
-        val MAX_BATCH_SIZE = 30000
+    fun fetchOppijatForPersonOidsInBatches(hakuOid: String, hakemusOids: List<String>, fetchEnsikertalaisuudet: Boolean): CompletableFuture<List<Oppija>> {
+        val MAX_BATCH_SIZE = 5000
         return sequentialBatches(
-            this::fetchOppijatForPersonOids,
+            { oids: List<String> -> fetchOppijatForPersonOids(hakuOid, oids, fetchEnsikertalaisuudet) },
             completedFuture(Pair(hakemusOids.chunked(MAX_BATCH_SIZE), listOf()))
         )
-    }*/
+    }
 
-    fun fetchOppijatForPersonOids(hakuOid: String, personOids: List<String>): CompletableFuture<List<Oppija>> {
-        return fetch(url("suoritusrekisteri-service.cas.oppijat", "false", hakuOid ), personOids)
+    fun fetchOppijatForPersonOids(hakuOid: String, personOids: List<String>, fetchEnsikertalaisuudet: Boolean): CompletableFuture<List<Oppija>> {
+        return fetch(url("suoritusrekisteri-service.cas.oppijat", fetchEnsikertalaisuudet, hakuOid ), personOids)
     }
 
 }
