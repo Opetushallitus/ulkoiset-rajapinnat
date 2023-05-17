@@ -19,7 +19,7 @@ class SuoritusrekisteriClient(username: String,
             "${properties.getProperty("host-virkailija")}/suoritusrekisteri",
             Headers.CSRF,
             Headers.CALLER_ID,
-            "/auth/cas"
+            "/j_spring_cas_security_check"
         ).setJsessionName("JSESSIONID")
             .build()
     )
@@ -34,8 +34,7 @@ class SuoritusrekisteriClient(username: String,
     }*/
 
     fun fetchOppijatForPersonOids(hakuOid: String, personOids: List<String>): CompletableFuture<List<Oppija>> {
-        //fixme, params potentially needed for audit-logging in valintapiste-service...
-        return fetch(url("suoritusrekisteri-service.oppijat", "true", hakuOid ), personOids)
+        return fetch(url("suoritusrekisteri-service.cas.oppijat", "false", hakuOid ), personOids)
     }
 
 }

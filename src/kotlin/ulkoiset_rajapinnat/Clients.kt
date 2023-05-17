@@ -5,6 +5,7 @@ import ulkoiset_rajapinnat.koodisto.KoodistoClient
 import ulkoiset_rajapinnat.kouta.KoutaInternalClient
 import ulkoiset_rajapinnat.ohjausparametrit.OhjausparametritClient
 import ulkoiset_rajapinnat.organisaatio.OrganisaatioClient
+import ulkoiset_rajapinnat.suoritusrekisteri.SuoritusrekisteriClient
 import ulkoiset_rajapinnat.valinta_tulos_service.ValintaTulosServiceClient
 import ulkoiset_rajapinnat.valintaperusteet.ValintaperusteetClient
 import ulkoiset_rajapinnat.valintapisteet.ValintapisteClient
@@ -17,5 +18,6 @@ data class Clients(
     val ohjausparametritClient: OhjausparametritClient,
     val valintaTulosServiceClient: ValintaTulosServiceClient,
     val valintaperusteetClient: ValintaperusteetClient,
-    val valintapisteClient: ValintapisteClient
+    val valintapisteClient: ValintapisteClient,
+    val suoritusrekisteriClient: SuoritusrekisteriClient
 )

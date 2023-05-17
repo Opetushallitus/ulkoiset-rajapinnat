@@ -13,6 +13,7 @@ import ulkoiset_rajapinnat.organisaatio.OrganisaatioClient
 import ulkoiset_rajapinnat.response.HakuResponse
 import ulkoiset_rajapinnat.response.HakukohdeResponse
 import ulkoiset_rajapinnat.response.VastaanottoResponse
+import ulkoiset_rajapinnat.suoritusrekisteri.SuoritusrekisteriClient
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletableFuture.*
 import ulkoiset_rajapinnat.util.*
@@ -45,7 +46,8 @@ class UlkoisetRajapinnatApi(
         ohjausparametritClient = OhjausparametritClient(username, password, properties),
         valintaTulosServiceClient = ValintaTulosServiceClient(username, password, properties),
         valintaperusteetClient = ValintaperusteetClient(username, password, properties),
-        valintapisteClient = ValintapisteClient(username, password, properties)
+        valintapisteClient = ValintapisteClient(username, password, properties),
+        suoritusrekisteriClient = SuoritusrekisteriClient(username, password, properties)
     ),
     hakukohteetForHaku: HakukohteetForHakuApi = HakukohteetForHakuApi(clients),
     hakuByYear: HakuByYear = HakuByYearApi(clients),
