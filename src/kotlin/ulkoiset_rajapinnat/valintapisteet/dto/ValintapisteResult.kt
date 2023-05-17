@@ -6,7 +6,7 @@ data class Valintapiste(
     val osallistuminen: String,
     val tallettaja: String
 ) {
-    fun osallistuiValintakokeeseen(kokeenTunniste: String): Boolean {
+    fun osallistuiKokeeseen(kokeenTunniste: String): Boolean {
         return tunniste == kokeenTunniste && osallistuminen == "OSALLISTUI"
     }
 }

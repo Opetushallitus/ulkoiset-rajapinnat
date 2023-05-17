@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory
 import ulkoiset_rajapinnat.kouta.dto.HakukohdeInternal
 import ulkoiset_rajapinnat.response.Hakutoive
 import ulkoiset_rajapinnat.response.VastaanottoResponse
+import ulkoiset_rajapinnat.suoritusrekisteri.dto.Oppija
 import ulkoiset_rajapinnat.valinta_tulos_service.dto.HakemuksenValinnanTulos
-import ulkoiset_rajapinnat.valintaperusteet.dto.ValintaperusteDTO
 import ulkoiset_rajapinnat.valintapisteet.dto.HakemuksenValintapisteet
 import java.util.concurrent.CompletableFuture
 
@@ -24,8 +24,8 @@ class VastaanottoForHakuApi(clients: Clients) : VastaanottoForHaku {
     private fun createHakemuksenTulos(
         hakemuksenTulos: HakemuksenValinnanTulos,
         halututHakukohteet: Set<String>,
-        valintakokeetByHakukohde: Map<String, List<ValintaperusteDTO>>,
-        kielikokeetByHakukohde: Map<String, List<ValintaperusteDTO>>,
+        valintakokeetByHakukohde: Map<String, List<String>>,
+        kielikokeetByHakukohde: Map<String, List<String>>,
         pisteetByHakemusOid: Map<String, HakemuksenValintapisteet>
     ): VastaanottoResponse {
         logger.info("Muodostetaan hakemuksen tulos hakemukselle ${hakemuksenTulos.hakemusOid}")
@@ -38,12 +38,19 @@ class VastaanottoForHakuApi(clients: Clients) : VastaanottoForHaku {
                             .find { it.valintatapajonoOid.equals(merkitsevaJono.valintatapajonoOid)
                                     && it.hakijaryhmatyyppikoodiUri.equals("hakijaryhmantyypit_ensikertalaiset") }
                             ?.hyvaksyttyHakijaryhmasta ?: false
+                    val valintakokeet = valintakokeetByHakukohde[ht.hakukohdeOid] ?: emptyList()
+                    val kielikokeet = kielikokeetByHakukohde[ht.hakukohdeOid] ?: emptyList()
+                    val pistetiedot = pisteetByHakemusOid[hakemuksenTulos.hakemusOid]
+                    val osallistuiPaasykokeeseen =
+                        valintakokeet.any { valintakoeTunniste -> pistetiedot?.pisteet?.any { it.osallistuiKokeeseen(valintakoeTunniste) } ?: false }
+                    val osallistuiKielikokeeseen =
+                        kielikokeet.any { valintakoeTunniste -> pistetiedot?.pisteet?.any { it.osallistuiKokeeseen(valintakoeTunniste) } ?: false }
                     Hakutoive(
                         hyvaksyttyEnsikertalaistenHakijaryhmasta = hyvaksyttyEnsikertalaistenHakijaryhmasta,
                         alinHyvaksyttyPistemaara = merkitsevaJono.alinHyvaksyttyPistemaara,
-                        osallistuiKielikokeeseen = false, //fixme
+                        osallistuiKielikokeeseen = osallistuiKielikokeeseen,
                         valintatapajono = merkitsevaJono.valintatapajonoOid,
-                        osallistuiPaasykokeeseen = false, //fixme
+                        osallistuiPaasykokeeseen = osallistuiPaasykokeeseen,
                         ilmoittautumisenTila = merkitsevaJono.ilmoittautumisTila,
                         vastaanotonTila = ht.vastaanottotieto,
                         hakijanLopullinenJonosija = merkitsevaJono.jonosija,
@@ -71,20 +78,20 @@ class VastaanottoForHakuApi(clients: Clients) : VastaanottoForHaku {
             val hakukohteetKaudellaOids =
                 hakukohteet?.filter { hk -> hk.onAlkamiskaudella(kausi, vuosi) }?.map { it.oid }?.toSet() ?: emptySet()
             logger.info("Haulle $hakuOid löytyi ${hakukohteet?.size} hakukohdetta, joista ${hakukohteetKaudellaOids.size} on vuoden $vuosi kaudella $kausi")
+
             val valintaperusteetByHakukohde = valintaperusteetClient.fetchValintakokeet(hakukohteetKaudellaOids)
                 .thenApply { result -> result.map { it.hakukohdeOid to it.valintaperusteDTO }.toMap() }
-            //logger.info("Saatiin valintaperusteet: ${valintaperusteetByHakukohde.await()}")
-
-            val valintakokeetByHakukohde = valintaperusteetByHakukohde.await().map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isValintakoe() } }.toMap()
-            val kielikoeetByHakukohde = valintaperusteetByHakukohde.await().map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isKielikoe()} }.toMap()
+            val valintakoeTunnisteetByHakukohde = valintaperusteetByHakukohde.await()
+                .map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isValintakoe() }.map { it.tunniste } }.toMap()
+            val kielikoeTunnisteetByHakukohde = valintaperusteetByHakukohde.await()
+                .map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isKielikoe() }.map { it.tunniste} }.toMap()
 
             val hakemusOids = hakemustenValinnantulokset.await().map { it.hakemusOid }
             val pisteet = valintapisteClient.fetchValintapisteetForHakemusOidsInBatches(hakemusOids)
-            val pisteetByHakemusOid = pisteet.thenApply { result -> result.map { it.hakemusOID to it }.toMap() }
-            //logger.info("Saatiin pisteet: ${pisteetByHakemusOid.await()}")
+            val pisteetByHakemusOid = pisteet.thenApply { result -> result.map { it.hakemusOID to it }.toMap() }.await()
 
             hakemustenValinnantulokset.await().map { hakemuksenTulos ->
-                createHakemuksenTulos(hakemuksenTulos, hakukohteetKaudellaOids, valintakokeetByHakukohde, kielikoeetByHakukohde, pisteetByHakemusOid.await())
+                createHakemuksenTulos(hakemuksenTulos, hakukohteetKaudellaOids, valintakoeTunnisteetByHakukohde, kielikoeTunnisteetByHakukohde, pisteetByHakemusOid)
             }.filter { response -> response.hakutoiveet.isNotEmpty() }
         }
     }
@@ -94,15 +101,24 @@ class VastaanottoForHakuApi(clients: Clients) : VastaanottoForHaku {
         return GlobalScope.future {
             logger.info("Haetaan vastaanotot haun $hakuOid hakukohteille $hakukohdeOids")
             val hakemustenValinnantulokset = vtsClient.fetchHakemustenTuloksetHakukohteille(hakuOid, hakukohdeOids)
-            val valintaperusteet = valintaperusteetClient.fetchValintakokeet(hakukohdeOids.toSet())
-            //logger.info("Saatiin valintaperusteet: ${valintaperusteet.await()}")
+            val valintaperusteetByHakukohde = valintaperusteetClient.fetchValintakokeet(hakukohdeOids.toSet())
+                .thenApply { result -> result.map { it.hakukohdeOid to it.valintaperusteDTO }.toMap() }
+            val valintakoeTunnisteetByHakukohde = valintaperusteetByHakukohde.await()
+                .map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isValintakoe() }.map { it.tunniste } }.toMap()
+            val kielikoeTunnisteetByHakukohde = valintaperusteetByHakukohde.await()
+                .map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isKielikoe() }.map { it.tunniste} }.toMap()
+
+            val hakemusOids = hakemustenValinnantulokset.await().map { it.hakemusOid }
+            val pisteet = valintapisteClient.fetchValintapisteetForHakemusOidsInBatches(hakemusOids)
+            val pisteetByHakemusOid = pisteet.thenApply { result -> result.map { it.hakemusOID to it }.toMap() }.await()
+
             hakemustenValinnantulokset.await().map { hakemuksenTulos ->
                 createHakemuksenTulos(
                     hakemuksenTulos,
                     hakukohdeOids.toSet(),
-                    emptyMap(),
-                    emptyMap(),
-                    emptyMap()
+                    valintakoeTunnisteetByHakukohde,
+                    kielikoeTunnisteetByHakukohde,
+                    pisteetByHakemusOid
                 )
             }.filter { response -> response.hakutoiveet.isNotEmpty() }
         }
