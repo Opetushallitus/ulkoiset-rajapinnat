@@ -100,7 +100,7 @@
           ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
           (if (= 35 (count haku-oid))
-            (fn [_] (.findHakemuksetForHaku rajapinnat-api haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi))
+            (fn [_] (.findHakemuksetForHakuCached rajapinnat-api haku-oid))
             (partial hakemus-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot))))
       (GET "/valintaperusteet/hakukohde/:hakukohde-oid" [hakukohde-oid ticket]
         :summary "Hakukohde valintaperusteista"

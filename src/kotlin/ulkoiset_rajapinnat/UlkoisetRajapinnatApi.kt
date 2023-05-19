@@ -38,7 +38,8 @@ interface VastaanottoForHaku {
 }
 
 interface HakemusForHaku {
-    fun findHakemuksetForHaku(hakuOid: String, vuosi: String, kausi: String): CompletableFuture<List<HakemusResponse>>
+    fun findHakemuksetForHaku(hakuOid: String): CompletableFuture<List<HakemusResponse>>
+    fun findHakemuksetForHakuCached(hakuOid: String): CompletableFuture<List<HakemusResponse>>
 }
 
 class UlkoisetRajapinnatApi(
