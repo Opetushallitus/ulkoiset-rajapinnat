@@ -131,13 +131,8 @@ class HakukohteetForHakuApi(clients: Clients): HakukohteetForHaku {
                     logger.warn("Haun $hakuOid hakukohteelta ${hk.oid} puuttuu koulutusKoodit. Koulutus: $koulutus")
                 }
                 if (koulutustyyppiHakukohteelta == null) {
-                    //fixme väliaikainen ratkaisu testiympäristöön, heitetään tämä virhe jatkossa
-                    //kun koulutus-koodiston relaatiot on korjattu ja tiedon pitäisi oikeasti löytyä
-                    if (!(koulutusKoodit.firstOrNull() ?: "").startsWith("9")) {
-                        logger.warn("Haun $hakuOid hakukohteelta ${hk.oid} puuttuu koulutustyyppi. Koulutuskoodit: $koulutusKoodit. Oletetaan rennosti, että tämä on korkeakoulutusta.")
-                        koulutustyyppiHakukohteelta = "3"
-                    }
-                    //throw RuntimeException("Puuttuva koulutustyyppi haun $hakuOid hakukohteella ${hk.oid}")
+                    logger.error("Haun $hakuOid hakukohteelta ${hk.oid} puuttuu koulutustyyppi. Koulutuskoodit: $koulutusKoodit.")
+                    throw RuntimeException("Puuttuva koulutustyyppi haun $hakuOid hakukohteella ${hk.oid}")
                 }
 
                 HakukohdeResponse(
