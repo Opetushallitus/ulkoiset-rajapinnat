@@ -1,31 +1,33 @@
 (ns ulkoiset-rajapinnat.core
   (:require [compojure.handler :only [site]]
-        [org.httpkit.timer :refer :all]
-        [compojure.api.sweet :refer :all]
-        [compojure.api.exception :as ex]
-        [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url url-properties]]
-        [ring.util.http-response :refer [ok not-found]]
-        [schema.core :as s]
-        [compojure.api.middleware :refer [no-response-coercion]]
-        [ulkoiset-rajapinnat.utils.audit :refer [audit create-audit-logger]]
-        [ulkoiset-rajapinnat.utils.access :refer [access-log
-                                                  access-log-with-ticket-check-with-channel
-                                                  access-log-with-ticket-check-as-channel
-                                                  handle-invalid-request]]
-        [ulkoiset-rajapinnat.utils.runtime :refer [shutdown-hook]]
-        [ulkoiset-rajapinnat.haku :refer [Haku haku-resource]]
-        [ulkoiset-rajapinnat.hakukohde :refer [Hakukohde hakukohde-resource]]
-        [ulkoiset-rajapinnat.hakemus :refer [Hakemus hakemus-resource]]
-        [ulkoiset-rajapinnat.vastaanotto :refer [Vastaanotto vastaanotto-resource]]
-        [ulkoiset-rajapinnat.valintaperusteet :refer [Valintaperusteet valintaperusteet-resource]]
-        [ulkoiset-rajapinnat.valintapiste :refer [PistetietoWrapper fetch-valintapisteet-for-hakukohde fetch-valintapisteet-for-hakemus-oids]]
-        [ulkoiset-rajapinnat.utils.config :refer [config init-config]]
-        [org.httpkit.server :refer :all]
-        [clojure.tools.logging :as log]
-        [cheshire.core :refer :all]
-        [clojure.tools.reader.edn :as edn])
+            [org.httpkit.timer :refer :all]
+            [compojure.api.sweet :refer :all]
+            [compojure.api.exception :as ex]
+            [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url url-properties]]
+            [ring.util.http-response :refer [ok not-found]]
+            [schema.core :as s]
+            [compojure.api.middleware :refer [no-response-coercion]]
+            [ulkoiset-rajapinnat.utils.audit :refer [audit create-audit-logger]]
+            [ulkoiset-rajapinnat.utils.access :refer [access-log
+                                                      access-log-with-ticket-check-with-channel
+                                                      access-log-with-ticket-check-as-channel
+                                                      handle-invalid-request]]
+            [ulkoiset-rajapinnat.utils.runtime :refer [shutdown-hook]]
+            [ulkoiset-rajapinnat.haku :refer [Haku haku-resource]]
+            [ulkoiset-rajapinnat.hakukohde :refer [Hakukohde hakukohde-resource]]
+            [ulkoiset-rajapinnat.hakemus :refer [Hakemus hakemus-resource]]
+            [ulkoiset-rajapinnat.vastaanotto :refer [Vastaanotto vastaanotto-resource]]
+            [ulkoiset-rajapinnat.valintaperusteet :refer [Valintaperusteet valintaperusteet-resource]]
+            [ulkoiset-rajapinnat.valintapiste :refer [PistetietoWrapper fetch-valintapisteet-for-hakukohde fetch-valintapisteet-for-hakemus-oids]]
+            [ulkoiset-rajapinnat.utils.config :refer [config init-config]]
+            [org.httpkit.server :refer :all]
+            [clojure.tools.logging :as log]
+            [cheshire.core :refer :all]
+            [clojure.tools.reader.edn :as edn])
   (:gen-class)
   (:import [ulkoiset_rajapinnat UlkoisetRajapinnatApi]))
+
+(def KOUTA_HAKU_OID_LENGTH 35)
 
 (defn api-opintopolku-routes [audit-logger rajapinnat-api]
   (api
@@ -47,11 +49,6 @@
         :responses {200 {:schema [Haku]}}
         (let [year (Integer/parseInt koulutuksen_alkamisvuosi)]
           (log/info (str "Got incoming request to /haku-for-year/" koulutuksen_alkamisvuosi))
-          (comment
-            (access-log-with-ticket-check-with-channel
-              ticket
-              (partial audit audit-logger (str "Haut koulutuksen alkamisvuodella " koulutuksen_alkamisvuosi))
-              (partial haku-resource koulutuksen_alkamisvuosi)))
           (access-log-with-ticket-check-as-channel
             ticket
             (partial audit audit-logger (str "Haut koulutuksen alkamisvuodella " koulutuksen_alkamisvuosi))
@@ -62,11 +59,6 @@
         :query-params [ticket :- String]
         :responses {200 {:schema [Hakukohde]}}
         (log/info (str "Got incoming request to /hakukohde-for-haku/" haku-oid))
-        (comment
-          (access-log-with-ticket-check-with-channel
-            ticket
-            (partial audit audit-logger (str "Hakukohteet haku OID:lla" haku-oid))
-            (partial hakukohde-resource haku-oid palauta-null-arvot)))
         (access-log-with-ticket-check-as-channel
           ticket
           (partial audit audit-logger (str "Hakukohteet haku OID:lla " haku-oid))
@@ -79,20 +71,32 @@
                        koulutuksen_alkamiskausi :- String]
         :responses {200 {:schema [Vastaanotto]}}
         (log/info (str "Got incoming request to /vastaanotto-for-haku/" haku-oid))
-        (access-log-with-ticket-check-with-channel
-           ticket
-          (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
-          (partial vastaanotto-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi)))
+        (if (= KOUTA_HAKU_OID_LENGTH (count haku-oid))
+          (access-log-with-ticket-check-as-channel
+            ticket
+            (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
+            (fn [_]
+              (.findVastaanototForHaku rajapinnat-api haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi)))
+          (access-log-with-ticket-check-with-channel
+            ticket
+            (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
+            (partial vastaanotto-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi))))
       (POST "/vastaanotto-for-haku/:haku-oid" [haku-oid ticket]
-              :summary "Vastaanotot haku OID:lla tietyille hakukohteille"
-              :query-params [ticket :- String]
-              :body [body (describe [s/Str] "hakukohteiden oidit JSON-taulukossa")]
-              :responses {200 {:schema [Vastaanotto]}}
-              (log/info (str "Got incoming request to /vastaanotto-for-haku/" haku-oid))
-              (access-log-with-ticket-check-with-channel
-                 ticket
-                (partial audit audit-logger (str "Vastaanotot haku OID:lla ja hakukohdeoideilla" haku-oid))
-                (partial vastaanotto-resource haku-oid)))
+        :summary "Vastaanotot haku OID:lla tietyille hakukohteille"
+        :query-params [ticket :- String]
+        :body [body (describe [s/Str] "hakukohteiden oidit JSON-taulukossa")]
+        :responses {200 {:schema [Vastaanotto]}}
+        (log/info (str "Got incoming request to /vastaanotto-for-haku/" haku-oid))
+        (if (= KOUTA_HAKU_OID_LENGTH (count haku-oid))
+          (access-log-with-ticket-check-as-channel
+            ticket
+            (partial audit audit-logger (str "Vastaanotot haku OID:lla ja hakukohdeoideilla" haku-oid))
+            (fn [_]
+              (.findVastaanototForHakukohteet rajapinnat-api haku-oid body)))
+          (access-log-with-ticket-check-with-channel
+            ticket
+            (partial audit audit-logger (str "Vastaanotot haku OID:lla ja hakukohdeoideilla" haku-oid))
+            (partial vastaanotto-resource haku-oid))))
       (GET "/hakemus-for-haku/:haku-oid" [haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot ticket] ; hakuoid + kaudet
         :summary "Hakemukset haku OID:lla"
         :query-params [ticket :- String
@@ -100,19 +104,24 @@
                        koulutuksen_alkamiskausi :- String]
         :responses {200 {:schema [Hakemus]}}
         (log/info (str "Got incoming request to /hakemus-for-haku/" haku-oid "?koulutuksen_alkamisvuosi=" koulutuksen_alkamisvuosi "&koulutuksen_alkamiskausi=" koulutuksen_alkamiskausi))
-        (access-log-with-ticket-check-with-channel
-           ticket
-          (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
-          (partial hakemus-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot)))
+        (if (= KOUTA_HAKU_OID_LENGTH (count haku-oid))
+          (access-log-with-ticket-check-as-channel
+            ticket
+            (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
+            (fn [_] (.findHakemuksetForHakuCached rajapinnat-api haku-oid)))
+          (access-log-with-ticket-check-with-channel
+            ticket
+            (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
+            (partial hakemus-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot))))
       (GET "/valintaperusteet/hakukohde/:hakukohde-oid" [hakukohde-oid ticket]
         :summary "Hakukohde valintaperusteista"
         :query-params [ticket :- String]
         :responses {200 {:schema [Valintaperusteet]}}
         (log/info (str "Got incoming request to /valintaperusteet/hakukohde/" hakukohde-oid))
         (access-log-with-ticket-check-with-channel
-           ticket
+          ticket
           (partial audit audit-logger (str "Vastaanotot hakukohde OID:lla" hakukohde-oid))
-          (partial valintaperusteet-resource  hakukohde-oid)))
+          (partial valintaperusteet-resource hakukohde-oid)))
       (POST "/valintaperusteet/hakukohde" [ticket]
         :summary "Hakukohteet valintaperusteista"
         :query-params [ticket :- String]
@@ -120,7 +129,7 @@
         :responses {200 {:schema [Valintaperusteet]}}
         (log/info (str "Got incoming request to /valintaperusteet/hakukohde"))
         (access-log-with-ticket-check-with-channel
-           ticket
+          ticket
           (partial audit audit-logger (str "Hakukohteet valintaperusteista"))
           (partial valintaperusteet-resource)))
       (GET "/valintapiste/haku/:haku-oid/hakukohde/:hakukohde-oid" [haku-oid hakukohde-oid ticket]
@@ -166,8 +175,8 @@
           rajapinnat-api (UlkoisetRajapinnatApi. @url-properties @config)
           server (run-server (api-opintopolku-routes audit-logger rajapinnat-api) {:port port})
           close-handle (fn [] (-> (meta server)
-                                    :server
-                                    (.stop 100)))]
+                                  :server
+                                  (.stop 100)))]
       (do
         (shutdown-hook #(close-handle))
         close-handle))))

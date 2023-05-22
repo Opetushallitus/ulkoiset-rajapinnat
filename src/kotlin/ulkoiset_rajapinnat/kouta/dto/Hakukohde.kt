@@ -16,6 +16,8 @@ data class PaateltyAlkamiskausi(
     val vuosi: Int?
 )
 
+data class HakukohdeKoodi(val koodiUri: String) {}
+
 data class HakukohdeInternal(
     val oid: String,
     val toteutusOid: String,
@@ -24,7 +26,7 @@ data class HakukohdeInternal(
     val aloituspaikat: Int?,
     val ensikertalaisenAloituspaikat: Int?,
     val nimi: Map<String, String>,
-    val kaytetaankoHaunAlkamiskautta: Boolean,
+    val kaytetaanHaunAlkamiskautta: Boolean,
     val hakulomaketyyppi: String,
     val hakulomakeAtaruId: String,
     val hakulomakeKuvaus: Map<String, String>,
@@ -55,5 +57,13 @@ data class HakukohdeInternal(
     val externalId: String,
     val uudenOpiskelijanUrl: Any,
     val paateltyAlkamiskausi: PaateltyAlkamiskausi,
-    val jarjestyspaikkaOid: String
-)
+    val jarjestyspaikkaOid: String,
+    val hakukohde: HakukohdeKoodi?,
+    val koulutustyyppikoodi: String?,
+) {
+    //kausi_s, kausi_k
+    fun onAlkamiskaudella(kausiUri: String, vuosi: String): Boolean {
+        val kausiPrefix = paateltyAlkamiskausi.kausiUri?.split("#")?.first() ?: ""
+        return kausiPrefix.equals(kausiUri) && vuosi.equals(paateltyAlkamiskausi.vuosi.toString())
+    }
+}

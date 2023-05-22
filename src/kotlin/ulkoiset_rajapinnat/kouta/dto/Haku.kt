@@ -50,4 +50,15 @@ data class HakuInternal(
     val muokkaaja: String,
     val organisaatioOid: String,
     val externalId: String
-)
+) {
+    fun isKkHaku(): Boolean {
+        return kohdejoukkoKoodiUri.split("#").first().equals("haunkohdejoukko_12")
+    }
+    fun isYhteishaku(): Boolean {
+        return hakutapaKoodiUri.split("#").first().equals("hakutapa_01")
+    }
+
+    fun isErillishaku(): Boolean {
+        return hakutapaKoodiUri.split("#").first().equals("hakutapa_02")
+    }
+}

@@ -5,7 +5,7 @@ data class HakukohdeResponse(
     val organisaatiot: List<OrganisaatioResponse>,
     val hakukohteenNimi: Map<String, String>,
     val koulutuksenOpetuskieli: List<String>,
-    val koulutuksenKoulutustyyppi: String?,
+    val koulutuksenKoulutustyyppi: List<String>?,
     val koulutuksenAlkamisvuosi: Int?,
     val koulutuksenAlkamiskausi: String?,
     val hakukohteenKoulutuskoodit: List<String>,
