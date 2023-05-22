@@ -14,7 +14,7 @@ abstract class BaseCasClient(
 ) {
 
     val logger = LoggerFactory.getLogger("BaseCasClient")
-    val timeoutMillis = 1000 * 60 * 15
+    val timeoutMillis = 1000 * 60 * 30
 
     protected fun url(s: String, vararg params: Any): String {
         return properties.getProperty(s, *params)
