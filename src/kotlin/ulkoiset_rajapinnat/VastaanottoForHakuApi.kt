@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory
 import ulkoiset_rajapinnat.kouta.dto.HakukohdeInternal
 import ulkoiset_rajapinnat.response.Hakutoive
 import ulkoiset_rajapinnat.response.VastaanottoResponse
-import ulkoiset_rajapinnat.suoritusrekisteri.dto.Oppija
 import ulkoiset_rajapinnat.valinta_tulos_service.dto.HakemuksenValinnanTulos
 import ulkoiset_rajapinnat.valintapisteet.dto.HakemuksenValintapisteet
 import java.util.concurrent.CompletableFuture
@@ -28,7 +27,6 @@ class VastaanottoForHakuApi(clients: Clients) : VastaanottoForHaku {
         kielikokeetByHakukohde: Map<String, List<String>>,
         pisteetByHakemusOid: Map<String, HakemuksenValintapisteet>
     ): VastaanottoResponse {
-        logger.info("Muodostetaan hakemuksen tulos hakemukselle ${hakemuksenTulos.hakemusOid}")
         val hakutoiveidenTulokset =
             hakemuksenTulos.hakutoiveet.filter { ht -> halututHakukohteet.contains(ht.hakukohdeOid) }
                 .map { ht ->
@@ -65,54 +63,21 @@ class VastaanottoForHakuApi(clients: Clients) : VastaanottoForHaku {
         return VastaanottoResponse(hakemuksenTulos.hakijaOid, hakutoiveidenTulokset)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    override fun findVastaanototForHaku(
-        hakuOid: String,
-        vuosi: String,
-        kausi: String
-    ): CompletableFuture<List<VastaanottoResponse>> {
-        return GlobalScope.future {
-            logger.info("Finding vastaanotot for haku $hakuOid, vuosi $vuosi and kausi $kausi")
-            val hakemustenValinnantulokset = vtsClient.fetchHaunHakemustenTuloksetCached(hakuOid)
-            val hakukohteet: List<HakukohdeInternal>? = koutaInternalClient.findHakukohteetByHakuOid(hakuOid).await()
-            val hakukohteetKaudellaOids =
-                hakukohteet?.filter { hk -> hk.onAlkamiskaudella(kausi, vuosi) }?.map { it.oid }?.toSet() ?: emptySet()
-            logger.info("Haulle $hakuOid löytyi ${hakukohteet?.size} hakukohdetta, joista ${hakukohteetKaudellaOids.size} on vuoden $vuosi kaudella $kausi")
+    private suspend fun muodostaTulokset(hakuOid: String, hakemustenTulokset: CompletableFuture<List<HakemuksenValinnanTulos>>, hakukohdeOids: List<String>): CompletableFuture<List<VastaanottoResponse>> {
+        logger.info("Muodostetaan vastaanotot haun $hakuOid hakukohteille $hakukohdeOids")
+        val valintaperusteetByHakukohde = valintaperusteetClient.fetchValintakokeet(hakukohdeOids.toSet())
+            .thenApply { result -> result.map { it.hakukohdeOid to it.valintaperusteDTO }.toMap() }
+        val valintakoeTunnisteetByHakukohde = valintaperusteetByHakukohde.await()
+            .map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isValintakoe() }.map { it.tunniste } }.toMap()
+        val kielikoeTunnisteetByHakukohde = valintaperusteetByHakukohde.await()
+            .map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isKielikoe() }.map { it.tunniste} }.toMap()
 
-            val valintaperusteetByHakukohde = valintaperusteetClient.fetchValintakokeet(hakukohteetKaudellaOids)
-                .thenApply { result -> result.map { it.hakukohdeOid to it.valintaperusteDTO }.toMap() }
-            val valintakoeTunnisteetByHakukohde = valintaperusteetByHakukohde.await()
-                .map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isValintakoe() }.map { it.tunniste } }.toMap()
-            val kielikoeTunnisteetByHakukohde = valintaperusteetByHakukohde.await()
-                .map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isKielikoe() }.map { it.tunniste} }.toMap()
+        val hakemusOids = hakemustenTulokset.await().map { it.hakemusOid }
+        val pisteet = valintapisteClient.fetchValintapisteetForHakemusOidsInBatches(hakemusOids)
+        val pisteetByHakemusOid = pisteet.thenApply { result -> result.map { it.hakemusOID to it }.toMap() }.await()
 
-            val hakemusOids = hakemustenValinnantulokset.await().map { it.hakemusOid }
-            val pisteet = valintapisteClient.fetchValintapisteetForHakemusOidsInBatches(hakemusOids)
-            val pisteetByHakemusOid = pisteet.thenApply { result -> result.map { it.hakemusOID to it }.toMap() }.await()
-
-            hakemustenValinnantulokset.await().map { hakemuksenTulos ->
-                createHakemuksenTulos(hakemuksenTulos, hakukohteetKaudellaOids, valintakoeTunnisteetByHakukohde, kielikoeTunnisteetByHakukohde, pisteetByHakemusOid)
-            }.filter { response -> response.hakutoiveet.isNotEmpty() }
-        }
-    }
-
-    @OptIn(DelicateCoroutinesApi::class)
-    override fun findVastaanototForHakukohteet(hakuOid: String, hakukohdeOids: List<String>): CompletableFuture<List<VastaanottoResponse>>  {
-        return GlobalScope.future {
-            logger.info("Haetaan vastaanotot haun $hakuOid hakukohteille $hakukohdeOids")
-            val hakemustenValinnantulokset = vtsClient.fetchHakemustenTuloksetHakukohteille(hakuOid, hakukohdeOids)
-            val valintaperusteetByHakukohde = valintaperusteetClient.fetchValintakokeet(hakukohdeOids.toSet())
-                .thenApply { result -> result.map { it.hakukohdeOid to it.valintaperusteDTO }.toMap() }
-            val valintakoeTunnisteetByHakukohde = valintaperusteetByHakukohde.await()
-                .map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isValintakoe() }.map { it.tunniste } }.toMap()
-            val kielikoeTunnisteetByHakukohde = valintaperusteetByHakukohde.await()
-                .map { v -> v.key to v.value.filter { valintaperuste -> valintaperuste.isKielikoe() }.map { it.tunniste} }.toMap()
-
-            val hakemusOids = hakemustenValinnantulokset.await().map { it.hakemusOid }
-            val pisteet = valintapisteClient.fetchValintapisteetForHakemusOidsInBatches(hakemusOids)
-            val pisteetByHakemusOid = pisteet.thenApply { result -> result.map { it.hakemusOID to it }.toMap() }.await()
-
-            hakemustenValinnantulokset.await().map { hakemuksenTulos ->
+        return hakemustenTulokset.thenApply { tulokset ->
+            tulokset.map { hakemuksenTulos ->
                 createHakemuksenTulos(
                     hakemuksenTulos,
                     hakukohdeOids.toSet(),
@@ -121,6 +86,32 @@ class VastaanottoForHakuApi(clients: Clients) : VastaanottoForHaku {
                     pisteetByHakemusOid
                 )
             }.filter { response -> response.hakutoiveet.isNotEmpty() }
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun findVastaanototForHaku(
+        hakuOid: String,
+        vuosi: String,
+        kausi: String
+    ): CompletableFuture<List<VastaanottoResponse>> {
+        return GlobalScope.future {
+            logger.info("Haetaan vastaanotot haulle $hakuOid, vuosi $vuosi and kausi $kausi")
+            val hakukohteet: List<HakukohdeInternal>? = koutaInternalClient.findHakukohteetByHakuOid(hakuOid).await()
+            val hakukohteetKaudellaOids =
+                hakukohteet?.filter { hk -> hk.onAlkamiskaudella(kausi, vuosi) }?.map { it.oid }?.toList() ?: emptyList()
+            logger.info("Haulle $hakuOid löytyi ${hakukohteet?.size} hakukohdetta, joista ${hakukohteetKaudellaOids.size} on vuoden $vuosi kaudella $kausi")
+            val valinnanTulokset = vtsClient.fetchHaunHakemustenTuloksetCached(hakuOid)
+            muodostaTulokset(hakuOid, valinnanTulokset, hakukohteetKaudellaOids).await()
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun findVastaanototForHakukohteet(hakuOid: String, hakukohdeOids: List<String>): CompletableFuture<List<VastaanottoResponse>>  {
+        return GlobalScope.future {
+            logger.info("Haetaan vastaanotot haun $hakuOid hakukohteille $hakukohdeOids")
+            val hakemustenValinnantulokset = vtsClient.fetchHakemustenTuloksetHakukohteille(hakuOid, hakukohdeOids)
+            muodostaTulokset(hakuOid, hakemustenValinnantulokset, hakukohdeOids).await()
         }
     }
 }

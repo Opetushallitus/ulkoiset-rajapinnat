@@ -29,6 +29,7 @@ class ValintapisteClient(username: String,
 ) {
 
     fun fetchValintapisteetForHakemusOidsInBatches(hakemusOids: List<String>): CompletableFuture<List<HakemuksenValintapisteet>> {
+        logger.info("Haetaan valintapisteet ${hakemusOids.size} hakemukselle.")
         val MAX_BATCH_SIZE = 30000
         return sequentialBatches(
             this::fetchValintapisteetForHakemusOids,
@@ -37,8 +38,8 @@ class ValintapisteClient(username: String,
     }
 
     fun fetchValintapisteetForHakemusOids(hakemusOids: List<String>): CompletableFuture<List<HakemuksenValintapisteet>> {
-        //fixme, params potentially needed for audit-logging in valintapiste-service...
-        return fetch(url("valintapiste-service.pisteet-with-hakemusoids", "-", "1.2.3", "1.1.1.1", "agent"), hakemusOids)
+        //Tässä ei nyt välitetä eteenpäin kutsujan tietoja, mutta tällä on merkitystä vain valintapiste-servicen auditlokituksen kannalta.
+        return fetch(url("valintapiste-service.pisteet-with-hakemusoids", "ulkoiset-rajapinnat", "1.2.3.4", "1.2.3.4", "agent"), hakemusOids)
     }
 
 }

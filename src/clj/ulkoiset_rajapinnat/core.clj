@@ -27,6 +27,8 @@
   (:gen-class)
   (:import [ulkoiset_rajapinnat UlkoisetRajapinnatApi]))
 
+(def KOUTA_HAKU_OID_LENGTH 35)
+
 (defn api-opintopolku-routes [audit-logger rajapinnat-api]
   (api
     {:coercion no-response-coercion
@@ -72,7 +74,7 @@
         (access-log-with-ticket-check-as-channel
           ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
-          (if (= 35 (count haku-oid))
+          (if (= KOUTA_HAKU_OID_LENGTH (count haku-oid))
             (fn [_]
               (.findVastaanototForHaku rajapinnat-api haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi))
             (partial vastaanotto-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi))))
@@ -85,7 +87,7 @@
         (access-log-with-ticket-check-as-channel
           ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla ja hakukohdeoideilla" haku-oid))
-          (if (= 35 (count haku-oid))
+          (if (= KOUTA_HAKU_OID_LENGTH (count haku-oid))
             (fn [_]
               (.findVastaanototForHakukohteet rajapinnat-api haku-oid body))
             (partial vastaanotto-resource haku-oid))))
@@ -99,7 +101,7 @@
         (access-log-with-ticket-check-as-channel
           ticket
           (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
-          (if (= 35 (count haku-oid))
+          (if (= KOUTA_HAKU_OID_LENGTH (count haku-oid))
             (fn [_] (.findHakemuksetForHakuCached rajapinnat-api haku-oid))
             (partial hakemus-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot))))
       (GET "/valintaperusteet/hakukohde/:hakukohde-oid" [hakukohde-oid ticket]

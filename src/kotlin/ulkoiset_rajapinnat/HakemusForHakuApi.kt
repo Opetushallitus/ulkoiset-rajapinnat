@@ -8,7 +8,6 @@ import kotlinx.coroutines.future.future
 import org.slf4j.LoggerFactory
 import ulkoiset_rajapinnat.ataru.dto.Ataruhakemus
 import ulkoiset_rajapinnat.koodisto.dto.CodeElement
-import ulkoiset_rajapinnat.koodisto.dto.Koodisto
 import ulkoiset_rajapinnat.kouta.dto.HakuInternal
 import ulkoiset_rajapinnat.oppijanumerorekisteri.dto.OnrHenkilo
 import ulkoiset_rajapinnat.response.HakemusResponse
@@ -21,9 +20,6 @@ import java.util.concurrent.TimeUnit
 class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     private val koutaInternalClient = clients.koutaInternalClient
     private val koodistoClient = clients.koodistoClient
-    private val vtsClient = clients.valintaTulosServiceClient
-    private val valintaperusteetClient = clients.valintaperusteetClient
-    private val valintapisteClient = clients.valintapisteClient
     private val ataruClient = clients.ataruClient
     private val sureClient = clients.suoritusrekisteriClient
     private val onrClient = clients.oppijanumerorekisteriClient
