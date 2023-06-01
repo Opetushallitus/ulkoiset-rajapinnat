@@ -11,7 +11,7 @@ import ulkoiset_rajapinnat.koodisto.dto.CodeElement
 import ulkoiset_rajapinnat.kouta.dto.HakuInternal
 import ulkoiset_rajapinnat.oppijanumerorekisteri.dto.OnrHenkilo
 import ulkoiset_rajapinnat.response.HakemusResponse
-import ulkoiset_rajapinnat.suoritusrekisteri.dto.Oppija
+import ulkoiset_rajapinnat.suoritusrekisteri.dto.Ensikertalaisuus
 import ulkoiset_rajapinnat.util.arvo
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
@@ -26,12 +26,12 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
 
     private val logger = LoggerFactory.getLogger("HakemusForHakuApi")
 
-    private fun createHakemusResponse(hakemus: Ataruhakemus, oppija: Oppija?, onrHenkilo: OnrHenkilo?, maatJaValtiot: Map<String, String> ): HakemusResponse {
+    private fun createHakemusResponse(hakemus: Ataruhakemus, ensikertalaisuus: Ensikertalaisuus?, onrHenkilo: OnrHenkilo?, maatJaValtiot: Map<String, String> ): HakemusResponse {
         if (onrHenkilo == null) {
             logger.warn("Hakemuksen ${hakemus.hakemus_oid} henkilö ${hakemus.henkilo_oid} puuttuu!")
         }
-        if (oppija == null) {
-            logger.warn("Hakemuksen ${hakemus.hakemus_oid} oppija henkilölle ${hakemus.henkilo_oid} puuttuu!")
+        if (ensikertalaisuus == null) {
+            logger.warn("Hakemuksen ${hakemus.hakemus_oid} ensikertalaisuustieto henkilölle ${hakemus.henkilo_oid} puuttuu!")
         }
 
         return HakemusResponse(
@@ -47,7 +47,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             henkiloOid = hakemus.henkilo_oid,
             hakuOid = hakemus.haku_oid,
             hakemusTila = hakemus.hakemus_tila,
-            ensikertalaisuus = oppija?.ensikertalainen,
+            ensikertalaisuus = ensikertalaisuus?.menettamisenPeruste == null,
             hakutoiveet = hakemus.hakutoiveet,
             hakijanAsuinmaa = hakemus.asuinmaa,
             hakijanKotikunta = hakemus.kotikunta,
@@ -63,20 +63,19 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             logger.info("Haetaan hakemukset kouta-haulle $hakuOid")
             val haku: HakuInternal = koutaInternalClient.findByHakuOid(hakuOid).await()
             val isHakuWithEnsikertalaisuus = haku.isKkHaku() && (haku.isErillishaku() || haku.isYhteishaku())
-
-            val hakemukset = ataruClient.fetchHaunHakemukset(hakuOid).await()
-            val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
-
-            val oppijat: CompletableFuture<List<Oppija>> = if (isHakuWithEnsikertalaisuus) {
-                sureClient.fetchOppijatForPersonOidsInBatches(hakuOid, personOidsFromHakemukset, true)
+            val ensikertalaisuudet = if (isHakuWithEnsikertalaisuus) {
+                sureClient.fetchHaunEnsikertalaisuudet(hakuOid)
             } else {
                 logger.info("Ei haeta sure-tietoja haulle $hakuOid, koska se ei ole kk-haku ja joko yhteis- tai erillishaku.")
                 CompletableFuture.completedFuture(emptyList())
             }
-            val henkilot = onrClient.fetchHenkilotInBatches(personOidsFromHakemukset.toSet())
-            val oppijatByHenkiloOid = oppijat.thenApply { result -> result.map { it.oppijanumero to it }.toMap() }.await()
-            val henkilotByHenkiloOid = henkilot.thenApply { result -> result.map { it.oidHenkilo to it }.toMap() }.await()
 
+            val hakemukset = ataruClient.fetchHaunHakemukset(hakuOid).await()
+            val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
+
+            val henkilot = onrClient.fetchHenkilotInBatches(personOidsFromHakemukset.toSet())
+            val ensikertalaisuusByHenkiloOid = ensikertalaisuudet.thenApply { result -> result.map { it.henkiloOid to it }.toMap() }.await()
+            val henkilotByHenkiloOid = henkilot.thenApply { result -> result.map { it.oidHenkilo to it }.toMap() }.await()
 
             val maatJaValtiot1 = koodistoClient.fetchKoodisto("maatjavaltiot1", 2, true).await()
             val maatJaValtiot2 = koodistoClient.fetchKoodisto("maatjavaltiot2", 2, true).await()
@@ -87,7 +86,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             }.toMap()
             logger.info("Mv2 to mv1 mappings $mv2_value_to_mv1_value")
             logger.info("Tiedot haettu haulle $hakuOid, muodostetaan tulokset")
-            hakemukset.map { hakemus -> createHakemusResponse(hakemus, oppijatByHenkiloOid[hakemus.henkilo_oid], henkilotByHenkiloOid[hakemus.henkilo_oid], mv2_value_to_mv1_value) }
+            hakemukset.map { hakemus -> createHakemusResponse(hakemus, ensikertalaisuusByHenkiloOid[hakemus.henkilo_oid], henkilotByHenkiloOid[hakemus.henkilo_oid], mv2_value_to_mv1_value) }
         }
     }
 

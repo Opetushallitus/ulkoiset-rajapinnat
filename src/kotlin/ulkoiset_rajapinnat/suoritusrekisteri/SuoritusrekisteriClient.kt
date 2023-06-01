@@ -4,6 +4,7 @@ import fi.vm.sade.javautils.nio.cas.CasClientBuilder
 import fi.vm.sade.javautils.nio.cas.CasConfig
 import fi.vm.sade.properties.OphProperties
 import ulkoiset_rajapinnat.config.Headers
+import ulkoiset_rajapinnat.suoritusrekisteri.dto.Ensikertalaisuus
 import ulkoiset_rajapinnat.suoritusrekisteri.dto.Oppija
 import ulkoiset_rajapinnat.util.BaseCasClient
 import ulkoiset_rajapinnat.util.sequentialBatches
@@ -33,6 +34,10 @@ class SuoritusrekisteriClient(username: String,
             { oids: List<String> -> fetchOppijatForPersonOids(hakuOid, oids, fetchEnsikertalaisuudet) },
             completedFuture(Pair(hakemusOids.chunked(MAX_BATCH_SIZE), listOf()))
         )
+    }
+
+    fun fetchHaunEnsikertalaisuudet(hakuOid: String): CompletableFuture<List<Ensikertalaisuus>> {
+        return fetch(url("suoritusrekisteri-service.cas.haun.ensikertalaiset", hakuOid))
     }
 
     fun fetchOppijatForPersonOids(hakuOid: String, personOids: List<String>, fetchEnsikertalaisuudet: Boolean): CompletableFuture<List<Oppija>> {
