@@ -47,7 +47,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             henkiloOid = hakemus.henkilo_oid,
             hakuOid = hakemus.haku_oid,
             hakemusTila = hakemus.hakemus_tila,
-            ensikertalaisuus = ensikertalaisuus?.menettamisenPeruste == null,
+            ensikertalaisuus = if (ensikertalaisuus != null) ensikertalaisuus?.menettamisenPeruste == null else null,
             hakutoiveet = hakemus.hakutoiveet,
             hakijanAsuinmaa = hakemus.asuinmaa,
             hakijanKotikunta = hakemus.kotikunta,
@@ -62,11 +62,11 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
         return GlobalScope.future {
             logger.info("Haetaan hakemukset kouta-haulle $hakuOid")
             val haku: HakuInternal = koutaInternalClient.findByHakuOid(hakuOid).await()
-            val isHakuWithEnsikertalaisuus = haku.isKkHaku() && (haku.isErillishaku() || haku.isYhteishaku())
+            val isHakuWithEnsikertalaisuus = haku.isKkHaku() //Fixme, tämä päättely voisi varmaan olla parempikin
             val ensikertalaisuudet = if (isHakuWithEnsikertalaisuus) {
                 sureClient.fetchHaunEnsikertalaisuudet(hakuOid)
             } else {
-                logger.info("Ei haeta sure-tietoja haulle $hakuOid, koska se ei ole kk-haku ja joko yhteis- tai erillishaku.")
+                logger.info("Ei haeta sure-tietoja haulle $hakuOid, koska se ei ole kk-haku.")
                 CompletableFuture.completedFuture(emptyList())
             }
 
