@@ -54,17 +54,6 @@ data class Oppija(
     val suoritukset: List<SuoritusJaArvosanat>
 )
 
-//{
-//    "henkiloOid": "1.2.246.562.24.61961728774"
-//  },
-//  {
-//    "henkiloOid": "1.2.246.562.24.45637322624",
-//    "menettamisenPeruste": {
-//      "peruste": "OpiskeluoikeusAlkanut",
-//      "paivamaara": "2021-08-30T00:00:00.000+03:00"
-//    }
-//  },
-
 data class MenettamisenPeruste(
     val peruste: String?,
     val paivamaara: String?
