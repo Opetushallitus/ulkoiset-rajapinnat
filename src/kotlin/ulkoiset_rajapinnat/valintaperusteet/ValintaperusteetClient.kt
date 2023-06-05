@@ -9,6 +9,7 @@ import ulkoiset_rajapinnat.valinta_tulos_service.dto.HakemuksenValinnanTulos
 import ulkoiset_rajapinnat.valintaperusteet.dto.HakukohteenValintaperusteResponse
 import ulkoiset_rajapinnat.valintaperusteet.dto.ValintaperusteDTO
 import java.util.concurrent.CompletableFuture
+import kotlin.math.log
 
 class ValintaperusteetClient(username: String,
                                 password: String,
@@ -27,6 +28,7 @@ class ValintaperusteetClient(username: String,
     )
 ) {
     fun fetchValintakokeet(hakukohdeOids: Set<String>): CompletableFuture<List<HakukohteenValintaperusteResponse>> {
+        logger.info("Haetaan valintaperusteet hakukohteille: $hakukohdeOids")
         return fetch(url("valintaperusteet-service.hakukohde-avaimet"), hakukohdeOids)
     }
 }

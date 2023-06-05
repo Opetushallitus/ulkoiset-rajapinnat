@@ -31,7 +31,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             logger.warn("Hakemuksen ${hakemus.hakemus_oid} henkilö ${hakemus.henkilo_oid} puuttuu!")
         }
         if (ensikertalaisuus == null) {
-            logger.warn("Hakemuksen ${hakemus.hakemus_oid} ensikertalaisuustieto henkilölle ${hakemus.henkilo_oid} puuttuu!")
+            logger.warn("Hakemuksen ${hakemus.hakemus_oid} ensikertalaisuustieto henkilölle ${hakemus.henkilo_oid} puuttuu! Henkilö $onrHenkilo")
         }
 
         return HakemusResponse(
@@ -73,9 +73,8 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             val hakemukset = ataruClient.fetchHaunHakemukset(hakuOid).await()
             val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
 
-            val henkilot = onrClient.fetchHenkilotInBatches(personOidsFromHakemukset.toSet())
+            val masterHenkilotByHakemusHenkiloOid = onrClient.fetchMasterHenkilotInBatches(personOidsFromHakemukset.toSet()).await()
             val ensikertalaisuusByHenkiloOid = ensikertalaisuudet.thenApply { result -> result.map { it.henkiloOid to it }.toMap() }.await()
-            val henkilotByHenkiloOid = henkilot.thenApply { result -> result.map { it.oidHenkilo to it }.toMap() }.await()
 
             val maatJaValtiot1 = koodistoClient.fetchKoodisto("maatjavaltiot1", 2, true).await()
             val maatJaValtiot2 = koodistoClient.fetchKoodisto("maatjavaltiot2", 2, true).await()
@@ -86,7 +85,9 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             }.toMap()
             logger.info("Mv2 to mv1 mappings $mv2_value_to_mv1_value")
             logger.info("Tiedot haettu haulle $hakuOid, muodostetaan tulokset")
-            hakemukset.map { hakemus -> createHakemusResponse(hakemus, ensikertalaisuusByHenkiloOid[hakemus.henkilo_oid], henkilotByHenkiloOid[hakemus.henkilo_oid], mv2_value_to_mv1_value) }
+            hakemukset.map { hakemus ->
+                val masterHenkilo = masterHenkilotByHakemusHenkiloOid[hakemus.henkilo_oid]
+                createHakemusResponse(hakemus, ensikertalaisuusByHenkiloOid[masterHenkilo?.oidHenkilo ?: ""], masterHenkilo, mv2_value_to_mv1_value) }
         }
     }
 
