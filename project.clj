@@ -7,7 +7,10 @@
                         "releases" {:url "https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local"}}
   :repositories [["oph-releases" "https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local"]
                  ["oph-snapshots" "https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local"]
-                 ["ext-snapshots" "https://artifactory.opintopolku.fi/artifactory/ext-snapshot-local"]]
+                 ["ext-snapshots" "https://artifactory.opintopolku.fi/artifactory/ext-snapshot-local"]
+                 ["github" {:url "https://maven.pkg.github.com/Opetushallitus/packages"
+                            :username "private-token"
+                            :password :env/GITHUB_TOKEN}]]
   :dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
                  ; Java Data
                  [org.flatland/ordered "1.5.7"]
@@ -39,7 +42,7 @@
                  [fi.vm.sade.java-utils/java-properties "0.1.0-SNAPSHOT"]
                  [com.google.code.gson/gson "2.9.0"]
                  [com.github.ben-manes.caffeine/caffeine "3.1.1"]
-                 [fi.vm.sade.java-utils/java-cas "1.0.7-SNAPSHOT" :exclusions [org.slf4j/slf4j-simple]]
+                 [fi.vm.sade.java-utils/java-cas "1.0.8-SNAPSHOT" :exclusions [org.slf4j/slf4j-simple]]
                  ; Kotlin
                  [org.jetbrains.kotlin/kotlin-stdlib "1.6.21"]
                  ; Coroutines

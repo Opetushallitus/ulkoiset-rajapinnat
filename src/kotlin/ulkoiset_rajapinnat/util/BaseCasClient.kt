@@ -29,7 +29,7 @@ abstract class BaseCasClient(
         val t = object: TypeToken<T>() {}.type
         val startTimeMillis = System.currentTimeMillis()
         logger.info("GET Calling url: $url")
-        return this.client.execute(req).thenApply<T> {
+        return this.client.executeAndRetryWithCleanSessionOnStatusCodes(req, setOf(302, 401)).thenApply<T> {
             if(it.statusCode != 200 && !acceptStatusCodes.contains(it.statusCode)) {
                 throw RuntimeException("Calling $url failed with status ${it.statusCode}")
             }
@@ -56,7 +56,7 @@ abstract class BaseCasClient(
         val t = object: TypeToken<T>() {}.type
         val startTimeMillis = System.currentTimeMillis()
         logger.info("POST Calling url: $url")
-        return this.client.execute(req).toCompletableFuture().thenApply<T> {
+        return this.client.executeAndRetryWithCleanSessionOnStatusCodes(req, setOf(302, 401)).toCompletableFuture().thenApply<T> {
             if(it.statusCode != 200 && !acceptStatusCodes.contains(it.statusCode)) {
                 throw RuntimeException("Calling $url failed with status ${it.statusCode}")
             }
