@@ -25,7 +25,7 @@ abstract class BaseCasClient(
             .setUrl(url)
             .setRequestTimeout(timeoutMillis)
             .setReadTimeout(timeoutMillis)
-             .build()
+            .build()
         val t = object: TypeToken<T>() {}.type
         val startTimeMillis = System.currentTimeMillis()
         logger.info("GET Calling url: $url")
