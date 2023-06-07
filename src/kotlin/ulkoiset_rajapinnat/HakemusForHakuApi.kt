@@ -26,11 +26,11 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
 
     private val logger = LoggerFactory.getLogger("HakemusForHakuApi")
 
-    private fun createHakemusResponse(hakemus: Ataruhakemus, ensikertalaisuus: Ensikertalaisuus?, onrHenkilo: OnrHenkilo?, maatJaValtiot: Map<String, String> ): HakemusResponse {
+    private fun createHakemusResponse(hakemus: Ataruhakemus, ensikertalaisuus: Ensikertalaisuus?, onrHenkilo: OnrHenkilo?, maatJaValtiot: Map<String, String>, isHakuWithEnsikertalaisuus: Boolean): HakemusResponse {
         if (onrHenkilo == null) {
             logger.warn("Hakemuksen ${hakemus.hakemus_oid} henkilö ${hakemus.henkilo_oid} puuttuu!")
         }
-        if (ensikertalaisuus == null) {
+        if (isHakuWithEnsikertalaisuus && ensikertalaisuus == null) {
             logger.warn("Hakemuksen ${hakemus.hakemus_oid} ensikertalaisuustieto henkilölle ${hakemus.henkilo_oid} puuttuu! Henkilö $onrHenkilo")
         }
 
@@ -87,7 +87,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             logger.info("Tiedot haettu haulle $hakuOid, muodostetaan tulokset")
             hakemukset.map { hakemus ->
                 val masterHenkilo = masterHenkilotByHakemusHenkiloOid[hakemus.henkilo_oid]
-                createHakemusResponse(hakemus, ensikertalaisuusByHenkiloOid[masterHenkilo?.oidHenkilo ?: ""], masterHenkilo, mv2_value_to_mv1_value) }
+                createHakemusResponse(hakemus, ensikertalaisuusByHenkiloOid[masterHenkilo?.oidHenkilo ?: ""], masterHenkilo, mv2_value_to_mv1_value, isHakuWithEnsikertalaisuus) }
         }
     }
 
