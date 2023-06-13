@@ -37,7 +37,7 @@ class SuoritusrekisteriClient(username: String,
     }
 
     fun fetchHaunEnsikertalaisuudet(hakuOid: String): CompletableFuture<List<Ensikertalaisuus>> {
-        return fetch(url("suoritusrekisteri-service.cas.haun.ensikertalaiset", hakuOid))
+        return fetch(url("suoritusrekisteri-service.cas.haun.ensikertalaiset", hakuOid, true))
     }
 
     fun fetchOppijatForPersonOids(hakuOid: String, personOids: List<String>, fetchEnsikertalaisuudet: Boolean): CompletableFuture<List<Oppija>> {
