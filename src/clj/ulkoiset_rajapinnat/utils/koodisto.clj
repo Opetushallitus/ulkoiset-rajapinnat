@@ -28,7 +28,7 @@
   response)
 
 (defn koodisto-as-channel [koodisto]
-  (let [url (resolve-url :koodisto-service.codeelement-codes koodisto)
+  (let [url (resolve-url :koodisto-service.codeelement-codes koodisto 2)
         options {:as :stream}
         response-mapper (comp #(into (sorted-map) %)
                               #(map transform-uri-to-arvo-format %)

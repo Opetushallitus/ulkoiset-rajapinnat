@@ -39,4 +39,16 @@ class OppijanumerorekisteriClient(username: String,
     fun fetchHenkilot(personOids: List<String>): CompletableFuture<List<OnrHenkilo>> {
         return fetch(url("oppijanumerorekisteri-service.henkilot-by-henkilo-oids"), personOids)
     }
+
+    fun fetchMasterHenkilotInBatches(organisaatioOids: Set<String>): CompletableFuture<Map<String, OnrHenkilo>> {
+        val MAX_BATCH_SIZE = 5000
+        return sequentialBatches(
+            { oids: List<String> -> fetchMasterHenkilot(oids) },
+            CompletableFuture.completedFuture(Pair(organisaatioOids.chunked(MAX_BATCH_SIZE), listOf()))
+        ).thenApply { result -> result.associate { it.first to it.second } }
+    }
+    fun fetchMasterHenkilot(personOids: List<String>): CompletableFuture<List<Pair<String, OnrHenkilo>>> {
+        return fetch<Map<String, OnrHenkilo>, List<String>>(url("oppijanumerorekisteri-service.master-henkilot-by-henkilo-oids"), personOids)
+            .thenApply { result -> result.map { entry -> Pair(entry.key, entry.value) } }
+    }
 }

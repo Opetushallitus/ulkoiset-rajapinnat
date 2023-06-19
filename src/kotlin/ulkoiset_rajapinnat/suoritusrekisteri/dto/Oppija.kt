@@ -53,3 +53,12 @@ data class Oppija(
     val ensikertalainen: Boolean?,
     val suoritukset: List<SuoritusJaArvosanat>
 )
+
+data class MenettamisenPeruste(
+    val peruste: String?,
+    val paivamaara: String?
+)
+data class Ensikertalaisuus(
+    val henkiloOid: String,
+    val menettamisenPeruste: MenettamisenPeruste?
+)
