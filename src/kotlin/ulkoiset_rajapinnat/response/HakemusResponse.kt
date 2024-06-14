@@ -19,5 +19,9 @@ data class HakemusResponse(
     val hakijanAsuinmaa: String?,
     val hakijanKotikunta: String?,
     val pohjakoulutus_kk: List<String>,
-    val ulkomaillaSuoritetunToisenAsteenTutkinnonSuoritusmaa: String?
+    val ulkomaillaSuoritetunToisenAsteenTutkinnonSuoritusmaa: String?,
+    val koulusivistyskieli: String?,
+    val pohjakoulutus2aste: String?,
+    val lahtokoulunOrganisaatioOid: String?
+
 )
