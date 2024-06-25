@@ -33,7 +33,6 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
         if (isHakuWithEnsikertalaisuus && ensikertalaisuus == null) {
             logger.warn("Hakemuksen ${hakemus.hakemus_oid} ensikertalaisuustieto henkilölle ${hakemus.henkilo_oid} puuttuu! Henkilö $onrHenkilo")
         }
-
         return HakemusResponse(
             yksiloity = onrHenkilo?.yksiloity,
             henkilotunnus = onrHenkilo?.hetu,
@@ -52,7 +51,10 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             hakijanAsuinmaa = hakemus.asuinmaa,
             hakijanKotikunta = hakemus.kotikunta,
             pohjakoulutus_kk = hakemus.pohjakoulutus_kk.map { it.pohjakoulutuskklomake }.filterNotNull(),
-            ulkomaillaSuoritetunToisenAsteenTutkinnonSuoritusmaa = hakemus.pohjakoulutus_kk_ulk_country)
+            ulkomaillaSuoritetunToisenAsteenTutkinnonSuoritusmaa = hakemus.pohjakoulutus_kk_ulk_country,
+            koulusivistyskieli = hakemus.koulusivistyskieli,
+            pohjakoulutus2aste = hakemus.pohjakoulutus_2aste,
+            lahtokoulunOrganisaatioOid = hakemus.lahtokoulunOrganisaatioOid)
     }
 
     @OptIn(DelicateCoroutinesApi::class)
