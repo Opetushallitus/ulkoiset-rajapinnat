@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import ulkoiset_rajapinnat.ataru.dto.Ataruhakemus
 import ulkoiset_rajapinnat.koodisto.dto.CodeElement
 import ulkoiset_rajapinnat.kouta.dto.HakuInternal
+import ulkoiset_rajapinnat.kouta.dto.HakukohdeInternal
 import ulkoiset_rajapinnat.oppijanumerorekisteri.dto.OnrHenkilo
 import ulkoiset_rajapinnat.response.HakemusResponse
 import ulkoiset_rajapinnat.suoritusrekisteri.dto.Ensikertalaisuus
@@ -71,8 +72,8 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                 logger.info("Ei haeta sure-tietoja haulle $hakuOid, koska se ei ole kk-haku.")
                 CompletableFuture.completedFuture(emptyList())
             }
-
-            val hakemukset = ataruClient.fetchHaunHakemukset(hakuOid).await()
+            val is2AsteenYhteishaku = (haku.isYhteishaku() && haku.is2Aste())
+            val hakemukset = fetchAtaru(hakuOid, is2AsteenYhteishaku)
             val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
 
             val masterHenkilotByHakemusHenkiloOid = onrClient.fetchMasterHenkilotInBatches(personOidsFromHakemukset.toSet()).await()
@@ -91,6 +92,19 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                 val masterHenkilo = masterHenkilotByHakemusHenkiloOid[hakemus.henkilo_oid]
                 createHakemusResponse(hakemus, ensikertalaisuusByHenkiloOid[masterHenkilo?.oidHenkilo ?: ""], masterHenkilo, mv2_value_to_mv1_value, isHakuWithEnsikertalaisuus) }
         }
+    }
+
+    private suspend fun fetchAtaru(hakuOid: String, is2AsteenYhteishaku: Boolean): List<Ataruhakemus> {
+        // tehdään hidas operaatio hakukohde kerrallaan koska cas clientissa tulee 30min kohdalla timeout
+        if(is2AsteenYhteishaku) {
+            val hakukohteetForHaku = koutaInternalClient.findHakukohteetByHakuOid(hakuOid).await()
+            val hakemukset = mutableListOf<Ataruhakemus>()
+            for (hakukohde: HakukohdeInternal in hakukohteetForHaku) {
+                hakemukset.addAll(ataruClient.fetchHaunHakemuksetHakukohteella(hakuOid, hakukohde.oid).await())
+            }
+            return hakemukset
+        }
+        return ataruClient.fetchHaunHakemukset(hakuOid).await()
     }
 
     private val tulosCache = Caffeine.newBuilder()
