@@ -72,8 +72,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                 logger.info("Ei haeta sure-tietoja haulle $hakuOid, koska se ei ole kk-haku.")
                 CompletableFuture.completedFuture(emptyList())
             }
-            val is2AsteenYhteishaku = (haku.isYhteishaku() && haku.is2Aste())
-            val hakemukset = fetchAtaru(hakuOid, is2AsteenYhteishaku)
+            val hakemukset = fetchAtaru(haku)
             val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
 
             val masterHenkilotByHakemusHenkiloOid = onrClient.fetchMasterHenkilotInBatches(personOidsFromHakemukset.toSet()).await()
@@ -94,17 +93,16 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
         }
     }
 
-    private suspend fun fetchAtaru(hakuOid: String, is2AsteenYhteishaku: Boolean): List<Ataruhakemus> {
+    private suspend fun fetchAtaru(haku: HakuInternal): List<Ataruhakemus> {
         // tehdään hidas operaatio hakukohde kerrallaan koska cas clientissa tulee 30min kohdalla timeout
-        if(is2AsteenYhteishaku) {
-            val hakukohteetForHaku = koutaInternalClient.findHakukohteetByHakuOid(hakuOid).await()
-            val hakemukset = mutableListOf<Ataruhakemus>()
-            for (hakukohde: HakukohdeInternal in hakukohteetForHaku) {
-                hakemukset.addAll(ataruClient.fetchHaunHakemuksetHakukohteella(hakuOid, hakukohde.oid).await())
+        if(haku.isYhteishaku() && haku.is2Aste()) {
+            val hakemukset = mutableMapOf<String, Ataruhakemus>()
+            for (hakukohdeOid: String in haku.hakukohdeOids) {
+                hakemukset.putAll(ataruClient.fetchHaunHakemuksetHakukohteella(haku.oid, hakukohdeOid).await().map { h -> h.hakemus_oid to h })
             }
-            return hakemukset
+            return hakemukset.values.toList()
         }
-        return ataruClient.fetchHaunHakemukset(hakuOid).await()
+        return ataruClient.fetchHaunHakemukset(haku.oid).await()
     }
 
     private val tulosCache = Caffeine.newBuilder()
