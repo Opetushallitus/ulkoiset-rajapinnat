@@ -72,7 +72,6 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                 logger.info("Ei haeta sure-tietoja haulle $hakuOid, koska se ei ole kk-haku.")
                 CompletableFuture.completedFuture(emptyList())
             }
-            logger.info("Haetaan hakemukset")
             val hakemukset = fetchAtaru(haku)
             val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
 
@@ -95,16 +94,14 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     }
 
     private suspend fun fetchAtaru(haku: HakuInternal): List<Ataruhakemus> {
-        logger.info("FetchAtaru")
-        // tehdään hidas operaatio hakukohde kerrallaan koska cas clientissa tulee 30min kohdalla timeout
+        logger.info("Haetaan hakemukset Atarusta")
         if(haku.isYhteishaku() && haku.is2Aste()) {
-            logger.info("On yhteishaku, pilkotaan")
+            // tehdään hidas operaatio hakukohde kerrallaan koska cas clientissa tulee 30min kohdalla timeout
+            logger.info("Haetaan 2. asteen yhteishaun hakemukset hakukohde kerrallaan")
+            val hakukohteetForHaku = koutaInternalClient.findHakukohteetByHakuOid(haku.oid).await()
             val hakemukset = mutableMapOf<String, Ataruhakemus>()
-            for (hakukohdeOid: String in haku.hakukohdeOids) {
-                logger.info("Haetaan hakemukset hakukohteelle $hakukohdeOid.")
-                val hakemussetti = ataruClient.fetchHaunHakemuksetHakukohteella(haku.oid, hakukohdeOid).await()
-                logger.info("Löytyi ${hakukohdeOid.length} hakemusta.")
-                hakemukset.putAll(hakemussetti.map { h -> h.hakemus_oid to h })
+            for (hakukohde: HakukohdeInternal in hakukohteetForHaku) {
+                hakemukset.putAll(ataruClient.fetchHaunHakemuksetHakukohteella(haku.oid, hakukohde.oid).await().map { h -> h.hakemus_oid to h })
             }
             return hakemukset.values.toList()
         }
