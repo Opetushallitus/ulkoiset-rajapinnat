@@ -58,6 +58,10 @@ data class HakuInternal(
         return hakutapaKoodiUri.split("#").first().equals("hakutapa_01")
     }
 
+    fun is2Aste(): Boolean {
+        return kohdejoukkoKoodiUri.split("#").first().equals("haunkohdejoukko_11")
+    }
+
     fun isErillishaku(): Boolean {
         return hakutapaKoodiUri.split("#").first().equals("hakutapa_02")
     }

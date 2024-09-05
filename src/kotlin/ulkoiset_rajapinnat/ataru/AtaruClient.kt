@@ -33,4 +33,8 @@ class AtaruClient(username: String,
         return fetch(url("lomake-editori.tilastokeskus-by-haku-oid", hakuOid))
     }
 
+    fun fetchHaunHakemuksetHakukohteella(hakuOid: String, hakukohdeOid: String): CompletableFuture<List<Ataruhakemus>> {
+        return fetch(url("lomake-editori.tilastokeskus-by-haku-oid-hakukohde-oid", hakuOid, hakukohdeOid))
+    }
+
 }
