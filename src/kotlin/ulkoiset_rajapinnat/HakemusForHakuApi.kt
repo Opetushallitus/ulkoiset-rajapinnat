@@ -99,10 +99,19 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             // tehdään hidas operaatio hakukohde kerrallaan koska cas clientissa tulee 30min kohdalla timeout
             logger.info("Haetaan 2. asteen yhteishaun hakemukset hakukohde kerrallaan")
             val hakukohteetForHaku = koutaInternalClient.findHakukohteetByHakuOid(haku.oid).await()
+            logger.info("Hakukohteita: ${hakukohteetForHaku.size}")
             val hakemukset = mutableMapOf<String, Ataruhakemus>()
-            for (hakukohde: HakukohdeInternal in hakukohteetForHaku) {
-                hakemukset.putAll(ataruClient.fetchHaunHakemuksetHakukohteella(haku.oid, hakukohde.oid).await().map { h -> h.hakemus_oid to h })
+            hakukohteetForHaku.forEachIndexed { index, hakukohde ->
+                logger.info("Käsitellään index: $index, hakukohde: ${hakukohde.oid}")
+                hakemukset.putAll(
+                    ataruClient.fetchHaunHakemuksetHakukohteella(haku.oid, hakukohde.oid)
+                        .await()
+                        .map { h -> h.hakemus_oid to h }
+                )
             }
+//            for (hakukohde: HakukohdeInternal in hakukohteetForHaku) {
+//                hakemukset.putAll(ataruClient.fetchHaunHakemuksetHakukohteella(haku.oid, hakukohde.oid).await().map { h -> h.hakemus_oid to h })
+//            }
             return hakemukset.values.toList()
         }
         return ataruClient.fetchHaunHakemukset(haku.oid).await()
