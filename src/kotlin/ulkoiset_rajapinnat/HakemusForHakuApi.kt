@@ -14,9 +14,7 @@ import ulkoiset_rajapinnat.oppijanumerorekisteri.dto.OnrHenkilo
 import ulkoiset_rajapinnat.response.HakemusResponse
 import ulkoiset_rajapinnat.suoritusrekisteri.dto.Ensikertalaisuus
 import ulkoiset_rajapinnat.util.arvo
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executor
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     private val koutaInternalClient = clients.koutaInternalClient
@@ -109,21 +107,30 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                         .map { h -> h.hakemus_oid to h }
                 )
             }
-//            for (hakukohde: HakukohdeInternal in hakukohteetForHaku) {
-//                hakemukset.putAll(ataruClient.fetchHaunHakemuksetHakukohteella(haku.oid, hakukohde.oid).await().map { h -> h.hakemus_oid to h })
-//            }
             return hakemukset.values.toList()
         }
         return ataruClient.fetchHaunHakemukset(haku.oid).await()
     }
 
     private val tulosCache = Caffeine.newBuilder()
-        .expireAfterWrite(2L, TimeUnit.HOURS)
+        .expireAfterWrite(2L, TimeUnit.DAYS)
         .buildAsync { hakuOid: String, executor: Executor -> findHakemuksetForHaku(hakuOid) }
 
     override fun findHakemuksetForHakuCached(
         hakuOid: String
      ): CompletableFuture<List<HakemusResponse>> {
         return tulosCache.get(hakuOid)
+    }
+
+    override fun put2AsteenYhteishaunHakemuksetToCache(
+        hakuOid: String
+    ): String {
+        val workerPool: ExecutorService = Executors.newFixedThreadPool(1)
+        logger.info("Käynnistetään kakkuoperaatio")
+        workerPool.submit {
+            val result = findHakemuksetForHaku(hakuOid)
+            tulosCache.put(hakuOid, result)
+        }
+        return "OK"
     }
 }

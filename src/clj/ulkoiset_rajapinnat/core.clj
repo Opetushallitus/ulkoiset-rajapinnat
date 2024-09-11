@@ -107,12 +107,21 @@
         (if (= KOUTA_HAKU_OID_LENGTH (count haku-oid))
           (access-log-with-ticket-check-as-channel
             ticket
-            (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
+            (partial audit audit-logger (str "Hakemukset haku OID:lla" haku-oid))
             (fn [_] (.findHakemuksetForHakuCached rajapinnat-api haku-oid)))
           (access-log-with-ticket-check-with-channel
             ticket
-            (partial audit audit-logger (str "Vastaanotot haku OID:lla" haku-oid))
+            (partial audit audit-logger (str "Hakemukset haku OID:lla" haku-oid))
             (partial hakemus-resource haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot))))
+      (GET "/hakemus-for-haku-job/:haku-oid" [haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot ticket] ; hakuoid + kaudet
+        :summary "Hakemukset haku OID:lla"
+        :query-params [ticket :- String]
+        :responses {200 {:schema [Hakemus]}}
+        (log/info (str "Got incoming request to /hakemus-for-haku-job/" haku-oid))
+        (access-log-with-ticket-check-as-channel
+          ticket
+          (partial audit audit-logger (str "laitetaan cacheen hakemukset haku OID:lla" haku-oid))
+          (fn [_] (.findHakemuksetForHakuThread rajapinnat-api haku-oid))))
       (GET "/valintaperusteet/hakukohde/:hakukohde-oid" [hakukohde-oid ticket]
         :summary "Hakukohde valintaperusteista"
         :query-params [ticket :- String]
