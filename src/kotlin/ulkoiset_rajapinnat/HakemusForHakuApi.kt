@@ -22,6 +22,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     private val ataruClient = clients.ataruClient
     private val sureClient = clients.suoritusrekisteriClient
     private val onrClient = clients.oppijanumerorekisteriClient
+    private val workerPool: ExecutorService = Executors.newFixedThreadPool(1)
 
     private val logger = LoggerFactory.getLogger("HakemusForHakuApi")
 
@@ -121,11 +122,10 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
      ): CompletableFuture<List<HakemusResponse>> {
         return tulosCache.get(hakuOid)
     }
-
+    
     override fun put2AsteenYhteishaunHakemuksetToCache(
         hakuOid: String
     ): String {
-        val workerPool: ExecutorService = Executors.newFixedThreadPool(1)
         logger.info("Käynnistetään kakkuoperaatio")
         workerPool.submit {
             val result = findHakemuksetForHaku(hakuOid)

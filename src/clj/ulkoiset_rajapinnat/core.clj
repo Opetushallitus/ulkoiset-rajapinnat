@@ -121,7 +121,7 @@
         (access-log-with-ticket-check-as-channel
           ticket
           (partial audit audit-logger (str "laitetaan cacheen hakemukset haku OID:lla" haku-oid))
-          (fn [_] (.findHakemuksetForHakuThread rajapinnat-api haku-oid))))
+          (fn [_] (.put2AsteenYhteishaunHakemuksetToCache rajapinnat-api haku-oid))))
       (GET "/valintaperusteet/hakukohde/:hakukohde-oid" [hakukohde-oid ticket]
         :summary "Hakukohde valintaperusteista"
         :query-params [ticket :- String]
