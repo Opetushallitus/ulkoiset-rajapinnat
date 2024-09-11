@@ -40,7 +40,7 @@ interface VastaanottoForHaku {
 interface HakemusForHaku {
     fun findHakemuksetForHaku(hakuOid: String): CompletableFuture<List<HakemusResponse>>
     fun findHakemuksetForHakuCached(hakuOid: String): CompletableFuture<List<HakemusResponse>>
-    fun put2AsteenYhteishaunHakemuksetToCache(hakuOid: String): String
+    fun put2AsteenYhteishaunHakemuksetToCache(hakuOid: String): CompletableFuture<String>
 }
 
 class UlkoisetRajapinnatApi(

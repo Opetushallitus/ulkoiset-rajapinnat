@@ -122,15 +122,15 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
      ): CompletableFuture<List<HakemusResponse>> {
         return tulosCache.get(hakuOid)
     }
-    
+
     override fun put2AsteenYhteishaunHakemuksetToCache(
         hakuOid: String
-    ): String {
+    ): CompletableFuture<String> {
         logger.info("Käynnistetään kakkuoperaatio")
         workerPool.submit {
             val result = findHakemuksetForHaku(hakuOid)
             tulosCache.put(hakuOid, result)
         }
-        return "OK"
+        return CompletableFuture.completedFuture("OK")
     }
 }

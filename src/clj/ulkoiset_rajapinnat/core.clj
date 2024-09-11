@@ -116,7 +116,7 @@
       (GET "/hakemus-for-haku-job/:haku-oid" [haku-oid koulutuksen_alkamisvuosi koulutuksen_alkamiskausi palauta-null-arvot ticket] ; hakuoid + kaudet
         :summary "Hakemukset haku OID:lla"
         :query-params [ticket :- String]
-        :responses {200 {:schema [Hakemus]}}
+        :responses {200 {:schema s/Str}}
         (log/info (str "Got incoming request to /hakemus-for-haku-job/" haku-oid))
         (access-log-with-ticket-check-as-channel
           ticket
