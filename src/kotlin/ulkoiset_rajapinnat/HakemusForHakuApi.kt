@@ -14,9 +14,7 @@ import ulkoiset_rajapinnat.oppijanumerorekisteri.dto.OnrHenkilo
 import ulkoiset_rajapinnat.response.HakemusResponse
 import ulkoiset_rajapinnat.suoritusrekisteri.dto.Ensikertalaisuus
 import ulkoiset_rajapinnat.util.arvo
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executor
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     private val koutaInternalClient = clients.koutaInternalClient
@@ -24,6 +22,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     private val ataruClient = clients.ataruClient
     private val sureClient = clients.suoritusrekisteriClient
     private val onrClient = clients.oppijanumerorekisteriClient
+    private val workerPool: ExecutorService = Executors.newFixedThreadPool(1)
 
     private val logger = LoggerFactory.getLogger("HakemusForHakuApi")
 
@@ -99,9 +98,15 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             // tehdään hidas operaatio hakukohde kerrallaan koska cas clientissa tulee 30min kohdalla timeout
             logger.info("Haetaan 2. asteen yhteishaun hakemukset hakukohde kerrallaan")
             val hakukohteetForHaku = koutaInternalClient.findHakukohteetByHakuOid(haku.oid).await()
+            logger.info("Hakukohteita: ${hakukohteetForHaku.size}")
             val hakemukset = mutableMapOf<String, Ataruhakemus>()
-            for (hakukohde: HakukohdeInternal in hakukohteetForHaku) {
-                hakemukset.putAll(ataruClient.fetchHaunHakemuksetHakukohteella(haku.oid, hakukohde.oid).await().map { h -> h.hakemus_oid to h })
+            hakukohteetForHaku.forEachIndexed { index, hakukohde ->
+                logger.info("Käsitellään index: $index, hakukohde: ${hakukohde.oid}")
+                hakemukset.putAll(
+                    ataruClient.fetchHaunHakemuksetHakukohteella(haku.oid, hakukohde.oid)
+                        .await()
+                        .map { h -> h.hakemus_oid to h }
+                )
             }
             return hakemukset.values.toList()
         }
@@ -109,12 +114,23 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     }
 
     private val tulosCache = Caffeine.newBuilder()
-        .expireAfterWrite(2L, TimeUnit.HOURS)
+        .expireAfterWrite(2L, TimeUnit.DAYS)
         .buildAsync { hakuOid: String, executor: Executor -> findHakemuksetForHaku(hakuOid) }
 
     override fun findHakemuksetForHakuCached(
         hakuOid: String
      ): CompletableFuture<List<HakemusResponse>> {
         return tulosCache.get(hakuOid)
+    }
+
+    override fun put2AsteenYhteishaunHakemuksetToCache(
+        hakuOid: String
+    ): CompletableFuture<String> {
+        logger.info("Käynnistetään kakkuoperaatio")
+        workerPool.submit {
+            val result = findHakemuksetForHaku(hakuOid)
+            tulosCache.put(hakuOid, result)
+        }
+        return CompletableFuture.completedFuture("OK")
     }
 }
