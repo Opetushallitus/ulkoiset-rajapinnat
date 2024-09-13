@@ -115,7 +115,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     }
 
     private val tulosCache = Caffeine.newBuilder()
-        .expireAfterWrite(2L, TimeUnit.DAYS)
+        .expireAfterWrite(14L, TimeUnit.DAYS)
         .buildAsync { hakuOid: String, executor: Executor -> findHakemuksetForHaku(hakuOid) }
 
     override fun findHakemuksetForHakuCached(
