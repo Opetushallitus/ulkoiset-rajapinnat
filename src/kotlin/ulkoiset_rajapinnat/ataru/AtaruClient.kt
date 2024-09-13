@@ -26,7 +26,7 @@ class AtaruClient(username: String,
             "/auth/cas"
         ).setJsessionName("ring-session")
             .build()
-    )
+    ), 1000 * 60 * 60 * 4
 ) {
 
     fun fetchHaunHakemukset(hakuOid: String): CompletableFuture<List<Ataruhakemus>> {
