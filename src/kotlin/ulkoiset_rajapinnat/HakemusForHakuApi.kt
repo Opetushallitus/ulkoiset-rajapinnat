@@ -71,7 +71,8 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                 logger.info("Ei haeta sure-tietoja haulle $hakuOid, koska se ei ole kk-haku.")
                 CompletableFuture.completedFuture(emptyList())
             }
-            val hakemukset = fetchAtaru(haku)
+            //val hakemukset = fetchAtaru(haku)
+            val hakemukset = ataruClient.fetchHaunHakemukset(hakuOid).await()
             val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
 
             val masterHenkilotByHakemusHenkiloOid = onrClient.fetchMasterHenkilotInBatches(personOidsFromHakemukset.toSet()).await()
@@ -114,7 +115,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     }
 
     private val tulosCache = Caffeine.newBuilder()
-        .expireAfterWrite(2L, TimeUnit.DAYS)
+        .expireAfterWrite(14L, TimeUnit.DAYS)
         .buildAsync { hakuOid: String, executor: Executor -> findHakemuksetForHaku(hakuOid) }
 
     override fun findHakemuksetForHakuCached(
@@ -130,6 +131,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
         workerPool.submit {
             val result = findHakemuksetForHaku(hakuOid)
             tulosCache.put(hakuOid, result)
+            logger.info("Kakkuoperaatio valmis")
         }
         return CompletableFuture.completedFuture("OK")
     }

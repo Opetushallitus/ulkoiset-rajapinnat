@@ -10,11 +10,11 @@ import java.util.concurrent.CompletableFuture
 
 abstract class BaseCasClient(
     val properties: OphProperties,
-    val client: CasClient
+    val client: CasClient,
+    val timeoutMillis: Int = 1000 * 60 * 30
 ) {
 
     val logger = LoggerFactory.getLogger("BaseCasClient")
-    val timeoutMillis = 1000 * 60 * 30
 
     protected fun url(s: String, vararg params: Any): String {
         return properties.getProperty(s, *params)
