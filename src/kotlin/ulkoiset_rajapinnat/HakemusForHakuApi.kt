@@ -71,8 +71,8 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                 logger.info("Ei haeta sure-tietoja haulle $hakuOid, koska se ei ole kk-haku.")
                 CompletableFuture.completedFuture(emptyList())
             }
-            //val hakemukset = fetchAtaru(haku)
-            val hakemukset = ataruClient.fetchHaunHakemukset(hakuOid).await()
+            val hakemukset = fetchAtaru(haku)
+            //val hakemukset = ataruClient.fetchHaunHakemukset(hakuOid).await()
             val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
 
             val masterHenkilotByHakemusHenkiloOid = onrClient.fetchMasterHenkilotInBatches(personOidsFromHakemukset.toSet()).await()
@@ -104,7 +104,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             hakukohteetForHaku.forEachIndexed { index, hakukohde ->
                 logger.info("Käsitellään index: $index, hakukohde: ${hakukohde.oid}")
                 hakemukset.putAll(
-                    ataruClient.fetchHaunHakemuksetHakukohteella(haku.oid, hakukohde.oid)
+                    ataruClient.fetchHaunHakemuksetHakukohteellaCached(haku.oid, hakukohde.oid)
                         .await()
                         .map { h -> h.hakemus_oid to h }
                 )
