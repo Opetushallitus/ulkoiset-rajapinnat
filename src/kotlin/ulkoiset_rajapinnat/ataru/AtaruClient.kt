@@ -38,6 +38,7 @@ class AtaruClient(username: String,
     }
 
     fun fetchHaunHakemuksetHakukohteella(hakuOid: String, hakukohdeOid: String): CompletableFuture<List<Ataruhakemus>> {
+        logger.info("Haetaan haun $hakuOid hakukohteen $hakukohdeOid hakemukset Atarusta")
         return fetch(url("lomake-editori.tilastokeskus-by-haku-oid-hakukohde-oid", hakuOid, hakukohdeOid))
     }
 
@@ -46,7 +47,10 @@ class AtaruClient(username: String,
         .buildAsync { hakuJaHakukohde: Pair<String, String>, executor: Executor -> fetchHaunHakemuksetHakukohteella(hakuJaHakukohde.first, hakuJaHakukohde.second) }
 
     fun fetchHaunHakemuksetHakukohteellaCached(hakuOid: String, hakukohdeOid: String): CompletableFuture<List<Ataruhakemus>> {
-        return cache.get(Pair(hakuOid, hakukohdeOid))
+        logger.info("Haetaan atarun hakemustiedot haun $hakuOid hakukohteelle $hakukohdeOid")
+        val result = cache.get(Pair(hakuOid, hakukohdeOid))
+        logger.info("Tulos valmis: ${result.isDone}")
+        return result
     }
 
 }

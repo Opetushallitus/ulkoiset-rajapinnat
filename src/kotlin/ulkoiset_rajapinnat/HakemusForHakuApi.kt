@@ -74,7 +74,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             val hakemukset = fetchAtaru(haku)
             //val hakemukset = ataruClient.fetchHaunHakemukset(hakuOid).await()
             val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
-
+            logger.info("Haetaan hakemusten masterhenkilöt oppijanumerorekisteristä")
             val masterHenkilotByHakemusHenkiloOid = onrClient.fetchMasterHenkilotInBatches(personOidsFromHakemukset.toSet()).await()
             val ensikertalaisuusByHenkiloOid = ensikertalaisuudet.thenApply { result -> result.map { it.henkiloOid to it }.toMap() }.await()
 
@@ -86,7 +86,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                 it.koodiArvo to (rinnasteisenArvo ?: "XXX")
             }.toMap()
             logger.info("Mv2 to mv1 mappings $mv2_value_to_mv1_value")
-            logger.info("Tiedot haettu haulle $hakuOid, muodostetaan tulokset")
+            logger.info("Tiedot haettu haulle $hakuOid, muodostetaan tulokset ${hakemukset.size} hakemukselle")
             hakemukset.map { hakemus ->
                 val masterHenkilo = masterHenkilotByHakemusHenkiloOid[hakemus.henkilo_oid]
                 createHakemusResponse(hakemus, ensikertalaisuusByHenkiloOid[masterHenkilo?.oidHenkilo ?: ""], masterHenkilo, mv2_value_to_mv1_value, isHakuWithEnsikertalaisuus) }
@@ -97,12 +97,12 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
         logger.info("Haetaan hakemukset Atarusta")
         if(haku.isYhteishaku() && haku.is2Aste()) {
             // tehdään hidas operaatio hakukohde kerrallaan koska cas clientissa tulee 30min kohdalla timeout
-            logger.info("Haetaan 2. asteen yhteishaun hakemukset hakukohde kerrallaan")
+            logger.info("Haetaan 2. asteen yhteishaun ${haku.oid} hakemukset hakukohde kerrallaan")
             val hakukohteetForHaku = koutaInternalClient.findHakukohteetByHakuOid(haku.oid).await()
             logger.info("Hakukohteita: ${hakukohteetForHaku.size}")
             val hakemukset = mutableMapOf<String, Ataruhakemus>()
             hakukohteetForHaku.forEachIndexed { index, hakukohde ->
-                logger.info("Käsitellään index: $index, hakukohde: ${hakukohde.oid}")
+                logger.info("Käsitellään index: $index, haku: $${haku.oid} hakukohde: ${hakukohde.oid}")
                 hakemukset.putAll(
                     ataruClient.fetchHaunHakemuksetHakukohteellaCached(haku.oid, hakukohde.oid)
                         .await()
@@ -121,7 +121,10 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     override fun findHakemuksetForHakuCached(
         hakuOid: String
      ): CompletableFuture<List<HakemusResponse>> {
-        return tulosCache.get(hakuOid)
+        logger.info("Haetaan hakemukset haulle $hakuOid (cachesta jos löytyy)")
+        val result = tulosCache.get(hakuOid)
+        logger.info("Tulos valmis: ${result.isDone}, tuliko hämminkiä: ${result.isCompletedExceptionally}")
+        return result
     }
 
     override fun put2AsteenYhteishaunHakemuksetToCache(
