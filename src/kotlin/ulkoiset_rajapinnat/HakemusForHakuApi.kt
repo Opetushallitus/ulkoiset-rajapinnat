@@ -103,12 +103,13 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             val hakemukset = mutableMapOf<String, Ataruhakemus>()
             hakukohteetForHaku.forEachIndexed { index, hakukohde ->
                 logger.info("Käsitellään index: $index, haku: $${haku.oid} hakukohde: ${hakukohde.oid}")
-                hakemukset.putAll(
-                    ataruClient.fetchHaunHakemuksetHakukohteellaCached(haku.oid, hakukohde.oid)
-                        .await()
-                        .map { h -> h.hakemus_oid to h }
+                val result = ataruClient.fetchHaunHakemuksetHakukohteellaCached(haku.oid, hakukohde.oid)
+                    .await()
+                logger.info("Löytyi ${result.size} hakemusta haun $${haku.oid} hakukohteelle ${hakukohde.oid}")
+                hakemukset.putAll(result.map { h -> h.hakemus_oid to h }
                 )
             }
+            logger.info("Löytyi yhteensä ${hakemukset.size} hakemusta haulle $${haku.oid}")
             return hakemukset.values.toList()
         }
         return ataruClient.fetchHaunHakemukset(haku.oid).await()
@@ -123,7 +124,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
      ): CompletableFuture<List<HakemusResponse>> {
         logger.info("Haetaan hakemukset haulle $hakuOid (cachesta jos löytyy)")
         val result = tulosCache.get(hakuOid)
-        logger.info("Tulos valmis: ${result.isDone}, tuliko hämminkiä: ${result.isCompletedExceptionally}")
+        logger.info("Tulos cachessa: ${result.isDone}, tuliko hämminkiä: ${result.isCompletedExceptionally}")
         return result
     }
 

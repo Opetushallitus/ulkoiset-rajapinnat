@@ -49,7 +49,7 @@ class AtaruClient(username: String,
     fun fetchHaunHakemuksetHakukohteellaCached(hakuOid: String, hakukohdeOid: String): CompletableFuture<List<Ataruhakemus>> {
         logger.info("Haetaan atarun hakemustiedot haun $hakuOid hakukohteelle $hakukohdeOid")
         val result = cache.get(Pair(hakuOid, hakukohdeOid))
-        logger.info("Tulos valmis: ${result.isDone}")
+        logger.info("Tulos cachessa: ${result.isDone}")
         return result
     }
 
