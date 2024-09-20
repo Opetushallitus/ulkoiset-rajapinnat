@@ -3,7 +3,7 @@ package ulkoiset_rajapinnat.ataru.dto
 data class HakemuksenHakutoive(
     val hakukohde_oid: String,
     val sija: Int,
-    val harkinnanvarainen_valinta: String?
+    val harkinnanvaraisuuden_syy: String?
 )
 
 data class PohjakoulutusKk(
@@ -16,9 +16,9 @@ data class Ataruhakemus(
     val pohjakoulutus_kk_ulk_country: String,
     val hakukohde_oids: List<String>,
     val pohjakoulutus_kk: List<PohjakoulutusKk>,
-    val koulusivistyskieli: String?,
+    val pohjakoulutus_2aste_suorituskieli: String?,
     val pohjakoulutus_2aste: String?,
-    val lahtokoulunOrganisaatioOid: String?,
+    val pohjakoulutus_2aste_lahtokoulu_oid: String?,
     val hakemus_oid: String,
     val henkilo_oid: String,
     val hakemus_tila: String?,

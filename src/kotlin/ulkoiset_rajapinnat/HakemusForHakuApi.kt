@@ -52,9 +52,9 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             hakijanKotikunta = hakemus.kotikunta,
             pohjakoulutus_kk = hakemus.pohjakoulutus_kk.map { it.pohjakoulutuskklomake }.filterNotNull(),
             ulkomaillaSuoritetunToisenAsteenTutkinnonSuoritusmaa = hakemus.pohjakoulutus_kk_ulk_country,
-            koulusivistyskieli = hakemus.koulusivistyskieli,
+            koulusivistyskieli = hakemus.pohjakoulutus_2aste_suorituskieli,
             pohjakoulutus2aste = hakemus.pohjakoulutus_2aste,
-            lahtokoulunOrganisaatioOid = hakemus.lahtokoulunOrganisaatioOid)
+            lahtokoulunOrganisaatioOid = hakemus.pohjakoulutus_2aste_lahtokoulu_oid)
     }
 
     @OptIn(DelicateCoroutinesApi::class)
