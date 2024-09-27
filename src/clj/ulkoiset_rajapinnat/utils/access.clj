@@ -165,8 +165,10 @@
                                                                                     (if e
                                                                                       (handle-exception channel start-time e)
                                                                                       (try
+                                                                                        (log/info "Future complete, parsitaan json")
                                                                                         (let [j (-> (transform-keys csk/->snake_case (jd/from-java-deep r {}))
                                                                                                     to-json)]
+                                                                                          (log/info "Palautetaan http 200")
                                                                                           (-> channel
                                                                                               (status 200)
                                                                                               (body j)

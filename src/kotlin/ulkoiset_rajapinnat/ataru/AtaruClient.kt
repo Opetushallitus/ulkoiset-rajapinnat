@@ -30,23 +30,29 @@ class AtaruClient(username: String,
             "/auth/cas"
         ).setJsessionName("ring-session")
             .build()
-    ), 1000 * 60 * 60 * 4
+    ), 1000 * 60 * 30 // 2. asteen yhteishaulle kasvata 1000 * 60 * 60 * 4
 ) {
 
     fun fetchHaunHakemukset(hakuOid: String): CompletableFuture<List<Ataruhakemus>> {
         return fetch(url("lomake-editori.tilastokeskus-by-haku-oid", hakuOid))
     }
 
+    // Näitä käytetään vain 2. asteen yhteishaun datalle
+
     fun fetchHaunHakemuksetHakukohteella(hakuOid: String, hakukohdeOid: String): CompletableFuture<List<Ataruhakemus>> {
+        logger.info("Haetaan haun $hakuOid hakukohteen $hakukohdeOid hakemukset Atarusta")
         return fetch(url("lomake-editori.tilastokeskus-by-haku-oid-hakukohde-oid", hakuOid, hakukohdeOid))
     }
 
     private val cache = Caffeine.newBuilder()
-        .expireAfterWrite(7L, TimeUnit.DAYS)
+        .expireAfterWrite(2L, TimeUnit.HOURS) // 2. asteen yhteishaulle kasvata
         .buildAsync { hakuJaHakukohde: Pair<String, String>, executor: Executor -> fetchHaunHakemuksetHakukohteella(hakuJaHakukohde.first, hakuJaHakukohde.second) }
 
     fun fetchHaunHakemuksetHakukohteellaCached(hakuOid: String, hakukohdeOid: String): CompletableFuture<List<Ataruhakemus>> {
-        return cache.get(Pair(hakuOid, hakukohdeOid))
+        logger.info("Haetaan atarun hakemustiedot haun $hakuOid hakukohteelle $hakukohdeOid")
+        val result = cache.get(Pair(hakuOid, hakukohdeOid))
+        logger.info("Tulos haun $hakuOid hakukohteelle $hakukohdeOid cachessa: ${result.isDone}")
+        return result
     }
 
 }

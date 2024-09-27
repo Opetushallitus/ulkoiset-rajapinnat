@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory
 import ulkoiset_rajapinnat.ataru.dto.Ataruhakemus
 import ulkoiset_rajapinnat.koodisto.dto.CodeElement
 import ulkoiset_rajapinnat.kouta.dto.HakuInternal
-import ulkoiset_rajapinnat.kouta.dto.HakukohdeInternal
 import ulkoiset_rajapinnat.oppijanumerorekisteri.dto.OnrHenkilo
 import ulkoiset_rajapinnat.response.HakemusResponse
 import ulkoiset_rajapinnat.suoritusrekisteri.dto.Ensikertalaisuus
@@ -52,9 +51,9 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             hakijanKotikunta = hakemus.kotikunta,
             pohjakoulutus_kk = hakemus.pohjakoulutus_kk.map { it.pohjakoulutuskklomake }.filterNotNull(),
             ulkomaillaSuoritetunToisenAsteenTutkinnonSuoritusmaa = hakemus.pohjakoulutus_kk_ulk_country,
-            koulusivistyskieli = hakemus.koulusivistyskieli,
+            koulusivistyskieli = hakemus.pohjakoulutus_2aste_suorituskieli,
             pohjakoulutus2aste = hakemus.pohjakoulutus_2aste,
-            lahtokoulunOrganisaatioOid = hakemus.lahtokoulunOrganisaatioOid)
+            lahtokoulunOrganisaatioOid = hakemus.pohjakoulutus_2aste_lahtokoulu_oid)
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -72,9 +71,8 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                 CompletableFuture.completedFuture(emptyList())
             }
             val hakemukset = fetchAtaru(haku)
-            //val hakemukset = ataruClient.fetchHaunHakemukset(hakuOid).await()
             val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
-
+            logger.info("Haetaan hakemusten masterhenkilöt oppijanumerorekisteristä")
             val masterHenkilotByHakemusHenkiloOid = onrClient.fetchMasterHenkilotInBatches(personOidsFromHakemukset.toSet()).await()
             val ensikertalaisuusByHenkiloOid = ensikertalaisuudet.thenApply { result -> result.map { it.henkiloOid to it }.toMap() }.await()
 
@@ -86,7 +84,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                 it.koodiArvo to (rinnasteisenArvo ?: "XXX")
             }.toMap()
             logger.info("Mv2 to mv1 mappings $mv2_value_to_mv1_value")
-            logger.info("Tiedot haettu haulle $hakuOid, muodostetaan tulokset")
+            logger.info("Tiedot haettu haulle $hakuOid, muodostetaan tulokset ${hakemukset.size} hakemukselle")
             hakemukset.map { hakemus ->
                 val masterHenkilo = masterHenkilotByHakemusHenkiloOid[hakemus.henkilo_oid]
                 createHakemusResponse(hakemus, ensikertalaisuusByHenkiloOid[masterHenkilo?.oidHenkilo ?: ""], masterHenkilo, mv2_value_to_mv1_value, isHakuWithEnsikertalaisuus) }
@@ -97,31 +95,35 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
         logger.info("Haetaan hakemukset Atarusta")
         if(haku.isYhteishaku() && haku.is2Aste()) {
             // tehdään hidas operaatio hakukohde kerrallaan koska cas clientissa tulee 30min kohdalla timeout
-            logger.info("Haetaan 2. asteen yhteishaun hakemukset hakukohde kerrallaan")
+            logger.info("Haetaan 2. asteen yhteishaun ${haku.oid} hakemukset hakukohde kerrallaan")
             val hakukohteetForHaku = koutaInternalClient.findHakukohteetByHakuOid(haku.oid).await()
             logger.info("Hakukohteita: ${hakukohteetForHaku.size}")
             val hakemukset = mutableMapOf<String, Ataruhakemus>()
             hakukohteetForHaku.forEachIndexed { index, hakukohde ->
-                logger.info("Käsitellään index: $index, hakukohde: ${hakukohde.oid}")
-                hakemukset.putAll(
-                    ataruClient.fetchHaunHakemuksetHakukohteellaCached(haku.oid, hakukohde.oid)
-                        .await()
-                        .map { h -> h.hakemus_oid to h }
+                logger.info("Käsitellään index: $index, haku: $${haku.oid} hakukohde: ${hakukohde.oid}")
+                val result = ataruClient.fetchHaunHakemuksetHakukohteellaCached(haku.oid, hakukohde.oid)
+                    .await()
+                logger.info("Löytyi ${result.size} hakemusta haun $${haku.oid} hakukohteelle ${hakukohde.oid}")
+                hakemukset.putAll(result.map { h -> h.hakemus_oid to h }
                 )
             }
+            logger.info("Löytyi yhteensä ${hakemukset.size} hakemusta haulle $${haku.oid}")
             return hakemukset.values.toList()
         }
         return ataruClient.fetchHaunHakemukset(haku.oid).await()
     }
 
     private val tulosCache = Caffeine.newBuilder()
-        .expireAfterWrite(14L, TimeUnit.DAYS)
+        .expireAfterWrite(2L, TimeUnit.HOURS) // 2. asteen yhteishaulle kasvata
         .buildAsync { hakuOid: String, executor: Executor -> findHakemuksetForHaku(hakuOid) }
 
     override fun findHakemuksetForHakuCached(
         hakuOid: String
      ): CompletableFuture<List<HakemusResponse>> {
-        return tulosCache.get(hakuOid)
+        logger.info("Haetaan hakemukset haulle $hakuOid (cachesta jos löytyy)")
+        val result = tulosCache.get(hakuOid)
+        logger.info("Tulos cachessa: ${result.isDone}")
+        return result
     }
 
     override fun put2AsteenYhteishaunHakemuksetToCache(
