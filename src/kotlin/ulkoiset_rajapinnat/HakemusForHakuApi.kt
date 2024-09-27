@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory
 import ulkoiset_rajapinnat.ataru.dto.Ataruhakemus
 import ulkoiset_rajapinnat.koodisto.dto.CodeElement
 import ulkoiset_rajapinnat.kouta.dto.HakuInternal
-import ulkoiset_rajapinnat.kouta.dto.HakukohdeInternal
 import ulkoiset_rajapinnat.oppijanumerorekisteri.dto.OnrHenkilo
 import ulkoiset_rajapinnat.response.HakemusResponse
 import ulkoiset_rajapinnat.suoritusrekisteri.dto.Ensikertalaisuus
@@ -72,7 +71,6 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
                 CompletableFuture.completedFuture(emptyList())
             }
             val hakemukset = fetchAtaru(haku)
-            //val hakemukset = ataruClient.fetchHaunHakemukset(hakuOid).await()
             val personOidsFromHakemukset = hakemukset.map { it.henkilo_oid }
             logger.info("Haetaan hakemusten masterhenkilöt oppijanumerorekisteristä")
             val masterHenkilotByHakemusHenkiloOid = onrClient.fetchMasterHenkilotInBatches(personOidsFromHakemukset.toSet()).await()
@@ -101,18 +99,14 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
             val hakukohteetForHaku = koutaInternalClient.findHakukohteetByHakuOid(haku.oid).await()
             logger.info("Hakukohteita: ${hakukohteetForHaku.size}")
             val hakemukset = mutableMapOf<String, Ataruhakemus>()
-            // temp hax qa:lla testausta varten
-            //1.2.246.562.20.00000000000000024222
-            val result = ataruClient.fetchHaunHakemuksetHakukohteellaCached(haku.oid, "1.2.246.562.20.00000000000000024222").await()
-            hakemukset.putAll(result.map { h -> h.hakemus_oid to h })
-/*            hakukohteetForHaku.forEachIndexed { index, hakukohde ->
+            hakukohteetForHaku.forEachIndexed { index, hakukohde ->
                 logger.info("Käsitellään index: $index, haku: $${haku.oid} hakukohde: ${hakukohde.oid}")
                 val result = ataruClient.fetchHaunHakemuksetHakukohteellaCached(haku.oid, hakukohde.oid)
                     .await()
                 logger.info("Löytyi ${result.size} hakemusta haun $${haku.oid} hakukohteelle ${hakukohde.oid}")
                 hakemukset.putAll(result.map { h -> h.hakemus_oid to h }
                 )
-            }*/
+            }
             logger.info("Löytyi yhteensä ${hakemukset.size} hakemusta haulle $${haku.oid}")
             return hakemukset.values.toList()
         }
@@ -120,7 +114,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
     }
 
     private val tulosCache = Caffeine.newBuilder()
-        .expireAfterWrite(14L, TimeUnit.DAYS)
+        .expireAfterWrite(2L, TimeUnit.HOURS) // 2. asteen yhteishaulle kasvata
         .buildAsync { hakuOid: String, executor: Executor -> findHakemuksetForHaku(hakuOid) }
 
     override fun findHakemuksetForHakuCached(
@@ -128,7 +122,7 @@ class HakemusForHakuApi(clients: Clients) : HakemusForHaku {
      ): CompletableFuture<List<HakemusResponse>> {
         logger.info("Haetaan hakemukset haulle $hakuOid (cachesta jos löytyy)")
         val result = tulosCache.get(hakuOid)
-        logger.info("Tulos cachessa: ${result.isDone}, tuliko hämminkiä: ${result.isCompletedExceptionally}")
+        logger.info("Tulos cachessa: ${result.isDone}")
         return result
     }
 
