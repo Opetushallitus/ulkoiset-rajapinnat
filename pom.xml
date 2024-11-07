@@ -18,7 +18,7 @@
     <url>https://github.com/Opetushallitus/ulkoiset-rajapinnat</url>
     <connection>scm:git:git://github.com/Opetushallitus/ulkoiset-rajapinnat.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ulkoiset-rajapinnat.git</developerConnection>
-    <tag>0577bd8151ab66da1a6b23cb8fe90951c7c62720</tag>
+    <tag>718e9c31d418cf1425303fc060fe0e8c7ff0c977</tag>
   </scm>
   <build>
     <sourceDirectory>src/clj</sourceDirectory>
@@ -133,7 +133,18 @@
     </repository>
   </repositories>
   <dependencyManagement>
-    <dependencies/>
+    <dependencies>
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.3.3</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.9.10.4</version>
+      </dependency>
+    </dependencies>
   </dependencyManagement>
   <dependencies>
     <dependency>

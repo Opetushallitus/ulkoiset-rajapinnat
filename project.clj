@@ -11,6 +11,8 @@
                  ["github" {:url "https://maven.pkg.github.com/Opetushallitus/packages"
                             :username "private-token"
                             :password :env/GITHUB_TOKEN}]]
+  :managed-dependencies [[commons-fileupload/commons-fileupload "1.3.3"]
+                         [com.fasterxml.jackson.core/jackson-databind "2.9.10.4"]]
   :dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
                  ; Java Data
                  [org.flatland/ordered "1.5.7"]
