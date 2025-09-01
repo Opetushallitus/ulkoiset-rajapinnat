@@ -6,6 +6,7 @@ import fi.vm.sade.properties.OphProperties
 import org.slf4j.LoggerFactory
 import ulkoiset_rajapinnat.config.Headers
 import ulkoiset_rajapinnat.util.Json.gson
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
 
 abstract class BaseCasClient(
@@ -23,8 +24,8 @@ abstract class BaseCasClient(
     inline fun <reified T> fetch(url: String, vararg acceptStatusCodes: Int): CompletableFuture<T> {
         val req = Headers.requestBuilderWithHeaders()
             .setUrl(url)
-            .setRequestTimeout(timeoutMillis)
-            .setReadTimeout(timeoutMillis)
+            .setRequestTimeout(Duration.ofMillis((timeoutMillis.toLong())))
+            .setReadTimeout(Duration.ofMillis(timeoutMillis.toLong()))
             .build()
         val t = object: TypeToken<T>() {}.type
         val startTimeMillis = System.currentTimeMillis()
@@ -47,8 +48,8 @@ abstract class BaseCasClient(
     inline fun <reified T, A> fetch(url: String, body: A, vararg acceptStatusCodes: Int): CompletableFuture<T> {
         val req = Headers.requestBuilderWithHeaders()
             .setUrl(url)
-            .setRequestTimeout(timeoutMillis)
-            .setReadTimeout(timeoutMillis)
+            .setRequestTimeout(Duration.ofMillis((timeoutMillis.toLong())))
+            .setReadTimeout(Duration.ofMillis(timeoutMillis.toLong()))
             .setMethod("POST")
             .setHeader("Content-Type", "application/json")
             .setBody(Json.gson.toJson(body))
