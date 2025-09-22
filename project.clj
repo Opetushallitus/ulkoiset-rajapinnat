@@ -44,7 +44,7 @@
                  [fi.vm.sade.java-utils/java-properties "0.1.0-SNAPSHOT"]
                  [com.google.code.gson/gson "2.9.0"]
                  [com.github.ben-manes.caffeine/caffeine "3.1.1"]
-                 [fi.vm.sade.java-utils/java-cas "1.0.8-SNAPSHOT" :exclusions [org.slf4j/slf4j-simple]]
+                 [opiskelijavalinnat-utils/java-cas "1.2.4-SNAPSHOT" :exclusions [org.slf4j/slf4j-simple]]
                  ; Kotlin
                  [org.jetbrains.kotlin/kotlin-stdlib "1.6.21"]
                  ; Coroutines

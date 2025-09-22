@@ -18,7 +18,7 @@
     <url>https://github.com/Opetushallitus/ulkoiset-rajapinnat</url>
     <connection>scm:git:git://github.com/Opetushallitus/ulkoiset-rajapinnat.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/Opetushallitus/ulkoiset-rajapinnat.git</developerConnection>
-    <tag>718e9c31d418cf1425303fc060fe0e8c7ff0c977</tag>
+    <tag>7b57eaa9b93613c2aa062f775f3cbccfc7f842e0</tag>
   </scm>
   <build>
     <sourceDirectory>src/clj</sourceDirectory>
@@ -290,9 +290,9 @@
       <version>3.1.1</version>
     </dependency>
     <dependency>
-      <groupId>fi.vm.sade.java-utils</groupId>
+      <groupId>opiskelijavalinnat-utils</groupId>
       <artifactId>java-cas</artifactId>
-      <version>1.0.8-SNAPSHOT</version>
+      <version>1.2.4-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <artifactId>slf4j-simple</artifactId>
