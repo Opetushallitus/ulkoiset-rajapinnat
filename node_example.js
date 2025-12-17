@@ -29,7 +29,7 @@ postForm(hostname + '/cas/v1/tickets', {username:username, password:password})
 	.then((tgtUrl) => postForm(tgtUrl,{service:hostname+'/ulkoiset-rajapinnat'}))
 	.then((serviceTicket) => {
 //		const url = hostname + '/ulkoiset-rajapinnat/api/hakemus-for-haku-job/1.2.246.562.29.00000000000000021303?ticket=' + serviceTicket
-		const url = hostname + '/ulkoiset-rajapinnat/api/hakemus-for-haku/1.2.246.562.29.00000000000000021303?ticket=' + serviceTicket + '&koulutuksen_alkamisvuosi=2023&koulutuksen_alkamiskausi=kausi_s%231'
+		const url = hostname + '/ulkoiset-rajapinnat/api/hakemus-for-haku/1.2.246.562.29.00000000000000011031?ticket=' + serviceTicket + '&koulutuksen_alkamisvuosi=2023&koulutuksen_alkamiskausi=kausi_s%231'
 		//console.log('Calling URL ' + url)
 		request.get(url, (e,r,body) => {
 			console.log(JSON.stringify(JSON.parse(body), null, 2))
