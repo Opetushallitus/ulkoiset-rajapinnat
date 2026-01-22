@@ -2,11 +2,10 @@
   (:require [full.async :refer :all]
             [clj-http.client :as client]
             [cheshire.core :refer :all]
-            [clojure.core.async :refer [chan >! go close! <!]]
+            [clojure.core.async :refer [chan >! go close!]]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.async_safe :refer :all]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
-            [ulkoiset-rajapinnat.utils.read_stream :refer [read-json-stream-to-channel]]
             [ulkoiset-rajapinnat.utils.rest :refer [to-json parse-json-body]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             ))

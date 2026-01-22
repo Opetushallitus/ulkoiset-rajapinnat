@@ -4,7 +4,7 @@
             [schema.core :as s]
             [ulkoiset-rajapinnat.utils.tarjonta :refer [fetch-hakukohteet-channel haku-for-haku-oid-channel]]
             [ulkoiset-rajapinnat.organisaatio :refer [fetch-organisations-in-batch-channel]]
-            [ulkoiset-rajapinnat.utils.rest :refer [post-as-channel get-as-channel status body body-and-close exception-response parse-json-body-stream to-json]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body body-and-close exception-response parse-json-body-stream to-json]]
             [ulkoiset-rajapinnat.utils.koodisto :refer [koodisto-as-channel strip-type-and-version-from-tarjonta-koodisto-uri]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [org.httpkit.server :refer :all]

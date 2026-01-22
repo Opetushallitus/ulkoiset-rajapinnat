@@ -13,8 +13,8 @@
                                                       access-log-with-ticket-check-as-channel
                                                       handle-invalid-request]]
             [ulkoiset-rajapinnat.utils.runtime :refer [shutdown-hook]]
-            [ulkoiset-rajapinnat.haku :refer [Haku haku-resource]]
-            [ulkoiset-rajapinnat.hakukohde :refer [Hakukohde hakukohde-resource]]
+            [ulkoiset-rajapinnat.haku :refer [Haku]]
+            [ulkoiset-rajapinnat.hakukohde :refer [Hakukohde]]
             [ulkoiset-rajapinnat.hakemus :refer [Hakemus hakemus-resource]]
             [ulkoiset-rajapinnat.vastaanotto :refer [Vastaanotto vastaanotto-resource]]
             [ulkoiset-rajapinnat.valintaperusteet :refer [Valintaperusteet valintaperusteet-resource]]
@@ -192,4 +192,3 @@
 
 (defn -main [& args]
   (start-server args))
-

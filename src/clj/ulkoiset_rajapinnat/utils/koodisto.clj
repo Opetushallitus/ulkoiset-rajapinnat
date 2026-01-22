@@ -1,8 +1,7 @@
 (ns ulkoiset-rajapinnat.utils.koodisto
   (:require [clojure.string :as str]
-            [clojure.core.async :as async]
             [clojure.tools.logging :as log]
-            [full.async :refer [<? <??]]
+            [full.async]
             [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel parse-json-body-stream]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [org.httpkit.server :refer :all]

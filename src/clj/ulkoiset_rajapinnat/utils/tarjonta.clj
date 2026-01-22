@@ -1,7 +1,6 @@
 (ns ulkoiset-rajapinnat.utils.tarjonta
   (:require [clojure.string :as str]
             [full.async :refer :all]
-            [clojure.core.async :refer [<! promise-chan >! go put! close!]]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.snippets :refer [is-valid-year]]

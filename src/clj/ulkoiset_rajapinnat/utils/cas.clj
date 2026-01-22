@@ -1,7 +1,7 @@
 (ns ulkoiset-rajapinnat.utils.cas
   (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
-            [clojure.core.async :refer [>! put! go promise-chan close!]]
+            [clojure.core.async :refer [>! go promise-chan close!]]
             [full.async :refer :all]
             [ulkoiset-rajapinnat.utils.config :refer [config]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]

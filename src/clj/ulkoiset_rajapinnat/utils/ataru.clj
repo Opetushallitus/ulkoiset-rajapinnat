@@ -1,8 +1,7 @@
 (ns ulkoiset-rajapinnat.utils.ataru
-  (:require [clojure.string :as str]
-            [full.async :refer :all]
+  (:require [full.async :refer :all]
             [clojure.tools.logging :as log]
-            [clojure.core.async :refer [chan promise-chan >! go put! close! alts! timeout <!]]
+            [clojure.core.async :refer [chan >! go close!]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.read_stream :refer [read-json-stream-to-channel]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]

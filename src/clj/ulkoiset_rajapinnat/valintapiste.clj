@@ -1,19 +1,17 @@
 (ns ulkoiset-rajapinnat.valintapiste
-  (:require [clojure.core.async :refer [go <!]]
-            [full.async :refer [<? go-try]]
+  (:require [clojure.core.async :refer [go]]
+            [full.async :refer [<?]]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
-            [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel fetch-service-ticket-channel]]
-            [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json get-as-channel post-as-channel status body body-and-close exception-response parse-json-body to-json parse-json-request post-json-options post-json-with-cookies]]
-            [ulkoiset-rajapinnat.utils.koodisto :refer [strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel post-as-channel status body body-and-close to-json parse-json-request post-json-with-cookies]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
             [schema.core :as s]))
 
 (s/defschema Pistetieto
-             {;:aikaleima s/Str
-              :tunniste              s/Str
+             {:tunniste              s/Str
               (s/optional-key :arvo) s/Any
               :osallistuminen        (s/enum "EI_OSALLISTUNUT" "OSALLISTUI" "EI_VAADITA" "MERKITSEMATTA")
               :tallettaja            s/Str})

@@ -1,6 +1,5 @@
 (ns ulkoiset-rajapinnat.utils.audit
-  (:require [clojure.tools.logging :as log]
-            [clojure.tools.logging.impl :as impl])
+  (:require [clojure.tools.logging.impl :as impl])
   (:import (fi.vm.sade.auditlog Audit User Logger Operation Target$Builder ApplicationType Changes$Builder)
            (java.net InetAddress)
            (org.ietf.jgss Oid)))

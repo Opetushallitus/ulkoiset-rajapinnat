@@ -1,11 +1,9 @@
 (ns ulkoiset-rajapinnat.onr
-  (:require [clojure.string :as str]
-            [clojure.core.async :refer [go]]
+  (:require [clojure.core.async :refer [go]]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
-            [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json post-as-channel status body body-and-close exception-response parse-json-body-stream to-json]]
-            [ulkoiset-rajapinnat.utils.koodisto :refer [strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.rest :refer [mime-application-json post-as-channel parse-json-body-stream to-json]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]))
 

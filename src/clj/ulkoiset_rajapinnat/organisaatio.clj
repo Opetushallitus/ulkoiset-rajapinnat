@@ -1,6 +1,5 @@
 (ns ulkoiset-rajapinnat.organisaatio
-  (:require [clojure.string :as str]
-            [clojure.core.async :as async]
+  (:require [clojure.core.async :as async]
             [full.async :refer :all]
             [clojure.tools.logging :as log]
             [ulkoiset-rajapinnat.utils.rest :refer [post-json-as-channel parse-json-body-stream]]

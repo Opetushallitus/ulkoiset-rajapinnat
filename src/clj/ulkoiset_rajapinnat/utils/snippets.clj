@@ -1,5 +1,4 @@
-(ns ulkoiset-rajapinnat.utils.snippets
-  (:require [clojure.string :as str]))
+(ns ulkoiset-rajapinnat.utils.snippets)
 
 (defn remove-nils
   [m]

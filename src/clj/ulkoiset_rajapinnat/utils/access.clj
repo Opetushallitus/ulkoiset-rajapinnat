@@ -6,7 +6,7 @@
             [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :refer [transform-keys]]
             [ulkoiset-rajapinnat.utils.rest :refer [status body to-json]]
-            [clojure.core.async :refer [promise-chan >! go put! close!]]
+            [clojure.core.async :refer [go]]
             [clojure.tools.logging.impl :as impl]
             [ulkoiset-rajapinnat.utils.headers :refer [user-agent-from-request remote-addr-from-request parse-request-headers]]
             [ring.util.http-response :refer [unauthorized bad-request internal-server-error]]

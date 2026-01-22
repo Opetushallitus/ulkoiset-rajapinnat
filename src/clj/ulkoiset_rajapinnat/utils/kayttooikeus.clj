@@ -3,9 +3,7 @@
             [full.async :refer [<?]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
-            [ulkoiset-rajapinnat.utils.config :refer [config]]
-            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel status body-and-close exception-response to-json parse-json-body-stream parse-json-body body parse-json-request]]
-            [cheshire.core :refer [parse-string]]))
+            [ulkoiset-rajapinnat.utils.rest :refer [get-as-channel parse-json-body]]))
 
 (defn fetch-user-from-kayttooikeus-service [username]
   (go
@@ -19,4 +17,3 @@
          :organisaatiot (kayttooikeus-response-body "organisaatiot")
          :personOid     (kayttooikeus-response-body "oidHenkilo")}
         (RuntimeException. (format "Could not find user '%s' from %s" username kayttooikeus-url))))))
-

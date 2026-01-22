@@ -1,15 +1,12 @@
 (ns ulkoiset-rajapinnat.oppija
   (:require [full.async :refer :all]
-            [clojure.string :as str]
             [clojure.tools.logging :as log]
             [full.async :refer :all]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
-            [ulkoiset-rajapinnat.utils.rest :refer [exception-response get-as-channel post-as-channel parse-json-body status body body-and-close exception-response parse-json-body-stream to-json]]
-            [ulkoiset-rajapinnat.utils.koodisto :refer [strip-version-from-tarjonta-koodisto-uri]]
+            [ulkoiset-rajapinnat.utils.rest :refer [post-as-channel parse-json-body to-json]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-service-ticket-channel]]
             [org.httpkit.server :refer :all]
             [org.httpkit.timer :refer :all]
-            [clj-time.core :as t]
             [clj-time.format :as f]))
 
 (defn fetch-hakurekisteri-service-ticket-channel [] (fetch-service-ticket-channel "/suoritusrekisteri"))

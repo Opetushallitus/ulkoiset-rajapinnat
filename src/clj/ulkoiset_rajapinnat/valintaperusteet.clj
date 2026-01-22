@@ -1,5 +1,5 @@
 (ns ulkoiset-rajapinnat.valintaperusteet
-  (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body-stream post-json-as-channel parse-json-request status body-and-close body to-json parse-json-body exception-response]]
+  (:require [ulkoiset-rajapinnat.utils.rest :refer [parse-json-body-stream post-json-as-channel parse-json-request status body-and-close to-json exception-response]]
             [ulkoiset-rajapinnat.utils.cas :refer [fetch-jsessionid-channel]]
             [ulkoiset-rajapinnat.utils.url-helper :refer [resolve-url]]
             [ulkoiset-rajapinnat.utils.snippets :refer [find-first-matching merge-if-not-nil]]
