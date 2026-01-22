@@ -19,7 +19,7 @@ or run Java part only from Idea (Edit Configurations -> Environment Variables ->
 
 ## CAS with Node.js Example
 
-`npm install --save cheerio request bluebird`
+`pnpm install`
 
 `node node_example.js ../file_with_creds_and_host.txt`
 
