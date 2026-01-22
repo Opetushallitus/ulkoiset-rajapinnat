@@ -1,3 +1,5 @@
+(def jackson-version "2.15.0")
+
 (defproject ulkoiset-rajapinnat "0.1.0-SNAPSHOT"
   :description "Opintopolku API"
   :url "http://api.opintopolku.fi"
@@ -11,26 +13,33 @@
                  ["github" {:url "https://maven.pkg.github.com/Opetushallitus/packages"
                             :username "private-token"
                             :password :env/GITHUB_TOKEN}]]
-  :managed-dependencies [[commons-fileupload/commons-fileupload "1.3.3"]
-                         [com.fasterxml.jackson.core/jackson-databind "2.9.10.4"]]
+  :managed-dependencies [[commons-fileupload/commons-fileupload "1.6.0"]
+                         [com.fasterxml.jackson.core/jackson-databind ~jackson-version]
+                         [com.fasterxml.jackson.core/jackson-core ~jackson-version]
+                         [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor ~jackson-version]
+                         [com.fasterxml.jackson.dataformat/jackson-dataformat-smile ~jackson-version]
+                         [org.jsoup/jsoup "1.19.1"]
+                         [clj-commons/clj-yaml "1.0.29"]
+                         [com.google.protobuf/protobuf-java "3.25.5"]
+                         ]
   :dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
                  ; Java Data
                  [org.flatland/ordered "1.5.7"]
                  [org.clojure/java.data "1.0.95" :exclusions [org.clojure/tools.logging]]
                  ; Snake Camel Kebab
                  [camel-snake-kebab "0.4.3"]
-                 [org.clojure/clojure "1.9.0"]
-                 [org.clojure/core.async "0.3.443"]
+                 [org.clojure/clojure "1.11.4"]
+                 [org.clojure/core.async "1.8.741"]
                  [fi.vm.sade/auditlogger "8.0.0-SNAPSHOT"]
                  [environ "1.1.0"]
                  [compojure "1.6.0"]
                  [clj-time "0.14.0"]
-                 [clj-http "3.7.0"]
+                 [clj-http "3.13.0"]
                  [org.clojure/data.xml "0.0.8"]
                  [fullcontact/full.async "1.0.0"]
                  [http-kit "2.5.3"]
                  [prismatic/schema "1.1.7"]
-                 [metosin/compojure-api "1.1.11"]
+                 [metosin/compojure-api "1.1.14"]
                  [cheshire "5.8.0"]
                  [org.mongodb/mongodb-driver-reactivestreams "1.6.0"]
                  [clj-soup/clojure-soup "0.1.3"]
@@ -77,7 +86,6 @@
              :dev {:test-paths ["test/clj" "test/kotlin"]
                    :kotlin-source-paths ["test/kotlin"]
                    :dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
-                                  [tempfile "0.2.0"]
                                   [junit/junit "4.13"]
                                   [io.github.infeez.kotlin-mock-server/mock-server-core "1.0.0"]
                                   [io.github.infeez.kotlin-mock-server/mock-server-junit4 "1.0.0"]
@@ -87,4 +95,3 @@
                                   [org.jetbrains.kotlinx/kotlinx-coroutines-test "1.6.4"]
                                   [ring/ring-mock "0.3.1"]
                                   [audiogum/picomock "0.1.11"]]}})
-
